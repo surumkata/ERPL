@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <link rel="stylesheet" href="style.css">
+        <meta charset="utf-8">
+    </head>
+    <body>
+        <div id="escape_room">
+            <div id="room">
+                <img id="door" src="door.png" onclick="tryDoor()">
+                <img id="cofre" src="cofre.png" onclick="openCofre()">
+                <img id="key" src="key.png" onclick="pickupItem('key',true)">
+                <img id="nota" src="nota.png" onclick="pickupItem('nota',false)">
+                <div id="view">
+                    <img id="board" src="board.png">
+                    <img id="x" src="x.png" onclick="closeView()">
+                    <img id="keyV" src="keyV.png">
+                    <img id="notaV" src="notaV.png">
+                </div>
+            </div>
+        </div>
+        <div id="inventory">
+            <img src="inventory.png">
+            <img id="eye1" src="eye.png" onclick="show(1)">
+            <img id="eye2" src="eye.png" onclick="show(2)">
+            <img id="eye3" src="eye.png" onclick="show(3)">
+            <img id="eye4" src="eye.png" onclick="show(4)">
+            <img id="eye5" src="eye.png" onclick="show(5)">
+            <img id="eye6" src="eye.png" onclick="show(6)">
+            <img id="eye7" src="eye.png" onclick="show(7)">
+            <img id="eye8" src="eye.png" onclick="show(8)">
+            <img id="eye9" src="eye.png" onclick="show(9)">
+        </div>
+
+        <script src="script.js"></script>
+    </body>

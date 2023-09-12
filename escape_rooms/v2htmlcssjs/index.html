@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <link rel="stylesheet" href="room.css">
+        <meta charset="utf-8">
+        <title>Escape Room</title>
+    </head>
+    <body>
+        <div class="room">
+            <div class="grid-container">
+                <div class="grid-item">1</div>
+                <div class="grid-item">2</div>
+                <div class="grid-item">3</div>  
+                <div class="grid-item">4</div>
+                <div class="grid-item">5</div>
+                <div class="grid-item">6</div>  
+                <div class="grid-item">7</div>
+                <div class="grid-item">8</div>
+                <div class="grid-item">9</div>
+                <div class="grid-item">10</div>
+                <div class="grid-item">11</div>
+                <div class="grid-item">12</div>
+                <div class="grid-item">13</div>  
+                <div class="grid-item">14</div>
+                <div class="grid-item">15</div>
+                <div class="grid-item">16</div>  
+                <div class="grid-item">17</div>
+                <div class="grid-item">18</div>
+                <div class="grid-item">19</div>
+                <div class="grid-item">20</div>
+                <div class="grid-item">21</div>
+                <div class="grid-item">22</div>
+                <div class="grid-item">23</div>  
+                <div class="grid-item">24</div>
+                <div class="grid-item">25</div>
+                <div class="grid-item">26</div>  
+                <div class="grid-item">27</div>
+                <div class="grid-item">28</div>
+                <div class="grid-item">29</div>
+                <div class="grid-item">30</div>
+                <div class="grid-item">30</div>
+                <div class="grid-item">31</div>
+                <div class="grid-item">32</div>
+                <div class="grid-item">33</div>  
+                <div class="grid-item">34</div>
+                <div class="grid-item">35</div>
+                <div class="grid-item">36</div>  
+                <div class="grid-item">37</div>
+                <div class="grid-item">38</div>
+                <div class="grid-item">39</div>
+                <div class="grid-item">40</div>
+                <div class="grid-item">41</div>
+                <div class="grid-item">42</div>
+                <div class="grid-item">43</div> 
+                <div class="grid-item">44</div>
+                <div class="grid-item">45</div>
+                <div class="grid-item">46</div>
+                <div class="grid-item">47</div>
+                <div class="grid-item">48</div>
+                <div class="grid-item">49</div>
+                <div class="grid-item">50</div>
+                <div class="grid-item">51</div>
+                <div class="grid-item">52</div>
+                <div class="grid-item">53</div> 
+                <div class="grid-item">54</div> 
+                <div class="grid-item">55</div>
+                <div class="grid-item">56</div> 
+                <div class="grid-item">57</div>
+                <div class="grid-item">58</div>
+                <div class="grid-item"> <img id='nota.png' src="nota.png" class="small_object" onclick="pickObject('nota.png',true)"> </div> 
+                <div class="grid-item">60</div>
+                <div class="grid-item">61</div>
+                <div class="grid-item">62</div>
+                <div class="grid-item">63</div> 
+                <div class="grid-item">64</div>
+                <div class="grid-item">65</div>
+                <div class="grid-item">66</div> 
+                <div class="grid-item" style="background-image: url('door.png'); background-position: top;">67</div>
+                <div class="grid-item">68</div>
+                <div class="grid-item">69</div>
+                <div class="grid-item" id="cofre.png" style="background-image: url('cofre.png');" onclick="openObjectByCode('cofre.png','Qual é o código?','8723', ['key.png'])">
+                    <img id="key.png" src="key.png" class="hidden_object small_object" onclick="pickObject('key.png',true)">
+                </div>
+                <div class="grid-item">71</div>
+                <div class="grid-item">72</div>
+                <div class="grid-item">73</div> 
+                <div class="grid-item">74</div>
+                <div class="grid-item">75</div>
+                <div class="grid-item">76</div> 
+                <div class="grid-item">77</div>
+                <div class="grid-item">78</div>
+                <div class="grid-item">79</div>
+                <div class="grid-item" style="background-image: url('door.png'); background-position: bottom;">80</div>
+                <div class="grid-item">81</div>
+                <div class="grid-item">82</div>
+                <div class="grid-item">83</div> 
+                <div class="grid-item">84</div>
+                <div class="grid-item">85</div>
+                <div class="grid-item">86</div> 
+                <div class="grid-item">87</div>
+                <div class="grid-item">88</div>
+                <div class="grid-item">89</div>
+                <div class="grid-item">90</div>
+              </div>
+        </div>
+        <!-- Início do inventário -->
+        <div class="inventory">
+            <div id="slot1" class="empty-slot">
+                <div class="slot-number">1</div>
+                Slot Vazio
+            </div>
+            <div id="slot2" class="empty-slot">
+                <div class="slot-number">2</div>
+                Slot Vazio
+            </div>
+            <div id="slot3" class="empty-slot">
+                <div class="slot-number">3</div>
+                Slot Vazio
+            </div>
+            <div id="slot4" class="empty-slot">
+                <div class="slot-number">4</div>
+                Slot Vazio
+            </div>
+            <div id="slot5" class="empty-slot">
+                <div class="slot-number">5</div>
+                Slot Vazio
+            </div>
+            <div id="slot6" class="empty-slot">
+                <div class="slot-number">6</div>
+                Slot Vazio
+            </div>
+            <div id="slot7" class="empty-slot">
+                <div class="slot-number">7</div>
+                Slot Vazio
+            </div>
+            <div id="slot8" class="empty-slot">
+                <div class="slot-number">8</div>
+                Slot Vazio
+            </div>
+            <div id="slot9" class="empty-slot">
+                <div class="slot-number">9</div>
+                Slot Vazio
+            </div>
+        </div>
+        <!-- Fim do inventário -->
+
+        <!-- Popup de ampliação do item -->
+        <div id="item-popup" class="item-popup">
+            <div class="item-popup-content">
+                <img id="popup-image" src="" alt="Item Ampliado">
+                <span id="close-popup" class="close-popup">×</span>
+            </div>
+        </div>
+
+        <script src="script.js"></script>
+    </body>
+
+
+
+<!--
+<div class="inventory-item">
+                <div class="slot-number">2</div>
+                <img src="door.png" alt="Item 2">
+                <div class="zoom-icon">&#128269;</div>
+            </div>
+
+-->
