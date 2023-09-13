@@ -7,7 +7,7 @@ body {
 }
 
 .room {
-    background-image: url('room.png');
+    background-image: url('../../images/room.png');
     background-size: cover;
     background-position: center;
     width: 100%;

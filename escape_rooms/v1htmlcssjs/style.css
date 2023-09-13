@@ -11,7 +11,7 @@ body {
     padding: 0;
     width: 1440px;
     height: 900px;
-    background-image: url("room.png");
+    background-image: url("../../images/room.png");
 }
 
 #room > * {

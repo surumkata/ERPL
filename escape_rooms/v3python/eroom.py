@@ -86,7 +86,7 @@ while running:
 
     # Exibir a mensagem se finish_game for True
     if finish_game:
-        pygame.draw.rect(screen, GREEN, (0, 0, WIDTH, HEIGHT))  # Fundo colorido
+        pygame.draw.rect(screen, GREEN, (0, 0, WIDTH, HEIGHT))  # Fundo colorido/
         font = pygame.font.Font(None, 36)
         text = font.render("Você Escapou!", True, WHITE)
         text_rect = text.get_rect(center=(WIDTH // 2, HEIGHT // 2))

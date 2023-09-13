@@ -3,7 +3,7 @@
 // Altera a src image de um objeto
 function changeObjectSrcImage(id, srcImage) {
     const element = document.getElementById(id);
-    element.style.backgroundImage = 'url('+srcImage+')';
+    element.style.backgroundImage = 'url(../../images/'+srcImage+')';
 }
 
 // Altera a src image de um item
@@ -13,7 +13,7 @@ function changeItemSrcImage(id, srcImage) {
     const imgElement = container.querySelector("img");
     
     if (imgElement) {
-        imgElement.src = srcImage;
+        imgElement.src = "../../images/" + srcImage;
         console.log(srcImage);
     } else {
         console.log("Elemento <img> não encontrado no contêiner.");
@@ -80,7 +80,7 @@ function addToInventory(id, onclick){
     var slot = emptyNextSlot();
 
     //adicionar ao inventario (dicionario)
-    inventory[id] = {"slot" : slot, "active" : onclick};
+    inventory[id] = {"slot" : slot, "active" : false};
 
     //adicionar visualmente
     element = document.getElementById("slot" + slot);
@@ -88,8 +88,8 @@ function addToInventory(id, onclick){
 
     element.innerHTML = `
         <div class="slot-number">${slot}</div>
-        <img src="${id}">
-        <div class="zoom-icon" onclick="abrirPopup('lupa_${id}')">&#128269;</div>
+        <img src="../../images/${id}">
+        <div class="zoom-icon" onclick="abrirPopup('../../images/lupa_${id}')">&#128269;</div>
     `;
 }
 
