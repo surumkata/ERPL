@@ -1,63 +1,93 @@
 {
-    "cena1" : { 
-        "objetos" : {
+    "cena" : { 
+       "objects" : {
             "porta" : {
-                "estados" : {
-                    "visivel" : "door.png",
-                    "aberta" : "open_door.png"
+                "states" : {
+                    "aberta" : "open_door.png",
+                    "fechada" : "door.png"
                 },
-                "eventos" : {
-                    "1" : {
-                        "objeto" : "porta",
-                        "estado_incial" : "visivel",
-                        "estado_final" : "aberta",
-                        "requesito" : "OBJETO_chave"
+                "events" : {
+                    "abrir_porta" : {
+                        "type" : 0,
+                        "trigger" : {
+                            "type" : 2,
+                            "object_id" : "chave",
+                            "state_id" : "ativa"
+                        },
+                        "object_id" : "porta",
+                        "initial_state" : "fechada",
+                        "final_state" : "aberta",
+                        "repeatble" : false
+                    },
+                    "apagar_chave" : {
+                        "type" : 0,
+                        "trigger" : {
+                            "type" : 2,
+                            "object_id" : "chave",
+                            "state_id" : "ativa"
+                        },
+                        "object_id" : "chave",
+                        "initial_state" : "ativa",
+                        "final_state" : null,
+                        "repeatble" : false
+                    },
+                    "fim" : {
+                        "type" : 4,
+                        "trigger" : {}
                     }
-                }
-            },
-            "nota" : {
-                "estados" : {
-                    "visivel" : "nota.png",
-                    "invisivel" : "",
-                    "inventario" : "lupa_nota.png"
                 },
-                "eventos" : {
-                    "1" : {
-                        "objeto" : "nota",
-                        "estado_incial" : "visivel",
-                        "estado_final" : "invisivel"
-                    }
-                }
+                "position_x" : 600,
+                "position_y" : 300,
+                "size_x" : 100,
+                "size_y" : 200,
+                "initial_state" : "fechada"
             },
             "chave" : {
-                "estados" : {
-                    "visivel" : "chave.png",
-                    "invisivel" : ""
+                "states" : {
+                    "ativa" : "active_key.png",
+                    "normal" : "key.png"
                 },
-                "eventos" : {}
-            },
-            "cofre" : {
-                "estados" : {
-                    "visivel" : "cofre.png",
-                    "aberto" : "cofre_aberto.png",
-                    "invisivel" : ""
-                },
-                "eventos" : {
-                    "1" : {
-                        "objeto" : "cofre",
-                        "estado_inicial" : "visivel",
-                        "estado_final" : "aberto",
-                        "requesito" : "CODE_8723"
+                "events" : {
+                    "chave_inventario" : {
+                        "type" : 1,
+                        "trigger" : {
+                            "type" : 0
+                        }
                     },
-                    "2" : {
-                        "objeto" : "chave",
-                        "estado_incial" : "invisivel",
-                        "estado_final" : "visivel"
-                    }  
-                }
+                    "ativar" : {
+                        "type" : 0,
+                        "trigger" : {
+                            "type" : 1,
+                            "scene_id" : "cena",
+                            "object_id" : "chave",
+                            "event_id" : "chave_inventario"
+                        },
+                        "object_id" : "chave",
+                        "initial_state" : "normal",
+                        "final_state" : "ativa",
+                        "repeatble" : true
+                    },
+                    "desativar" : {
+                        "type" : 0,
+                        "trigger" : {
+                            "type" : 1,
+                            "scene_id" : "cena",
+                            "object_id" : "chave",
+                            "event_id" : "chave_inventario"
+                        },
+                        "object_id" : "chave",
+                        "initial_state" : "ativa",
+                        "final_state" : "normal",
+                        "repeatble" : true
+                    }
+                },
+                "position_x" : 200,
+                "position_y" : 400,
+                "size_x" : 50,
+                "size_y" : 50,
+                "initial_state" : "normal"
             }
-            
-        },
-        "fundo" : "room.png"
+       },
+       "background" : "room.png"
     }
 }
