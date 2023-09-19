@@ -1,0 +1,63 @@
+{
+    "cena1" : { 
+        "objetos" : {
+            "porta" : {
+                "estados" : {
+                    "visivel" : "door.png",
+                    "aberta" : "open_door.png"
+                },
+                "eventos" : {
+                    "1" : {
+                        "objeto" : "porta",
+                        "estado_incial" : "visivel",
+                        "estado_final" : "aberta",
+                        "requesito" : "OBJETO_chave"
+                    }
+                }
+            },
+            "nota" : {
+                "estados" : {
+                    "visivel" : "nota.png",
+                    "invisivel" : "",
+                    "inventario" : "lupa_nota.png"
+                },
+                "eventos" : {
+                    "1" : {
+                        "objeto" : "nota",
+                        "estado_incial" : "visivel",
+                        "estado_final" : "invisivel"
+                    }
+                }
+            },
+            "chave" : {
+                "estados" : {
+                    "visivel" : "chave.png",
+                    "invisivel" : ""
+                },
+                "eventos" : {}
+            },
+            "cofre" : {
+                "estados" : {
+                    "visivel" : "cofre.png",
+                    "aberto" : "cofre_aberto.png",
+                    "invisivel" : ""
+                },
+                "eventos" : {
+                    "1" : {
+                        "objeto" : "cofre",
+                        "estado_inicial" : "visivel",
+                        "estado_final" : "aberto",
+                        "requesito" : "CODE_8723"
+                    },
+                    "2" : {
+                        "objeto" : "chave",
+                        "estado_incial" : "invisivel",
+                        "estado_final" : "visivel"
+                    }  
+                }
+            }
+            
+        },
+        "fundo" : "room.png"
+    }
+}
