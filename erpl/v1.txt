@@ -1,0 +1,73 @@
+Room: titulo
+Cena:
+    id: cena
+    background: room.png
+Objeto:
+    id: porta
+    cena: cena
+    posicao: (600,300)
+    tamanho: (100,200)
+    estado_inicial: fechada
+    estados: [fechada, aberta]
+    eventos: [abrir_porta, apagar_chave, fim]
+Estado:
+    id: fechada
+    img: door.png
+Estado:
+    id: aberta
+    img: open_door.png
+Objeto:
+    id: chave
+    cena: cena
+    posicao: (200,400)
+    tamanho: (50,50)
+    estado_inicial: normal
+    estados: [normal,ativa]
+    eventos: [chave_inventario, ativar, desativar]
+Evento:
+    id: abrir_porta
+    tipo: MUDAR_ESTADOS
+    objeto: porta
+    estado_inicial: fechada
+    estado_final: aberta
+    gatilho: clique_com_chave_ativa
+Evento:
+    id: apagar_chave
+    tipo: MUDAR_ESTADOS
+    objeto: chave
+    estado_inicial: ativa
+    estado_final: null
+    gatilho: clique_com_chave_ativa
+Evento:
+    id: fim
+    tipo: FIM_DE_JOGO
+    gatilho: fim_de_jogo
+Gatilho:
+    id: clique_com_chave_ativa
+    tipo: CLIQUE_QUANDO_ESTADO_DE_OBJETO
+    objeto: chave
+    estado: ativa
+Gatilho:
+    id: fim_de_jogo
+    tipo CLIQUE_QUANDO_ESTADO_DE_OBJETO
+    objeto: porta
+    estado: aberta
+Evento:
+    id: chave_inventario
+    tipo: COLOCA_NO_INVENTARIO
+    gatilho: clique_simples
+Gatilho:
+    id: clique_simples
+    tipo: CLIQUE
+Evento:
+    id: ativar
+    tipo: MUDAR_ESTADOS
+    objeto: chave
+    estado_inicial: normal
+    estado_final: ativa
+    gatilho: clique_no_inv
+Gatilho:
+    id: clique_no_inv
+    tipo: CLIQUE_DEPOIS_DE_EVENTO
+    objeto: chave
+    evento: chave_inventario

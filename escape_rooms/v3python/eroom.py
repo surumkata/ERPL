@@ -200,6 +200,7 @@ class EscapeRoom:
         self.title = title #TITULO
         self.scenes = {} #CENAS (DICIONARIO [CHAVE = ID DA CENA])
         self.current_scene = None #ID DA CENA ATUAL
+        self.finish_game = False
 
     #Função que adiciona uma cena
     def add_scene(self,scene : Scene):
@@ -280,11 +281,54 @@ room.add_scene(scene)
 # Posição do inventário
 inventory_x, inventory_y = 10, 10
 
-# Variáveis para controlar a exibição da message
-finish_game = False
+#Dicionarios auxiliares
+buffer_happen_events = {}
+buffer_changed_objects_states = {}
 
-# Loop principal do jogo
+
+def check_trigger(trigger):
+    #Se o tipo de gatilho de evento é apenas clique
+    if trigger.type == TriggerType.CLICK:
+        return True
+    #Se o tipo de gatilho de evento é clique depois de evento
+    elif trigger.type == TriggerType.CLICK_AFTER_EVENT:
+        #Verificar se o evento do gatilho já ocorreu
+        return room.check_if_event_occurred(trigger.scene_id,trigger.object_id,trigger.event_id)
+    #Se o tipo de gatilho de evento é Clique quando estado de objeto
+    elif trigger.type == TriggerType.CLICK_WHEN_OBJECT_STATE:
+        #Verificar se o estado de objeto do gatilho é igual ao estado atual do objeto
+        return room.get_current_state_of_object(room.current_scene,trigger.object_id) == trigger.state_id
+
+def try_do_event(object, event):
+    if not event.happen or event.repeatable:
+        if check_trigger(event.trigger):
+            #Verificar o tipo de evento é mudança de estados
+            if event.type == EventType.EVENT_CHANGE_STATES:
+                #VERIFICAR SE ESTADO INICIAL BATE CERTO COM O ATUAL
+                if event.initial_state == room.get_current_state_of_object(room.current_scene, event.object_id):
+                    buffer_changed_objects_states[event.object_id] = event.final_state #colocar no buffer o estado do objeto para ser posteriormente alterado
+                    buffer_happen_events[event.id] = object.id #colocar o evento no buffer para ser atualizado (que aconteceu)
+
+            elif event.type == EventType.EVENT_SHOW_MESSAGE:
+                pass
+                #TODO:
+
+            #Verficar se o evento é do tipo colocar no inventario
+            elif event.type == EventType.EVENT_PUT_IN_INVENTARIO:
+                #TODO:COLOCAR POSICAO NO INVENTARIO
+                object.chage_position(Position(inventory_x,inventory_y)) #Mudar a posicao do objeto para a do slot no inventario
+                buffer_happen_events[event.id] = object.id #colocar o evento no buffer para ser atualizado (que aconteceu)
+
+            elif event.type == EventType.EVENT_ASK_CODE:
+                pass
+                #TODO:
+
+            #Verificar se o tipo de evento é "fim de jogo"
+            elif event.type == EventType.EVENT_END_GAME:
+                room.finish_game = True
+
 running = True
+# Loop principal do jogo
 while running:
     for pygame_event in pygame.event.get():
         #Carregar em fechar jogo = encerra o jogo
@@ -293,56 +337,11 @@ while running:
         
         #Evento de clique
         elif pygame_event.type == pygame.MOUSEBUTTONDOWN:
-            #Dicionarios auxiliares
-            buffer_happen_events = {}
-            buffer_changed_objects_states = {}
             
-            #Clique foi na porta
-            if door.have_clicked(pygame_event.pos[0],pygame_event.pos[1]):
-                #Iterar todos os eventos ligados à porta
-                for event_id,event in door.events.items():
-                    #Se o evento ainda não aconteceu ou é repetível
-                    if (not event.happen or event.repeatable):
-                        #Se o tipo de gatilho de evento é Clique quando estado de objeto
-                        if event.trigger.type == TriggerType.CLICK_WHEN_OBJECT_STATE:
-                            #Verificar se o estado de objeto do gatilho é igual ao atual
-                            if room.get_current_state_of_object(room.current_scene,event.trigger.object_id) == event.trigger.state_id:
-                                #Verificar o tipo de evento é mudança de estados
-                                if event.type == EventType.EVENT_CHANGE_STATES:
-                                    #VERIFICAR SE ESTADO INICIAL BATE CERTO COM O ATUAL
-                                    if event.initial_state == room.get_current_state_of_object(room.current_scene, event.object_id):
-                                        buffer_changed_objects_states[event.object_id] = event.final_state #colocar no buffer o estado do objeto para ser posteriormente alterado
-                                        buffer_happen_events[event.id] = door.id #colocar o evento no buffer para ser atualizado (que aconteceu)
-                                #Verificar se o tipo de evento é "fim de jogo"
-                                elif event.type == EventType.EVENT_END_GAME:
-                                    finish_game = True
-            
-            #Clique foi na chave
-            elif key.have_clicked(pygame_event.pos[0],pygame_event.pos[1]):
-                #Iterar todos os eventos ligados à chave
-                for event_id,event in key.events.items():
-                    #Se o evento ainda não aconteceu ou é repetível
-                    if (not event.happen or event.repeatable):
-                        #Se o tipo de gatilho de evento é apenas clique
-                        if event.trigger.type == TriggerType.CLICK:
-                            #LÓGICA DE TODOS OS TIPOS DE EVENTOS
-                            #Verficar se o evento é do tipo colocar no inventario
-                            if event.type == EventType.EVENT_PUT_IN_INVENTARIO:
-                                #TODO:COLOCAR POSICAO NO INVENTARIO
-                                key.chage_position(Position(inventory_x,inventory_y)) #Mudar a posicao do objeto para a do slot no inventario
-                                buffer_happen_events[event.id] = key.id #colocar o evento no buffer para ser atualizado (que aconteceu)
-                        #Se o tipo de gatilho de evento é clique depois de evento
-                        elif event.trigger.type == TriggerType.CLICK_AFTER_EVENT:
-                            #Verificar se o evento do gatilho já ocorreu
-                            if room.check_if_event_occurred(event.trigger.scene_id,event.trigger.object_id,event.trigger.event_id):                        
-                                #LOGICA DE TODOS OS TIPOS DE EVENTOS
-                                #Verificar o tipo de evento é mudança de estados
-                                if event.type == EventType.EVENT_CHANGE_STATES:
-                                    #VERIFICAR SE ESTADO INICIAL BATE CERTO COM O ATUAL
-                                    if event.initial_state == room.get_current_state_of_object(room.current_scene, event.object_id):
-                                        buffer_changed_objects_states[event.object_id] = event.final_state #colocar no buffer o estado do objeto para ser posteriormente alterado
-                                        buffer_happen_events[event.id] = key.id #colocar o evento no buffer para ser atualizado (que aconteceu)
-
+            for object in room.scenes[room.current_scene].objects.values():
+                if object.have_clicked(pygame_event.pos[0],pygame_event.pos[1]):
+                    for event in object.events.values():
+                        try_do_event(object,event)
 
             #Atualizar os eventos que occorreram com o clique
             for event_id,object_id in buffer_happen_events.items():
@@ -350,12 +349,15 @@ while running:
             #Atualizar os estados que mudaram com o clique
             for object_id,state_id in buffer_changed_objects_states.items():
                 room.change_object_state(room.current_scene,object_id,state_id)
+            # RESET BUFFERS
+            buffer_happen_events = {}
+            buffer_changed_objects_states = {}
     
     #Desenhar a room
     room.draw()
 
     #Tela de fim de jogo
-    if finish_game:
+    if room.finish_game:
         pygame.draw.rect(screen, GREEN, (0, 0, WIDTH, HEIGHT))  # Fundo colorido/
         font = pygame.font.Font(None, 36)
         text = font.render("Você Escapou!", True, WHITE)
