@@ -2,15 +2,15 @@ import pygame
 import sys
 from enum import Enum
 
-
 WIDTH, HEIGHT = 1300, 700
-
 
 """TIPOS DE GATILHO (TRIGGER) DE EVENTO"""
 class TriggerType(Enum):
     CLICK = 0
     CLICK_AFTER_EVENT = 1
     CLICK_WHEN_OBJECT_STATE = 2
+    AFTER_EVENT = 3
+    AFTER_TIME = 4
 
 
 """TIPOS DE EVENTOS"""
@@ -20,6 +20,8 @@ class EventType(Enum):
     EVENT_SHOW_MESSAGE = 2
     EVENT_ASK_CODE = 3
     EVENT_END_GAME = 4
+    EVENT_CHANGE_POSITION = 5
+    EVENT_CHANGE_SIZE = 6
 
 
 """CLASSE AUXIALIRES"""
@@ -58,6 +60,20 @@ class ClickWhenStateOfObject(Trigger):
         self.state_id = state_id
         self.object_id = object_id
 
+#Trigger após um evento ter ocorrido
+class AfterEvent(Trigger):
+    def __init__(self,scene_id : str,object_id : str,event_id : str):
+        super().__init__(TriggerType.AFTER_EVENT)
+        self.scene_id = scene_id
+        self.object_id = object_id
+        self.event_id = event_id
+
+#Trigger após um evento ter ocorrido
+class AfterTime(Trigger):
+    def __init__(self,time : int):
+        super().__init__(TriggerType.AFTER_TIME)
+        self.time = time
+
 """CLASSE DE EVENTO"""
 class Event:
 
@@ -89,15 +105,29 @@ class EventShowMessage(Event):
 
 #Evento que pede um código
 class EventAskCode(Event):
-    def __init__(self, id : str, trigger : Trigger , message : str, code : str):
+    def __init__(self, id : str, trigger : Trigger , message : str, code : str, hit_event_id : str, miss_event_id : str):
         super().__init__(id, trigger, EventType.EVENT_ASK_CODE, True) 
         self.message = message
         self.code = code
+        self.hit_event = hit_event_id
+        self.miss_event = miss_event_id
 
 #Evento que finaliza um jogo
 class EventEndGame(Event):
     def __init__(self,id : str,trigger : Trigger):
         super().__init__(id, trigger, EventType.EVENT_END_GAME, False)
+
+#Evento que altera a posicao de um objeto
+class EventChangePosition(Event):
+    def __init__(self,id : str,trigger : Trigger, position : Position):
+        super().__init__(id, trigger, EventType.EVENT_CHANGE_POSITION, False)
+        self.position = position
+
+#Evento que altera a posicao de um objeto
+class EventChangeSize(Event):
+    def __init__(self,id : str,trigger : Trigger, size : Size):
+        super().__init__(id, trigger, EventType.EVENT_CHANGE_SIZE, False)
+        self.size = size
 
 """CLASSE DE UM ESTADO"""
 class State:
@@ -133,8 +163,12 @@ class Object:
         return self.position.x <= x <= self.position.x + self.size.x and self.position.y <= y <= self.position.y + self.size.y
     
     #Função que muda a posição do objeto
-    def chage_position(self,position : Position):
+    def change_position(self,position : Position):
         self.position = position
+
+    #Função que muda o tamanho do objeto
+    def change_size(self,size : Size):
+        self.size = size
 
     #Função que desenha o objeto (usando o estado atual)
     def draw(self):
@@ -207,6 +241,10 @@ class EscapeRoom:
         self.scenes[scene.id] = scene
         if self.current_scene == None: #Se for a primeira cena a ser adicionar fica a atual
             self.current_scene = scene.id
+
+    def add_object(self,scene_id : str, object : Object):
+        if scene_id in self.scenes:
+            self.scenes[scene_id].add_object(object)
     
     #Função que muda a cena atual
     def change_current_scene(self,scene_id : str):
@@ -233,10 +271,13 @@ class EscapeRoom:
     def get_current_state_of_object(self,scene_id : str,object_id : str):
         return self.scenes[scene_id].get_current_state_of_object(object_id)
 
-
-
-
 __images = "../../images/"
+
+import json
+file = open("../../models/sample.json")
+jsonString = file.read()
+escape_room = json.loads(jsonString)
+
 
 # Inicialização do Pygame
 pygame.init()
@@ -252,31 +293,94 @@ GREEN = (0, 255, 0)
 RED = (255, 0, 0)
 
 room = EscapeRoom('Escape Room')
+cenas = escape_room['CENA']
+objetos = escape_room['OBJETO']
+eventos = escape_room['EVENTO']
+estados = escape_room['ESTADO']
+gatilhos = escape_room['GATILHO']
 
-scene = Scene('cena', __images + "room.png")
+aux = {}
 
-door = Object('porta',Position(600,300),Size(100,200))
+for cena,atributos in cenas.items():
+    background = __images + atributos['BACKGROUND'][1:-1]
+    scene = Scene(cena, background)
+    cenas[cena] = scene
+    aux[cena] = []
 
-door.add_state('fechada',__images+'door.png')
-door.add_state('aberta',__images+'open_door.png')
+for objeto,atributos in objetos.items():
+    (px,py) = atributos['POSICAO']
+    (sx,sy) = atributos['TAMANHO']
+    scene_id = atributos['REFERENTE']
+    object = Object(objeto,Position(px,py),Size(sx,sy))
+    objetos[objeto] = object
+    aux[scene_id].append(objeto)
 
-key = Object('chave',Position(200,400),Size(50, 50))
+for estado,atributos in estados.items():
+    object_id = atributos['REFERENTE']
+    imagem = __images + atributos['IMAGEM'][1:-1]
+    objetos[object_id].add_state(estado,imagem)
+    if 'estado_inicial' in atributos and atributos['estado_inicial']:
+        objetos[object_id].change_current_state(estado)
 
-key.add_state('normal',__images+'key.png')
-key.add_state('ativa',__images+'active_key.png')
+for gatilho,atributos in gatilhos.items():
+    type = atributos['TIPO']
+    if type == 'CLIQUE':
+        gatilhos[gatilho] = Click()
 
-key.add_event(EventPutInInventario('chave_inventario',Click()))
-key.add_event(EventChangeStates('ativar',ClickAfterEvent('cena','chave','chave_inventario'),'chave','normal','ativa'))
-key.add_event(EventChangeStates('desativar',ClickAfterEvent('cena','chave','chave_inventario'),'chave','ativa','normal'))
+    elif type == 'CLIQUE_DEPOIS_DE_EVENTO':
+        scene_id = atributos['CENA']
+        object_id = atributos['OBJETO']
+        event_id = atributos['EVENTO']
+        gatilhos[gatilho] = ClickAfterEvent(scene_id,object_id,event_id)
 
-door.add_event(EventChangeStates('abrir_porta',ClickWhenStateOfObject('chave','ativa'),'porta','fechada','aberta',False))
-door.add_event(EventChangeStates('apagar_chave',ClickWhenStateOfObject('chave','ativa'),'chave','ativa',None,False))
-door.add_event(EventEndGame('fim',ClickWhenStateOfObject('porta','aberta')))
+    elif type == 'CLIQUE_QUANDO_ESTADO_DE_OBJETO':
+        object_id = atributos['OBJETO']
+        state_id = atributos['ESTADO']
+        gatilhos[gatilho] = ClickWhenStateOfObject(object_id,state_id)
+    
+    elif type == 'DEPOIS_DE_EVENTO':
+        scene_id = atributos['CENA']
+        object_id = atributos['OBJETO']
+        event_id = atributos['EVENTO']
+        gatilhos[gatilho] = AfterEvent(scene_id,object_id,event_id)
 
-scene.add_object(door)
-scene.add_object(key)
+for evento, atributos in eventos.items():
+    type = atributos['TIPO']
+    referente = atributos['REFERENTE']
+    if type == 'MUDAR_ESTADOS':
+        object_id = atributos['OBJETO']
+        estado_inicial = atributos['ESTADO_INICIAL']
+        estado_final = atributos['ESTADO_FINAL']
+        gatilho_id = atributos['GATILHO']
+        objetos[referente].add_event(EventChangeStates(evento,
+                                            gatilhos[gatilho_id],
+                                            object_id,
+                                            estado_inicial,
+                                            estado_final,
+                                            repeatable=True)) #TODO:ADD À GRAM
 
-room.add_scene(scene)
+    elif type == 'COLOCA_NO_INVENTARIO':
+        gatilho_id = atributos['GATILHO']
+        objetos[referente].add_event(EventPutInInventario(evento,
+                                            gatilhos[gatilho_id]))
+
+    elif type == 'FIM_DE_JOGO':
+        gatilho_id = atributos['GATILHO']
+        objetos[referente].add_event(EventEndGame(evento,
+                                            gatilhos[gatilho_id]))
+
+    elif type == 'PEDIR_CODIGO':
+        pass
+
+    elif type == 'MOSTRAR_MENSAGEM':
+        pass
+
+
+for cena,objetos_da_cena in aux.items():
+    for objeto_id in objetos_da_cena:
+        cenas[cena].add_object(objetos[objeto_id])
+    room.add_scene(cenas[cena])
+
 
 # Posição do inventário
 inventory_x, inventory_y = 10, 10
@@ -298,35 +402,56 @@ def check_trigger(trigger):
     elif trigger.type == TriggerType.CLICK_WHEN_OBJECT_STATE:
         #Verificar se o estado de objeto do gatilho é igual ao estado atual do objeto
         return room.get_current_state_of_object(room.current_scene,trigger.object_id) == trigger.state_id
+    elif trigger.type == TriggerType.AFTER_EVENT:
+        #Verificar se o evento do gatilho já ocorreu
+        return room.check_if_event_occurred(trigger.scene_id,trigger.object_id,trigger.event_id)
+    elif trigger.type == TriggerType.AFTER_TIME:
+        #verificar se o tempo do gatilho já passou
+        #TODO:
+        return False
 
 def try_do_event(object, event):
     if not event.happen or event.repeatable:
         if check_trigger(event.trigger):
-            #Verificar o tipo de evento é mudança de estados
-            if event.type == EventType.EVENT_CHANGE_STATES:
-                #VERIFICAR SE ESTADO INICIAL BATE CERTO COM O ATUAL
-                if event.initial_state == room.get_current_state_of_object(room.current_scene, event.object_id):
-                    buffer_changed_objects_states[event.object_id] = event.final_state #colocar no buffer o estado do objeto para ser posteriormente alterado
-                    buffer_happen_events[event.id] = object.id #colocar o evento no buffer para ser atualizado (que aconteceu)
+            do_event(object,event)
 
-            elif event.type == EventType.EVENT_SHOW_MESSAGE:
-                pass
-                #TODO:
+def do_event(object,event):
+    #Verificar o tipo de evento é mudança de estados
+    if event.type == EventType.EVENT_CHANGE_STATES:
+        #VERIFICAR SE ESTADO INICIAL BATE CERTO COM O ATUAL
+        if event.initial_state == room.get_current_state_of_object(room.current_scene, event.object_id):
+            buffer_changed_objects_states[event.object_id] = event.final_state #colocar no buffer o estado do objeto para ser posteriormente alterado
+            buffer_happen_events[event.id] = object.id #colocar o evento no buffer para ser atualizado (que aconteceu  
+    elif event.type == EventType.EVENT_SHOW_MESSAGE:
+        pass
+        #TODO  
+    #Verficar se o evento é do tipo colocar no inventario
+    elif event.type == EventType.EVENT_PUT_IN_INVENTARIO:
+        #TODO:COLOCAR POSICAO NO INVENTARIO
+        object.change_position(Position(inventory_x,inventory_y)) #Mudar a posicao do objeto para a do slot no inventario
+        buffer_happen_events[event.id] = object.id #colocar o evento no buffer para ser atualizado (que aconteceu  
+    
+    #Verificar se o evento é do tipo pedir codigo
+    elif event.type == EventType.EVENT_ASK_CODE:
+        pass
+        #TODO
 
-            #Verficar se o evento é do tipo colocar no inventario
-            elif event.type == EventType.EVENT_PUT_IN_INVENTARIO:
-                #TODO:COLOCAR POSICAO NO INVENTARIO
-                object.chage_position(Position(inventory_x,inventory_y)) #Mudar a posicao do objeto para a do slot no inventario
-                buffer_happen_events[event.id] = object.id #colocar o evento no buffer para ser atualizado (que aconteceu)
+    #Verificar se o tipo de evento é "fim de jogo"
+    elif event.type == EventType.EVENT_END_GAME:
+        room.finish_game = True
 
-            elif event.type == EventType.EVENT_ASK_CODE:
-                pass
-                #TODO:
+    #Verificar se o evento é do tipo mudar posicao
+    elif event.type == EventType.EVENT_CHANGE_POSITION:
+        object.change_position(Position(event.position.x,event.position.y))  #Mudar a posicao do objeto
+        buffer_happen_events[event.id] = object.id #colocar o evento no buffer para ser atualizado (que aconteceu 
+    
+    #Verificar se o evento é do tipo mudar tamanho
+    elif event.type == EventType.EVENT_CHANGE_SIZE:
+        object.change_size(Size(event.size.x,event.size.y))  #Mudar o tamanho do objeto
+        buffer_happen_events[event.id] = object.id #colocar o evento no buffer para ser atualizado (que aconteceu 
 
-            #Verificar se o tipo de evento é "fim de jogo"
-            elif event.type == EventType.EVENT_END_GAME:
-                room.finish_game = True
 
+update = False
 running = True
 # Loop principal do jogo
 while running:
@@ -335,23 +460,35 @@ while running:
         if pygame_event.type == pygame.QUIT:
             running = False
         
-        #Evento de clique
+        #Evento c/ gatilho clique
         elif pygame_event.type == pygame.MOUSEBUTTONDOWN:
             
             for object in room.scenes[room.current_scene].objects.values():
                 if object.have_clicked(pygame_event.pos[0],pygame_event.pos[1]):
                     for event in object.events.values():
-                        try_do_event(object,event)
+                        if event.trigger.type >= 0 and event.trigger.type <= 2:
+                            try_do_event(object,event)
 
             #Atualizar os eventos que occorreram com o clique
             for event_id,object_id in buffer_happen_events.items():
                 room.happened_event(room.current_scene,object_id,event_id)
+                if not update: update = True
             #Atualizar os estados que mudaram com o clique
             for object_id,state_id in buffer_changed_objects_states.items():
                 room.change_object_state(room.current_scene,object_id,state_id)
+                if not update: update = True
             # RESET BUFFERS
             buffer_happen_events = {}
             buffer_changed_objects_states = {}
+        
+        #Eventos com gatilhos "temporais"
+        if update:
+            update = False
+            #Percorrer todos os eventos com gatilhos especiais
+            for object in room.scenes[room.current_scene].objects.values():
+                for event in object.events.values():
+                    if event.trigger.type >= 3 and event.trigger.type <= 4:
+                            try_do_event(object,event)
     
     #Desenhar a room
     room.draw()
@@ -362,9 +499,7 @@ while running:
         font = pygame.font.Font(None, 36)
         text = font.render("Você Escapou!", True, WHITE)
         text_rect = text.get_rect(center=(WIDTH // 2, HEIGHT // 2))
-        screen.blit(text, text_rect)
-    
-    
+        screen.blit(text, text_rect)    
     
     pygame.display.flip()
 
