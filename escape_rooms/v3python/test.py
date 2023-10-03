@@ -106,9 +106,9 @@ while running:
                 if event.key == pygame.K_RETURN:  # Verifica se o jogador pressionou Enter
                     if input_text.upper() == "SIM":
                         have_key = True
-                        message_text = "Você pegou a chave!"
+                        message_text = "Pegaste na chave!"
                     else:
-                        message_text = "Resposta incorreta! Você não pegou a chave."
+                        message_text = "Resposta incorreta!"
                     balloon_messages.append(BalloonMessage(message_text, input_box.x, input_box.y - 30))
                     input_active = False
                 elif event.key == pygame.K_BACKSPACE:  # Verifica se o jogador pressionou Backspace

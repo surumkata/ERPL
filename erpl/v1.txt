@@ -1,35 +1,27 @@
 #ROOM sala:
 --TAMANHO: (1300,700)
-
 #CENA cena:
 --BACKGROUND: "room.png"
-
 #OBJETO porta:
 --REFERENTE: cena
 --POSICAO: (600,300)
 --TAMANHO: (100,200)
-
 #ESTADO(INICIAL) fechada:
 --REFERENTE: porta
 --IMAGEM: "door.png"
-
 #ESTADO aberta:
 --REFERENTE: porta
 --IMAGEM: "open_door.png"
-
 #OBJETO chave:
 --REFERENTE: cena
 --POSICAO: (200,400)
 --TAMANHO: (50,50)
-
 #ESTADO(INICIAL) normal:
 --REFERENTE: chave
 --IMAGEM: "key.png"
-
 #ESTADO ativa:
 --REFERENTE: chave
 --IMAGEM: "active_key.png"
-
 #EVENTO abrir_porta:
 --TIPO: MUDAR_ESTADOS
 --REFERENTE: porta
@@ -37,7 +29,6 @@
 --ESTADO_INICIAL: fechada
 --ESTADO_FINAL: aberta
 --GATILHO: clique_com_chave_ativa
-
 #EVENTO apagar_chave:
 --TIPO: MUDAR_ESTADOS
 --REFERENTE: porta
@@ -45,30 +36,24 @@
 --ESTADO_INICIAL: ativa
 --ESTADO_FINAL: null
 --GATILHO: clique_com_chave_ativa
-
 #EVENTO fim:
 --TIPO: FIM_DE_JOGO
 --REFERENTE: porta
 --GATILHO: fim_de_jogo
-
 #GATILHO clique_com_chave_ativa:
 --TIPO: CLIQUE_QUANDO_ESTADO_DE_OBJETO
 --OBJETO: chave
 --ESTADO: ativa
-
 #GATILHO fim_de_jogo:
 --TIPO: CLIQUE_QUANDO_ESTADO_DE_OBJETO
 --OBJETO: porta
 --ESTADO: aberta
-
 #EVENTO chave_inventario:
 --TIPO: COLOCA_NO_INVENTARIO
 --REFERENTE: chave
 --GATILHO: clique_simples
-
 #GATILHO clique_simples:
 --TIPO: CLIQUE
-
 #EVENTO ativar:
 --TIPO: MUDAR_ESTADOS
 --REFERENTE: chave
@@ -76,7 +61,6 @@
 --ESTADO_INICIAL: normal
 --ESTADO_FINAL: ativa
 --GATILHO: clique_no_inv
-
 #EVENTO desativar:
 --TIPO: MUDAR_ESTADOS
 --REFERENTE: chave
@@ -84,7 +68,6 @@
 --ESTADO_INICIAL: ativa
 --ESTADO_FINAL: normal
 --GATILHO: clique_no_inv
-
 #GATILHO clique_no_inv:
 --TIPO: CLIQUE_DEPOIS_DE_EVENTO
 --CENA: cena

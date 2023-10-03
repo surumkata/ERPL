@@ -389,6 +389,8 @@ inventory_x, inventory_y = 10, 10
 buffer_happen_events = {}
 buffer_changed_objects_states = {}
 
+def is_click_trigger(trigger_type):
+    return trigger_type == TriggerType.CLICK or trigger_type == TriggerType.CLICK_AFTER_EVENT or trigger_type == TriggerType.CLICK_WHEN_OBJECT_STATE
 
 def check_trigger(trigger):
     #Se o tipo de gatilho de evento é apenas clique
@@ -466,7 +468,7 @@ while running:
             for object in room.scenes[room.current_scene].objects.values():
                 if object.have_clicked(pygame_event.pos[0],pygame_event.pos[1]):
                     for event in object.events.values():
-                        if event.trigger.type >= 0 and event.trigger.type <= 2:
+                        if is_click_trigger(event.trigger.type):
                             try_do_event(object,event)
 
             #Atualizar os eventos que occorreram com o clique
@@ -487,7 +489,7 @@ while running:
             #Percorrer todos os eventos com gatilhos especiais
             for object in room.scenes[room.current_scene].objects.values():
                 for event in object.events.values():
-                    if event.trigger.type >= 3 and event.trigger.type <= 4:
+                    if not is_click_trigger(event.trigger.type):
                             try_do_event(object,event)
     
     #Desenhar a room
