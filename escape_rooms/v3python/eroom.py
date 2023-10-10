@@ -11,6 +11,7 @@ class TriggerType(Enum):
     CLICK_WHEN_OBJECT_STATE = 2
     AFTER_EVENT = 3
     AFTER_TIME = 4
+    CLICK_AFTER_TIME = 5
 
 
 """TIPOS DE EVENTOS"""
@@ -72,6 +73,12 @@ class AfterEvent(Trigger):
 class AfterTime(Trigger):
     def __init__(self,time : int):
         super().__init__(TriggerType.AFTER_TIME)
+        self.time = time
+
+#Trigger clique após um evento ter ocorrido
+class ClickAfterTime(Trigger):
+    def __init__(self,time : int):
+        super().__init__(TriggerType.CLICK_AFTER_TIME)
         self.time = time
 
 """CLASSE DE EVENTO"""

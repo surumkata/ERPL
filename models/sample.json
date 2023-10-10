@@ -61,66 +61,75 @@
     "EVENTO": {
         "abrir_porta": {
             "TIPO": "MUDAR_ESTADOS",
-            "REFERENTE": "porta",
             "OBJETO": "porta",
             "ESTADO_INICIAL": "fechada",
-            "ESTADO_FINAL": "aberta",
-            "GATILHO": "clique_com_chave_ativa"
+            "ESTADO_FINAL": "aberta"
         },
         "apagar_chave": {
             "TIPO": "MUDAR_ESTADOS",
-            "REFERENTE": "porta",
             "OBJETO": "chave",
             "ESTADO_INICIAL": "ativa",
-            "ESTADO_FINAL": "null",
-            "GATILHO": "clique_com_chave_ativa"
+            "ESTADO_FINAL": "null"
         },
         "fim": {
             "TIPO": "FIM_DE_JOGO",
-            "REFERENTE": "porta",
-            "GATILHO": "fim_de_jogo"
+            "MENSAGEM" : "GG!"
         },
         "chave_inventario": {
             "TIPO": "COLOCA_NO_INVENTARIO",
-            "REFERENTE": "chave",
-            "GATILHO": "clique_simples"
+            "OBJETO" : "chave"
         },
         "ativar": {
             "TIPO": "MUDAR_ESTADOS",
-            "REFERENTE": "chave",
             "OBJETO": "chave",
             "ESTADO_INICIAL": "normal",
-            "ESTADO_FINAL": "ativa",
-            "GATILHO": "clique_no_inv"
+            "ESTADO_FINAL": "ativa"
         },
         "desativar": {
             "TIPO": "MUDAR_ESTADOS",
-            "REFERENTE": "chave",
             "OBJETO": "chave",
             "ESTADO_INICIAL": "ativa",
-            "ESTADO_FINAL": "normal",
-            "GATILHO": "clique_no_inv"
+            "ESTADO_FINAL": "normal"
         }
     },
     "GATILHO": {
         "clique_com_chave_ativa": {
             "TIPO": "CLIQUE_QUANDO_ESTADO_DE_OBJETO",
+            "REFERENTE": "porta",
             "OBJETO": "chave",
-            "ESTADO": "ativa"
+            "ESTADO": "ativa",
+            "EVENTO" : "abrir_porta"
+        },
+        "clique_com_chave_ativa2": {
+            "TIPO": "CLIQUE_QUANDO_ESTADO_DE_OBJETO",
+            "REFERENTE": "porta",
+            "OBJETO": "chave",
+            "ESTADO": "ativa",
+            "EVENTO" : "apagar_chave"
         },
         "fim_de_jogo": {
             "TIPO": "CLIQUE_QUANDO_ESTADO_DE_OBJETO",
+            "REFERENTE": "porta",
             "OBJETO": "porta",
-            "ESTADO": "aberta"
+            "ESTADO": "aberta",
+            "EVENTO" : "fim"
         },
         "clique_simples": {
-            "TIPO": "CLIQUE"
+            "TIPO": "CLIQUE",
+            "REFERENTE": "chave",
+            "EVENTO" : "chave_inventario"
         },
         "clique_no_inv": {
             "TIPO": "CLIQUE_DEPOIS_DE_EVENTO",
-            "CENA": "cena",
-            "OBJETO": "chave",
-            "EVENTO": "chave_inventario"
+            "REFERENTE": "chave",
+            "AFTER_EVENTO": "chave_inventario",
+            "EVENTO" : "ativar"
+        },
+        "clique_no_inv2": {
+            "TIPO": "CLIQUE_DEPOIS_DE_EVENTO",
+            "REFERENTE": "chave",
+            "AFTER_EVENTO": "chave_inventario",
+            "EVENTO" : "desativar"
         }
     }
 }
