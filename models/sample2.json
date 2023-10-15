@@ -1,0 +1,450 @@
+{
+   "map": {
+      "sala": {
+         "size": [
+            1300,
+            700
+         ],
+         "scenes": {
+            "cena": {
+               "states": {
+                  "background": {
+                     "filename": "room.png",
+                     "initial": true
+                  }
+               },
+               "objects": {
+                  "porta": {
+                     "size": [
+                        100,
+                        200
+                     ],
+                     "position": [
+                        600,
+                        385
+                     ],
+                     "states": {
+                        "fechada": {
+                           "filename": "door.png",
+                           "initial": true
+                        },
+                        "aberta": {
+                           "filename": "open_door.png",
+                           "initial": false
+                        }
+                     }
+                  },
+                  "porta2": {
+                     "size": [
+                        100,
+                        200
+                     ],
+                     "position": [
+                        0,
+                        385
+                     ],
+                     "states": {
+                        "fechada": {
+                           "filename": "door.png",
+                           "initial": true
+                        },
+                        "aberta": {
+                           "filename": "open_door.png",
+                           "initial": false
+                        }
+                     }
+                  },
+                  "cofre": {
+                     "size": [
+                        100,
+                        100
+                     ],
+                     "position": [
+                        1000,
+                        485
+                     ],
+                     "states": {
+                        "fechado": {
+                           "filename": "cofre.png",
+                           "initial": true
+                        },
+                        "aberto": {
+                           "filename": "open_cofre.png",
+                           "initial": false
+                        }
+                     }
+                  },
+                  "chave": {
+                     "size": [
+                        50,
+                        25
+                     ],
+                     "position": [
+                        1020,
+                        520
+                     ],
+                     "states": {
+                        "normal": {
+                           "filename": "key.png",
+                           "initial": false
+                        },
+                        "ativa": {
+                           "filename": "active_key.png",
+                           "initial": false
+                        }
+                     }
+                  },
+                  "nota": {
+                     "size": [
+                        30,
+                        30
+                     ],
+                     "position": [
+                        400,
+                        600
+                     ],
+                     "states": {
+                        "normal": {
+                           "filename": "nota.png",
+                           "initial": true
+                        }
+                     }
+                  },
+                  "nota_lupa": {
+                     "size": [
+                        200,
+                        200
+                     ],
+                     "position": [
+                        300,
+                        500
+                     ],
+                     "states": {
+                        "visivel": {
+                           "filename": "lupa_nota.png",
+                           "initial": false
+                        }
+                     }
+                  }
+               }
+            },
+            "cena2": {
+               "states": {
+                  "background": {
+                     "filename": "room.png",
+                     "initial": true
+                  }
+               },
+               "objects": {
+                  "lupa": {
+                     "size": [
+                        40,
+                        40
+                     ],
+                     "position": [
+                        200,
+                        500
+                     ],
+                     "states": {
+                        "normal": {
+                           "filename": "lupa.png",
+                           "initial": true
+                        },
+                        "ativa": {
+                           "filename": "active_lupa.png",
+                           "initial": false
+                        }
+                     }
+                  },
+                  "porta3": {
+                     "size": [
+                        100,
+                        200
+                     ],
+                     "position": [
+                        600,
+                        385
+                     ],
+                     "states": {
+                        "aberta": {
+                           "filename": "open_door.png",
+                           "initial": true
+                        }
+                     }
+                  }
+               }
+            }
+         }
+      }
+   },
+   "events": {
+      "abrir_porta": {
+         "precondicoes": [
+            {
+               "type": "Click",
+               "object": "porta"
+            },
+            {
+               "type": "WhenStateObject",
+               "object": "porta",
+               "state": "fechada"
+            },
+            {
+               "type": "ItemActived",
+               "item": "chave"
+            }
+         ],
+         "poscondicoes": [
+            {
+               "type": "ChangeState",
+               "object": "porta",
+               "state": "aberta"
+            },
+            {
+               "type": "DeleteItem",
+               "item": "chave"
+            }
+         ],
+         "repetivel": false
+      },
+      "abrir_porta2": {
+         "precondicoes": [
+            {
+               "type": "Click",
+               "object": "porta2"
+            },
+            {
+               "type": "WhenStateObject",
+               "object": "porta2",
+               "state": "fechada"
+            }
+         ],
+         "poscondicoes": [
+            {
+               "type": "ChangeState",
+               "object": "porta2",
+               "state": "aberta"
+            }
+         ],
+         "repetivel": false
+      },
+      "muda_cena": {
+         "precondicoes": [
+            {
+               "type": "Click",
+               "object": "porta2"
+            },
+            {
+               "type": "WhenStateObject",
+               "object": "porta2",
+               "state": "aberta"
+            }
+         ],
+         "poscondicoes": [
+            {
+               "type": "ChangeScene",
+               "scene": "cena2"
+            }
+         ],
+         "repetivel": true
+      },
+      "muda_cena2": {
+         "precondicoes": [
+            {
+               "type": "Click",
+               "object": "porta3"
+            },
+            {
+               "type": "WhenStateObject",
+               "object": "porta3",
+               "state": "aberta"
+            }
+         ],
+         "poscondicoes": [
+            {
+               "type": "ChangeScene",
+               "scene": "cena"
+            }
+         ],
+         "repetivel": true
+      },
+      "fim": {
+         "precondicoes": [
+            {
+               "type": "Click",
+               "object": "porta"
+            },
+            {
+               "type": "WhenStateObject",
+               "object": "porta",
+               "state": "aberta"
+            }
+         ],
+         "poscondicoes": [
+            {
+               "type": "EndGame"
+            }
+         ],
+         "repetivel": false
+      },
+      "chave_inventario": {
+         "precondicoes": [
+            {
+               "type": "Click",
+               "object": "chave"
+            },
+            {
+               "type": "WhenStateObject",
+               "object": "cofre",
+               "state": "aberto"
+            }
+         ],
+         "poscondicoes": [
+            {
+               "type": "PutInInventory",
+               "object": "chave"
+            }
+         ],
+         "repetivel": false
+      },
+      "tentar_abrir_cofre": {
+         "precondicoes": [
+            {
+               "type": "Click",
+               "object": "cofre"
+            },
+            {
+               "type": "WhenStateObject",
+               "object": "cofre",
+               "state": "fechado"
+            }
+         ],
+         "poscondicoes": [
+            {
+               "type": "AskCode",
+               "code": "8723",
+               "message": "Qual \u00e9 o c\u00f3digo do cofre?",
+               "sucess_event": "abrir_cofre",
+               "fail_event": "mostrar_erro"
+            }
+         ],
+         "repetivel": true
+      },
+      "abrir_cofre": {
+         "precondicoes": [],
+         "poscondicoes": [
+            {
+               "type": "ChangeState",
+               "object": "cofre",
+               "state": "aberto"
+            },
+            {
+               "type": "ChangeState",
+               "object": "chave",
+               "state": "normal"
+            }
+         ],
+         "repetivel": true,
+         "linked": true
+      },
+      "mostrar_erro": {
+         "precondicoes": [],
+         "poscondicoes": [
+            {
+               "type": "ShowMessage",
+               "message": "C\u00f3digo errado!",
+               "position": [
+                  1000,
+                  485
+               ]
+            }
+         ],
+         "repetivel": true,
+         "linked": true
+      },
+      "mensagem_trancada": {
+         "precondicoes": [
+            {
+               "type": "Click",
+               "object": "porta"
+            },
+            {
+               "type": "WhenStateObject",
+               "object": "porta",
+               "state": "fechada"
+            },
+            {
+               "type": "ItemNotActived",
+               "item": "chave"
+            }
+         ],
+         "poscondicoes": [
+            {
+               "type": "ShowMessage",
+               "message": "porta trancada! procura uma chave!",
+               "position": [
+                  600,
+                  385
+               ]
+            }
+         ],
+         "repetivel": true
+      },
+      "lupa_inventario": {
+         "precondicoes": [
+            {
+               "type": "Click",
+               "object": "lupa"
+            }
+         ],
+         "poscondicoes": [
+            {
+               "type": "PutInInventory",
+               "object": "lupa"
+            }
+         ],
+         "repetivel": false
+      },
+      "aumentar_nota": {
+         "precondicoes": [
+            {
+               "type": "Click",
+               "object": "nota"
+            },
+            {
+               "type": "ItemActived",
+               "item": "lupa"
+            }
+         ],
+         "poscondicoes": [
+            {
+               "type": "ChangeState",
+               "object": "nota_lupa",
+               "state": "visivel"
+            }
+         ],
+         "repetivel": true
+      },
+      "desaparecer_nota_lupa": {
+         "precondicoes": [
+            {
+               "type": "ClickNot",
+               "object": "nota_lupa"
+            },
+            {
+               "type": "WhenStateObject",
+               "object": "nota_lupa",
+               "state": "visivel"
+            }
+         ],
+         "poscondicoes": [
+            {
+               "type": "ChangeState",
+               "object": "nota_lupa",
+               "state": "null"
+            }
+         ],
+         "repetivel": true
+      }
+   }
+}

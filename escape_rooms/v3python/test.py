@@ -79,6 +79,7 @@ while running:
         if event.type == pygame.QUIT:
             running = False
         elif event.type == pygame.MOUSEBUTTONDOWN:
+            input_active = False
             # Verifique se o mouse está fora da área da mensagem e clique para fechá-la
             if not message_x <= pygame.mouse.get_pos()[0] <= message_x + 260 or not message_y <= pygame.mouse.get_pos()[1] <= message_y + 60:
                 if pygame.mouse.get_pressed()[0]:
@@ -104,6 +105,7 @@ while running:
         elif event.type == pygame.KEYDOWN:
             if input_active:
                 if event.key == pygame.K_RETURN:  # Verifica se o jogador pressionou Enter
+                    balloon_messages.clear()
                     if input_text.upper() == "SIM":
                         have_key = True
                         message_text = "Pegaste na chave!"
