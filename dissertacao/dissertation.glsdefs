@@ -1,0 +1,196 @@
+\glsdefs@newdocentry{gcd}%
+{%
+name={MDC},%
+sort={MDC},%
+type={acronym},%
+first={Máximo Divisor Comum\glsspace (MDC)},%
+firstplural={Máximo Divisor Comum\acrpluralsuffix \glsspace (MDC\acrpluralsuffix )},%
+text={MDC},%
+plural={MDC\acrpluralsuffix },%
+description={Máximo Divisor Comum},%
+descriptionplural={Máximo Divisor Comum\acrpluralsuffix },%
+symbol={\relax },%
+symbolplural={\relax },%
+user1={},%
+user2={},%
+user3={},%
+user4={},%
+user5={},%
+user6={},%
+long={Máximo Divisor Comum},%
+longplural={Máximo Divisor Comums},%
+short={MDC},%
+shortplural={MDCs},%
+counter={page},%
+parent={},%
+%
+}%
+
+\glsdefs@newdocentry{lcm}%
+{%
+name={MMC},%
+sort={MMC},%
+type={acronym},%
+first={Mínimo múltiplo comum\glsspace (MMC)},%
+firstplural={Mínimo múltiplo comum\acrpluralsuffix \glsspace (MMC\acrpluralsuffix )},%
+text={MMC},%
+plural={MMC\acrpluralsuffix },%
+description={Mínimo múltiplo comum},%
+descriptionplural={Mínimo múltiplo comum\acrpluralsuffix },%
+symbol={\relax },%
+symbolplural={\relax },%
+user1={},%
+user2={},%
+user3={},%
+user4={},%
+user5={},%
+user6={},%
+long={Mínimo múltiplo comum},%
+longplural={Mínimo múltiplo comums},%
+short={MMC},%
+shortplural={MMCs},%
+counter={page},%
+parent={},%
+%
+}%
+
+\glsdefs@newdocentry{maths}%
+{%
+name={matemática},%
+sort={matemática},%
+type={main},%
+first={matemática},%
+firstplural={matemáticas},%
+text={matemática},%
+plural={matemáticas},%
+description={Matemática é o que os matemáticos fazem},%
+descriptionplural={Matemática é o que os matemáticos fazem},%
+symbol={\relax },%
+symbolplural={\relax },%
+user1={},%
+user2={},%
+user3={},%
+user4={},%
+user5={},%
+user6={},%
+long={},%
+longplural={},%
+short={},%
+shortplural={},%
+counter={page},%
+parent={},%
+%
+}%
+
+\glsdefs@newdocentry{latex}%
+{%
+name={latex},%
+sort={latex},%
+type={main},%
+first={latex},%
+firstplural={latexs},%
+text={latex},%
+plural={latexs},%
+description={É uma linguagem especialmente adequada para documentos científicos},%
+descriptionplural={É uma linguagem especialmente adequada para documentos científicos},%
+symbol={\relax },%
+symbolplural={\relax },%
+user1={},%
+user2={},%
+user3={},%
+user4={},%
+user5={},%
+user6={},%
+long={},%
+longplural={},%
+short={},%
+shortplural={},%
+counter={page},%
+parent={},%
+%
+}%
+
+\glsdefs@newdocentry{formula}%
+{%
+name={fórmula},%
+sort={fórmula},%
+type={main},%
+first={fórmula},%
+firstplural={fórmulas},%
+text={fórmula},%
+plural={fórmulas},%
+description={Expressão matemática},%
+descriptionplural={Expressão matemática},%
+symbol={\relax },%
+symbolplural={\relax },%
+user1={},%
+user2={},%
+user3={},%
+user4={},%
+user5={},%
+user6={},%
+long={},%
+longplural={},%
+short={},%
+shortplural={},%
+counter={page},%
+parent={},%
+%
+}%
+
+\glsdefs@newdocentry{rpd}%
+{%
+name={RPD},%
+sort={RPD},%
+type={acronym},%
+first={Relatório de Pré-Dissertação\glsspace (RPD)},%
+firstplural={Relatório de Pré-Dissertação\acrpluralsuffix \glsspace (RPD\acrpluralsuffix )},%
+text={RPD},%
+plural={RPD\acrpluralsuffix },%
+description={Relatório de Pré-Dissertação},%
+descriptionplural={Relatório de Pré-Dissertação\acrpluralsuffix },%
+symbol={\relax },%
+symbolplural={\relax },%
+user1={},%
+user2={},%
+user3={},%
+user4={},%
+user5={},%
+user6={},%
+long={Relatório de Pré-Dissertação},%
+longplural={Relatório de Pré-Dissertaçãos},%
+short={RPD},%
+shortplural={RPDs},%
+counter={page},%
+parent={},%
+%
+}%
+
+\glsdefs@newdocentry{eda}%
+{%
+name={EA},%
+sort={EA},%
+type={acronym},%
+first={Estado da Arte\glsspace (EA)},%
+firstplural={Estado da Arte\acrpluralsuffix \glsspace (EA\acrpluralsuffix )},%
+text={EA},%
+plural={EA\acrpluralsuffix },%
+description={Estado da Arte},%
+descriptionplural={Estado da Arte\acrpluralsuffix },%
+symbol={\relax },%
+symbolplural={\relax },%
+user1={},%
+user2={},%
+user3={},%
+user4={},%
+user5={},%
+user6={},%
+long={Estado da Arte},%
+longplural={Estado da Artes},%
+short={EA},%
+shortplural={EAs},%
+counter={page},%
+parent={},%
+%
+}%
+

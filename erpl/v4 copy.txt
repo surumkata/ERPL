@@ -70,8 +70,9 @@ Evento único lupa_inventario:
 Se clique lupa,
 Então lupa vai para o inventário.
 
-Evento ligado aumentar_nota:
-nota_lupa muda para visivel.
+Evento aumentar_nota:
+Se clique nota e lupa está em uso,
+então nota_lupa muda para visivel.
 
 Evento desaparecer_nota_lupa:
 Se clique não nota_lupa e nota_lupa está visivel,

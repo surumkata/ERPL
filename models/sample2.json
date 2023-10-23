@@ -55,22 +55,30 @@
                      }
                   },
                   "cofre": {
-                     "size": [
-                        100,
-                        100
-                     ],
-                     "position": [
-                        1000,
-                        485
-                     ],
                      "states": {
                         "fechado": {
                            "filename": "cofre.png",
-                           "initial": true
+                           "initial": true,
+                           "position": [
+                              1000,
+                              485
+                           ],
+                           "size": [
+                              100,
+                              100
+                           ]
                         },
                         "aberto": {
                            "filename": "open_cofre.png",
-                           "initial": false
+                           "initial": false,
+                           "position": [
+                              1000,
+                              485
+                           ],
+                           "size": [
+                              172,
+                              100
+                           ]
                         }
                      }
                   },
@@ -406,16 +414,7 @@
          "repetivel": false
       },
       "aumentar_nota": {
-         "precondicoes": [
-            {
-               "type": "Click",
-               "object": "nota"
-            },
-            {
-               "type": "ItemActived",
-               "item": "lupa"
-            }
-         ],
+         "precondicoes": [],
          "poscondicoes": [
             {
                "type": "ChangeState",
@@ -423,7 +422,8 @@
                "state": "visivel"
             }
          ],
-         "repetivel": true
+         "repetivel": true,
+         "linked": true
       },
       "desaparecer_nota_lupa": {
          "precondicoes": [

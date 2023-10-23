@@ -10,10 +10,10 @@ mapa          : "#Mapa:" sala
 sala          : "Sala" ID tamanho ("contém" cena)+
 cena          : "Cena" ID estados objetos
 objetos       : ("contém" objeto)+
-objeto        : "Objeto" ID posicao tamanho estados
+objeto        : "Objeto" ID postam? estados
 
 estados       : ("tem" estado)+
-estado        : (ESTADO|ESTADOINICIAL) ID filename
+estado        : (ESTADO|ESTADOINICIAL) ID filename postam?
 
 eventos       : "#Eventos:" evento+
 evento        : (EVENTO|EVENTOUNICO) ID ":" se "," entao "."
@@ -41,6 +41,7 @@ poscondicao   : ID MUDAPARA ID
               | MUDAPARACENA ID
               | ID REMOVEITEM
 
+postam        : posicao tamanho
 posicao       : "(" par ")"
 tamanho       : "[" par "]"
 par           : NUM "," NUM
@@ -174,20 +175,21 @@ class Interpreter(Interpreter):
         return result
 
     def objeto (self,objeto):
-        '''objeto : 'Objeto' ID posicao tamanho estados'''
+        '''objeto : "Objeto" ID postam? estados'''
         elems = objeto.children
         id = elems[0].value
-        position = self.visit(elems[1])
-        size = self.visit(elems[2])
-        
-        result = {
-            'size' : size,
-            'position' : position,
-            'states' : []
-        }
+
+        i = 1
+        result = {}
+
+        if(len(elems) == 3):
+            (position,size) = self.visit(elems[i])
+            i+=1
+            result['size'] = size
+            result['position'] = position
 
         #visitar estados
-        result['states'] = self.visit(elems[3])
+        result['states'] = self.visit(elems[i])
 
         return (id,result)
 
@@ -204,7 +206,7 @@ class Interpreter(Interpreter):
         return result
 
     def estado (self,estado):
-        '''estado : (ESTADO|ESTADOINICIAL) ID filename'''
+        '''estado : (ESTADO|ESTADOINICIAL) ID filename postam?'''
         elems = estado.children
         id = elems[1].value
         filename = self.visit(elems[2])
@@ -213,6 +215,11 @@ class Interpreter(Interpreter):
             'filename' : filename,
             'initial' : False
         }
+
+        if(len(elems) == 4):
+            position,size = self.visit(elems[3])
+            result['position'] = position
+            result['size'] = size
 
         if elems[0].type == 'ESTADOINICIAL':
             result['initial'] = True
@@ -436,6 +443,10 @@ class Interpreter(Interpreter):
             }
 
         return result
+
+    def postam (self, postam):
+        '''postam : posicao tamanho'''
+        return (self.visit(postam.children[0]),self.visit(postam.children[1]))
 
     def posicao (self, posicao):
         '''posicao : "(" par ")"'''
