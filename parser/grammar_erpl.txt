@@ -1,0 +1,53 @@
+start         : sala eventos?
+
+sala          : "Sala" ID tamanho cenas
+cenas         : ("contém" cena)+
+cena          : "Cena" ID "{" estobjs "}"
+estobjs       : (("tem" estado)|("contém" objeto))+
+objeto        : "Objeto" ID (posicao tamanho)? "{" estados "}"
+
+estados       : ("tem" estado)+
+estado        : (ESTADO|ESTADOINICIAL) ID filename (posicao tamanho)?
+
+eventos       : "#Eventos:" evento+
+evento        : "Evento" ID "(" NUM? ")" ":" ("se"|"Se") precondicoes "," ("Então"|"então") poscondicoes "." -> evento_simples
+              | "Evento" ID "(""-"")" ":" poscondicoes "." -> evento_ligado
+
+precondicoes  : precondicao                             -> precondicoes_simples
+              | precondicoes "e" precondicoes           -> precondicoes_e
+              | precondicoes "ou" precondicoes          -> precondicoes_ou
+              | "não" precondicoes                      -> precondicoes_nao
+              | "(" precondicoes ")"                    -> precondicoes_grupo
+
+precondicao   : "clique" ID                                     -> clique
+              | "clique não" ID                                 -> clique_nao
+              | ID "está" ID                                    -> esta_estado
+              | "clique" ID "depois de" ID "ter acontecido"     -> clique_depois
+              | ID "está em uso"                                -> uso
+
+poscondicoes  : poscondicao ("e" poscondicao)*
+poscondicao   : ID "muda para" ID                                                                   -> muda_estado
+              | ID "vai para o inventário"                                                          -> vai_inv
+              | "fim de jogo"                                                                       -> fim_de_jogo
+              | "mostra mensagem" TEXTO "em" posicao                                                -> mensagem   
+              | "pede código" TEXTO "com mensagem" TEXTO ", se acertar faz" ID "e se errar faz" ID  -> pede_codigo
+              | ID "muda tamanho para" tamanho                                                      -> muda_tamanho
+              | ID "muda posição para" posicao                                                      -> muda_posicao
+              | "muda para cena" ID                                                                 -> muda_cena
+              | ID "é removid" ("o"|"a")                                                            -> remove
+
+posicao       : "(" par ")"
+tamanho       : "[" par "]"
+par           : NUM "," NUM
+filename      : TEXTO
+
+ESTADO        : /Estado/
+ESTADOINICIAL : /Estado inicial/
+
+
+ID            : /[\w\-_]+/
+TEXTO         : /"[^"]*"/
+NUM           : /\d+/
+
+%import common.WS
+%ignore WS

@@ -1,79 +1,88 @@
-#Mapa:
 Sala sala [1300,700]
-    contém Cena cena
+    contém Cena cena {
         tem Estado inicial background "room.png"
-        contém Objeto porta (600,385) [100,200]
+        contém Objeto porta (600,385) [100,200] {
             tem Estado inicial fechada "door.png"
             tem Estado aberta "open_door.png"
-        contém Objeto porta2 (0,385) [100,200]
+        }
+        contém Objeto porta2 (0,385) [100,200] {
             tem Estado inicial fechada "door.png"
             tem Estado aberta "open_door.png"
-        contém Objeto cofre 
+        }
+        contém Objeto cofre {
             tem Estado inicial fechado "cofre.png" (1000, 485) [100,100]
             tem Estado aberto "open_cofre.png" (1000, 485) [172,100]
-        contém Objeto chave (1020,520) [50,25]
+        }
+        contém Objeto chave (1020,520) [50,25] {
             tem Estado normal "key.png"
             tem Estado ativa "active_key.png"
-        contém Objeto nota (400,600) [30,30]
+        }
+        contém Objeto nota (400,600) [30,30] {
             tem Estado inicial normal "nota.png"
-        contém Objeto nota_lupa (300,500) [200,200]
+        }
+        contém Objeto nota_lupa (300,500) [200,200] {
             tem Estado visivel "lupa_nota.png"
-    contém Cena cena2
+        }
+    }
+    contém Cena cena2 {
         tem Estado inicial background "room.png"
-            contém Objeto lupa (200,500) [40,40]
-                tem Estado inicial normal "lupa.png"
-                tem Estado ativa "active_lupa.png"
-            contém Objeto porta3 (600,385) [100,200]
-                tem Estado inicial aberta "open_door.png"
+        contém Objeto lupa (200,500) [40,40] {
+            tem Estado inicial normal "lupa.png"
+            tem Estado ativa "active_lupa.png"
+        }
+        contém Objeto porta3 (600,385) [100,200] {
+            tem Estado inicial aberta "open_door.png"
+        }
+    }
 
 #Eventos:
 
-Evento único abrir_porta:
+Evento abrir_porta(1):
 Se clique porta e porta está fechada e chave está em uso,
 então porta muda para aberta e chave é removida.
 
-Evento único abrir_porta2:
+Evento abrir_porta2(1):
 Se clique porta2 e porta2 está fechada,
 então porta2 muda para aberta.
 
-Evento muda_cena:
+Evento muda_cena():
 Se clique porta2 e porta2 está aberta,
 então muda para cena cena2.
 
-Evento muda_cena2:
+Evento muda_cena2():
 Se clique porta3 e porta3 está aberta,
 então muda para cena cena.
 
-Evento único fim:
+Evento fim(1):
 se clique porta e porta está aberta,
 então fim de jogo.
 
-Evento único chave_inventario:
+Evento chave_inventario(1):
 Se clique chave e cofre está aberto,
 Então chave vai para o inventário.
 
-Evento tentar_abrir_cofre:
+Evento tentar_abrir_cofre():
 Se clique cofre e cofre está fechado,
 então pede código "8723" com mensagem "Qual é o código do cofre?", se acertar faz abrir_cofre e se errar faz mostrar_erro.
 
-Evento ligado abrir_cofre:
+Evento abrir_cofre(-):
 cofre muda para aberto e chave muda para normal.
 
-Evento ligado mostrar_erro:
+Evento mostrar_erro(-):
 mostra mensagem "Código errado!" em (1000, 485).
 
-Evento mensagem_trancada:
-Se clique porta e porta está fechada e chave não está em uso,
+Evento mensagem_trancada():
+Se clique porta e porta está fechada e não chave está em uso,
 então mostra mensagem "porta trancada! procura uma chave!" em (600,385).
 
-Evento único lupa_inventario:
+Evento lupa_inventario(1):
 Se clique lupa,
 Então lupa vai para o inventário.
 
-Evento aumentar_nota:
+Evento aumentar_nota():
 Se clique nota e lupa está em uso,
 então nota_lupa muda para visivel.
 
-Evento desaparecer_nota_lupa:
+Evento desaparecer_nota_lupa():
 Se clique não nota_lupa e nota_lupa está visivel,
 então nota_lupa muda para null.

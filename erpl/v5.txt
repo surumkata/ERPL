@@ -1,0 +1,69 @@
+S(sala,[1300,700]){
+    C(cena){
+        Ei(background,"room.png"),
+        O(porta,(600,385),[100,200]){
+            Ei(fechada,"door.png"),
+            E(aberta,"open_door.png")
+        },
+        O(porta2,(0,385),[100,200]){
+            Ei(fechada,"door.png"),
+            E(aberta,"open_door.png")
+        },
+        O(cofre){
+            Ei(fechado,"cofre.png",(1000, 485),[100,100]),
+            E(aberto,"open_cofre.png",(1000, 485),[172,100])
+        },
+        O(chave,(1020,520),[50,25]){
+            E(normal,"key.png"),
+            E(ativa,"active_key.png")
+        },
+        O(nota,(400,600),[30,30]){
+            Ei(normal,"nota.png")
+        },
+        O(nota_lupa,(300,500),[200,200]){
+            E(visivel,"lupa_nota.png")
+        }
+    },
+    C(cena2){
+        Ei(background,"room.png"),
+        O(lupa,(200,500),[40,40]){
+            Ei(normal,"lupa.png"),
+            E(ativa,"active_lupa.png")
+        },
+            
+        O(porta3,(600,385),[100,200]){
+            Ei(aberta,"open_door.png")
+        }
+    }
+}
+    
+
+E{
+
+abrir_porta(1) {clique(porta) && porta@fechada && uso(chave)} => {porta@aberta && remove(chave)}
+
+abrir_porta2(1) {clique(porta2) && porta2@fechada} => {porta2@aberta}
+
+muda_cena() {clique(porta2) && porta2@aberta} => {cena.cena2}
+
+muda_cena2() {clique(porta3) && porta3@aberta} => {cena.cena}
+
+fim_de_jogo() {clique(porta) && porta@aberta} => {fim()}
+
+chave_inventario(1) {clique(chave) && cofre@aberto} => {chave>>inventário}
+
+tentar_abrir_cofre() {clique(cofre) && cofre@fechado} => {pede_código("8723","Qual é o código do cofre?",abrir_cofre,mostrar_erro)}
+
+abrir_cofre(-) {} => {cofre@aberto && chave@normal}
+
+mostrar_erro(-) {} => {mensagem("Código errado!",(1000, 485))}
+
+mensagem_trancada() {clique(porta) && porta@fechada && ~uso(chave)} => {mensagem("porta trancada! procura uma chave!",(600,385))}
+
+lupa_inventario(1) {clique(lupa)} => {lupa>>inventário}
+
+aumentar_nota() {clique(nota) && uso(lupa)} => {nota_lupa@visivel}
+
+desaparecer_nota_lupa() {clique_não(nota_lupa) && nota_lupa@visivel} => {nota_lupa@null}
+
+}

@@ -1,0 +1,53 @@
+start         : sala eventos?
+
+sala          : "S""(" ID "," tamanho ")""{" cenas "}"
+cenas         : cena ("," cena)*
+cena          : "C""(" ID ")""{" estobjs "}"
+estobjs       : (estado|objeto) ("," (estado|objeto))*
+objeto        : "O""(" ID ("," posicao "," tamanho)? ")""{" estados "}"
+
+estados       : estado ("," estado)*
+estado        : (ESTADO|ESTADOINICIAL) "(" ID "," filename ("," posicao "," tamanho)? ")"
+
+eventos       : "E{" evento+ "}"
+evento        : ID "(" NUM? ")" "{" precondicoes "}" "=>" "{" poscondicoes "}" -> evento_simples
+              | ID "(""-"")" "{""}" "=>" "{" poscondicoes "}"                         -> evento_ligado
+
+
+precondicoes  : precondicao                             -> precondicoes_simples
+              | precondicoes "&&" precondicoes          -> precondicoes_e
+              | precondicoes "||" precondicoes          -> precondicoes_ou
+              | "~" precondicoes                        -> precondicoes_nao
+              | "(" precondicoes ")"                    -> precondicoes_grupo
+
+precondicao   : "clique" "(" ID ")"                     -> clique
+              | "clique_não" "(" ID ")"                 -> clique_nao
+              | ID "@" ID                               -> esta_estado
+              | "clique_depois" "(" ID "," ID ")"       -> clique_depois
+              | "uso" "(" ID ")"                        -> uso
+
+poscondicoes  : poscondicao ("&&" poscondicao)*
+poscondicao   : ID "@" ID                               -> muda_estado
+              | ID ">>" "inventário"                    -> vai_inv
+              | "fim""("")"                             -> fim_de_jogo
+              | "mensagem""("TEXTO","posicao")"         -> mensagem   
+              | "pede_código" "(" TEXTO "," TEXTO "," ID "," ID ")" -> pede_codigo
+              | ID ">>" tamanho                         -> muda_tamanho
+              | ID ">>" posicao                         -> muda_posicao
+              | "cena" "." ID                           -> muda_cena
+              | "remove" "(" ID ")"                     -> remove
+
+posicao       : "(" par ")"
+tamanho       : "[" par "]"
+par           : NUM "," NUM
+filename      : TEXTO
+
+ESTADO        : /E/
+ESTADOINICIAL : /Ei/
+
+ID            : /[\w\-_]+/
+TEXTO         : /"[^"]*"/
+NUM           : /\d+/
+
+%import common.WS
+%ignore WS

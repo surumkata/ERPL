@@ -188,8 +188,51 @@ class EventPosConditionDeleteItem(EventPosCondition):
         super().__init__(EventPosConditionsType.DELETE_ITEM)
         self.item_id = item_id
 
+class PreConditionNode():
+    def __init__(self,value,left,right, is_operator=False):
+        self.value = value
+        self.left = left
+        self.right = right
+        self.is_operator = is_operator
+
+    def test_node(self):
+        if self.is_operator:
+            if self.value == "and":
+                return self.left.test_node() and self.right.test_node()
+            elif self.value == "or":
+                return self.left.test_node() or self.right.test_node()
+            elif self.value == "not":
+                return not self.left.test_node()
+        else:
+            return test_precondition(self.value)
+            #return testar self.value
+
+class PreConditionOperatorAnd(PreConditionNode):
+    def __init__(self, left, right):
+        super().__init__("and", left, right, is_operator=True)
+
+class PreConditionOperatorOr(PreConditionNode):
+    def __init__(self, left, right):
+        super().__init__("or", left, right, is_operator=True)
+
+class PreConditionOperatorNot(PreConditionNode):
+    def __init__(self, left):
+        super().__init__("not", left, None, is_operator=True)
+
+class PreConditionVar(PreConditionNode):
+    def __init__(self, value):
+        super().__init__(value, None, None)
+
+class PreConditionTree():
+    def __init__(self,root):
+        self.root = root
+
+    def test_tree(self):
+        return self.root.test_node()
+
+
 class Event:
-    def __init__(self, id : str, pre_conditions : [EventPreCondition], pos_conditions : [EventPosCondition], repeatable : bool, linked : bool = False):
+    def __init__(self, id : str, pre_conditions : PreConditionTree, pos_conditions : [EventPosCondition], repeatable : int, linked : bool = False):
        self.id = id
        self.pre_conditions = pre_conditions
        self.pos_conditions = pos_conditions
@@ -210,18 +253,24 @@ class Size():
         self.y = y
 
 
+
 """CLASSE DE UM ESTADO"""
 class State:
-    def __init__(self, id : str, src_image : str, size : Size):
+    def __init__(self, id : str, src_image : str, size : Size, position : Position):
         self.id = id
         # Carregando a imagem da porta
         self.src_image = src_image
         self.image = pygame.image.load(self.src_image) 
         self.image = pygame.transform.scale(self.image, (size.x,size.y))  # Ajuste o tamanho conforme necessário
+        self.position = position
+        self.size = size
 
     def change_size(self, size):
         self.image = pygame.image.load(self.src_image) 
         self.image = pygame.transform.scale(self.image, (size.x,size.y))
+
+    def change_position(self, position):
+        self.position = position
 
 """CLASSE DE UM OBJETO"""
 class Object:
@@ -236,6 +285,8 @@ class Object:
     def change_current_state(self, state_id : str):
         if (state_id in self.states):
             self.current_state = state_id
+            self.position = self.states[state_id].position
+            self.size = self.states[state_id].size
         else:
             self.current_state = None
 
@@ -246,6 +297,8 @@ class Object:
     #Função que muda a posição do objeto
     def change_position(self,position : Position):
         self.position = position
+        for state in self.states.values():
+            state.change_position(position)
 
     #Função que muda o tamanho do objeto
     def change_size(self,size : Size):
@@ -256,7 +309,7 @@ class Object:
     def add_state(self, state : State, initial : bool = False):
         self.states[state.id] = state
         if initial:
-            self.current_state = state.id
+            self.change_current_state(state.id)
 
     def draw(self):
         if self.current_state != None:
@@ -375,6 +428,7 @@ class EscapeRoom:
         for event in self.er_state.events_happend:
             if event in self.events:
                 self.events[event].happen = True
+                self.events[event].repeatable -= 1
         
         for event in self.events_buffer.values():
             self.events[event.id] = event
@@ -538,7 +592,7 @@ inventory = Inventory()
 __images = "../../images/"
 
 import json
-file = open("../../models/sample2.json")
+file = open("../../models/sample3.json")
 jsonString = file.read()
 escape_room_json = json.loads(jsonString)
 
@@ -570,58 +624,75 @@ for room_id,data_room in data_map.items():
         for ss_id,ss in scene_states.items():
             ss_filename = __images + ss['filename']
             ss_initial = ss['initial']
-            scene.add_state(State(ss_id,ss_filename,Size(size_x,size_y)),ss_initial)
+            scene.add_state(State(ss_id,ss_filename,Size(size_x,size_y),Position(0,0)),ss_initial)
         room.add_scene(scene)
         objects = data_scene['objects']
         for object_id,data_object in objects.items():
-            (obj_size_x,obj_size_y) = data_object['size']
-            (obj_pos_x,obj_pos_y) = data_object['position']
+            (obj_size_x,obj_size_y) = data_object['size'] if 'size' in data_object else (None,None)
+            (obj_pos_x,obj_pos_y) = data_object['position'] if 'position' in data_object else (None,None)
             obj_states = data_object['states']
             object = Object(object_id, scene_id, Position(obj_pos_x,obj_pos_y),Size(obj_size_x,obj_size_y))
             for os_id,os in obj_states.items():
                 os_filename = __images + os['filename']
                 os_initial = os['initial']
-                object.add_state(State(os_id,os_filename,Size(obj_size_x,obj_size_y)),os_initial) #TODO: estado para items
+                (os_size_x,os_size_y) =  os['size'] if 'size' in os else (obj_size_x,obj_size_y)
+                (os_pos_x,os_pos_y) =  os['position'] if 'position' in os else (obj_pos_x,obj_pos_y)
+                object.add_state(State(os_id,os_filename,Size(os_size_x,os_size_y),Position(os_pos_x,os_pos_y)),os_initial) #TODO: estado para items
             room.add_object(object)
 
+def load_precondition(precondition):
+    type = precondition['type']
+    if type == "Click":
+        object_id = precondition['object']
+        event_precondition = EventPreConditionClick(object_id)
+    elif type == "ClickNot":
+        object_id = precondition['object']
+        event_precondition = EventPreConditionClickNot(object_id)
+    elif type == "WhenStateObject":
+        object_id = precondition['object']
+        state_id = precondition['state']
+        event_precondition = EventPreConditionActiveWhenState(object_id,state_id)
+    elif type == "WhenNotStateObject":
+        object_id = precondition['object']
+        state_id = precondition['state']
+        event_precondition = EventPreConditionActiveWhenNotState(object_id,state_id)
+    elif type == "ClickAfterEvent":
+        object_id = precondition['object']
+        after_event_id = precondition['event']
+        event_precondition = EventPreConditionClickAfterEvent(object_id,after_event_id)
+    elif type == 'ItemNotActived':
+        item_id = precondition['item']
+        event_precondition = EventPreConditionActiveWhenItemNotInUse(item_id)
+    elif type == 'ItemActived':
+        item_id = precondition['item']
+        event_precondition = EventPreConditionActiveWhenItemInUse(item_id)
+    
+    return event_precondition
+
+def load_preconditions(preconditions):
+    if 'operator' in preconditions:
+        operator = preconditions['operator']
+        left = load_preconditions(preconditions['left'])
+        right = load_preconditions(preconditions['right']) if 'right' in preconditions and preconditions['right'] is not None else None
+        if operator == 'e':
+            return PreConditionOperatorAnd(left,right)
+        elif operator == 'ou':
+            return PreConditionOperatorOr(left,right)
+        elif operator == 'nao':    
+            return PreConditionOperatorNot(left)
+    elif 'variavel' in preconditions:
+        variavel = preconditions['variavel']
+        return PreConditionVar(load_precondition(variavel))
+
+    else: 
+        return None
+
 for event_id, data_event in data_events.items():
-    data_preconditions = data_event['precondicoes']
+    data_preconditions = data_event['precondicoes'] if 'precondicoes' in data_event else {}
     data_posconditions = data_event['poscondicoes']
     repeatable = data_event['repetivel']
-    pre_conditions = []
+    pre_conditions = PreConditionTree(load_preconditions(data_preconditions))
     pos_conditions = []
-
-    for data_condition in data_preconditions:
-        type = data_condition['type']
-        if type == "Click":
-            object_id = data_condition['object']
-            event_precondition = EventPreConditionClick(object_id)
-        elif type == "ClickNot":
-            object_id = data_condition['object']
-            event_precondition = EventPreConditionClickNot(object_id)
-
-        elif type == "WhenStateObject":
-            object_id = data_condition['object']
-            state_id = data_condition['state']
-            event_precondition = EventPreConditionActiveWhenState(object_id,state_id)
-
-        elif type == "WhenNotStateObject":
-            object_id = data_condition['object']
-            state_id = data_condition['state']
-            event_precondition = EventPreConditionActiveWhenNotState(object_id,state_id)
-
-        elif type == "ClickAfterEvent":
-            object_id = data_condition['object']
-            after_event_id = data_condition['event']
-            event_precondition = EventPreConditionClickAfterEvent(object_id,after_event_id)
-        elif type == 'ItemNotActived':
-            item_id = data_condition['item']
-            event_precondition = EventPreConditionActiveWhenItemNotInUse(item_id)
-        elif type == 'ItemActived':
-            item_id = data_condition['item']
-            event_precondition = EventPreConditionActiveWhenItemInUse(item_id)
-        
-        pre_conditions.append(event_precondition)
 
     for data_action in data_posconditions:
         type = data_action['type']
@@ -660,7 +731,7 @@ for event_id, data_event in data_events.items():
             event_poscondition = EventPosConditionChangeScene(scene_id)
         pos_conditions.append(event_poscondition)
 
-    linked = 'linked' in data_event
+    linked = 'linked' in data_event and data_event['linked']
 
     room.add_event(Event(event_id,pre_conditions,pos_conditions,repeatable, linked))
 
@@ -743,8 +814,10 @@ def do_poscondition(poscondition):
         del room.objects[object_id]
         slot = inventory.find_empty_slot()
         inventory.update_add.append((object,slot))
-        room.add_event_buffer(Event("desativar_"+object_id,[EventPreConditionClickItem(object_id),EventPreConditionActiveWhenItemInUse(object_id)],[EventPosConditionDesactiveItem(object_id)],True,False))
-        room.add_event_buffer(Event("ativar"+object_id,[EventPreConditionClickItem(object_id),EventPreConditionActiveWhenItemNotInUse(object_id)],[EventPosConditionActiveItem(object_id)],True,False))
+        desativar = PreConditionTree(PreConditionOperatorAnd(PreConditionVar(EventPreConditionClickItem(object_id)),PreConditionVar(EventPreConditionActiveWhenItemInUse(object_id))))
+        ativar = PreConditionTree(PreConditionOperatorAnd(PreConditionVar(EventPreConditionClickItem(object_id)),PreConditionVar(EventPreConditionActiveWhenItemNotInUse(object_id))))
+        room.add_event_buffer(Event("desativar_"+object_id,desativar,[EventPosConditionDesactiveItem(object_id)],True,False))
+        room.add_event_buffer(Event("ativar"+object_id,ativar,[EventPosConditionActiveItem(object_id)],True,False))
         debug("EVENT_PUT_IN_INVENTORY: Colocando item "+object_id+" no slot "+str(slot)+" do inventário.")
     elif type == EventPosConditionsType.ACTIVE_ITEM:
         item_id = poscondition.item_id
@@ -794,14 +867,9 @@ def try_do_events():
     for event in room.events.values():
         if event.linked:
             continue
-        if not event.repeatable and event.happen:
+        if not event.repeatable > 0 and event.happen:
             continue
-        sucess_test = True
-        for precondition in event.pre_conditions:
-            if not test_precondition(precondition):
-                sucess_test = False
-                break
-        if sucess_test:
+        if event.pre_conditions.test_tree():
             do_event(event)
 
 
