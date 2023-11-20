@@ -8,7 +8,7 @@ class State:
         self.id = id
         # Carregando a imagem da porta
         self.src_image = src_image
-        self.image = pygame.image.load(self.src_image) 
+        self.image = pygame.image.load(self.src_image).convert_alpha()
         self.image = pygame.transform.scale(self.image, (size.x,size.y))  # Ajuste o tamanho conforme necessário
         self.position = position
         self.size = size

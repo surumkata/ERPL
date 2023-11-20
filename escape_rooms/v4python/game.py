@@ -172,7 +172,7 @@ if __name__ == '__main__':
 
     # Configurações do jogo
 
-    screen = pygame.display.set_mode((WIDTH, HEIGHT))
+    screen = pygame.display.set_mode((WIDTH, HEIGHT), pygame.DOUBLEBUF)
     pygame.display.set_caption("Escape Room 2D")
 
     # Loading do modelo
