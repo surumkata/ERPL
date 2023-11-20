@@ -7,11 +7,12 @@ estobjs       : (estado|objeto) ("," (estado|objeto))*
 objeto        : "O""(" ID ("," posicao "," tamanho)? ")""{" estados "}"
 
 estados       : estado ("," estado)*
-estado        : (ESTADO|ESTADOINICIAL) "(" ID "," filename ("," posicao "," tamanho)? ")"
+estado        : "E" INICIAL? "(" ID "," filename ("," posicao "," tamanho)? ")"
+              | "E" INICIAL? "animado" "(" NUM  "," NUM ")" "(" ID "," "[" filenames "]" ("," posicao "," tamanho)? ")" -> estado_animado
 
 eventos       : "E{" evento+ "}"
 evento        : ID "(" NUM? ")" "{" precondicoes "}" "=>" "{" poscondicoes "}" -> evento_simples
-              | ID "(""-"")" "{""}" "=>" "{" poscondicoes "}"                         -> evento_ligado
+              | ID "(""-"")" "{""}" "=>" "{" poscondicoes "}"                  -> evento_ligado
 
 
 precondicoes  : precondicao                             -> precondicoes_simples
@@ -40,10 +41,10 @@ poscondicao   : ID "@" ID                               -> muda_estado
 posicao       : "(" par ")"
 tamanho       : "[" par "]"
 par           : NUM "," NUM
+filenames     : filename ("," filename)*
 filename      : TEXTO
 
-ESTADO        : /E/
-ESTADOINICIAL : /Ei/
+INICIAL : /i/
 
 ID            : /[\w\-_]+/
 TEXTO         : /"[^"]*"/

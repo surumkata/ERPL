@@ -7,7 +7,8 @@ estobjs       : (("tem" estado)|("contém" objeto))+
 objeto        : "Objeto" ID (posicao tamanho)? "{" estados "}"
 
 estados       : ("tem" estado)+
-estado        : (ESTADO|ESTADOINICIAL) ID filename (posicao tamanho)?
+estado        : "Estado" INICIAL? ID filename (posicao tamanho)?
+              | "Estado" INICIAL? "animado" "(" NUM  "," NUM ")" ID "[" filenames "]" (posicao tamanho)? -> estado_animado
 
 eventos       : "#Eventos:" evento+
 evento        : "Evento" ID "(" NUM? ")" ":" ("se"|"Se") precondicoes "," ("Então"|"então") poscondicoes "." -> evento_simples
@@ -39,10 +40,10 @@ poscondicao   : ID "muda para" ID                                               
 posicao       : "(" par ")"
 tamanho       : "[" par "]"
 par           : NUM "," NUM
+filenames     : filename ("," filename)*
 filename      : TEXTO
 
-ESTADO        : /Estado/
-ESTADOINICIAL : /Estado inicial/
+INICIAL : /inicial/
 
 
 ID            : /[\w\-_]+/

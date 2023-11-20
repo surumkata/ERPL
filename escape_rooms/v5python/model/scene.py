@@ -17,4 +17,4 @@ class Scene:
 
     def draw (self, screen):
         if self.current_state != None:
-            screen.blit(self.states[self.current_state].image, (0,0))
+            self.states[self.current_state].draw(screen)

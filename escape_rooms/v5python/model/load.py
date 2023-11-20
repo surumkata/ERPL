@@ -114,9 +114,12 @@ def load_room(room_id,data_room):
         scene = Scene(scene_id)
         scene_states = data_scene['states']
         for ss_id,ss in scene_states.items():
-            ss_filename = __images + ss['filename']
+            ss_filenames = ss['filenames']
+            ss_filenames = [__images + filename for filename in ss_filenames]
             ss_initial = ss['initial']
-            scene.add_state(State(ss_id,[ss_filename],Size(size_x,size_y),Position(0,0)),ss_initial)
+            time_sprite = ss['time_sprite'] if 'time_sprite' in ss else 0
+            repeate = ss['repeate'] if 'repeate' in ss else 0
+            scene.add_state(State(ss_id,ss_filenames,Size(size_x,size_y),Position(0,0),time_sprite, repeate),ss_initial)
         room.add_scene(scene)
         objects = data_scene['objects']
         for object_id,data_object in objects.items():
@@ -125,11 +128,15 @@ def load_room(room_id,data_room):
             obj_states = data_object['states']
             object = Object(object_id, scene_id, Position(obj_pos_x,obj_pos_y),Size(obj_size_x,obj_size_y))
             for os_id,os in obj_states.items():
-                os_filename = __images + os['filename']
+                os_filenames = os['filenames']
+                os_filenames = [__images + filename for filename in os_filenames]
+                print(os_filenames)
                 os_initial = os['initial']
                 (os_size_x,os_size_y) =  os['size'] if 'size' in os else (obj_size_x,obj_size_y)
                 (os_pos_x,os_pos_y) =  os['position'] if 'position' in os else (obj_pos_x,obj_pos_y)
-                object.add_state(State(os_id,[os_filename],Size(os_size_x,os_size_y),Position(os_pos_x,os_pos_y)),os_initial) #TODO: estado para items
+                time_sprite = os['time_sprite'] if 'time_sprite' in os else 0
+                repeate = os['repeate'] if 'repeate' in os else 0
+                object.add_state(State(os_id,os_filenames,Size(os_size_x,os_size_y),Position(os_pos_x,os_pos_y),time_sprite, repeate),os_initial) #TODO: estado para items
             room.add_object(object)
     return room
 

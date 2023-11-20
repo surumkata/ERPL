@@ -1,17 +1,17 @@
 S(sala,[1300,700]){
     C(cena){
         Ei(background,"room.png"),
-        O(porta,(600,385),[100,200]){
+        O(porta,(600,342),[225,300]){
             Ei(fechada,"door.png"),
             E(aberta,"open_door.png")
         },
-        O(porta2,(0,385),[100,200]){
+        O(porta2,(0,342),[225,300]){
             Ei(fechada,"door.png"),
-            E(aberta,"open_door.png")
+            E animado(3,1) (aberta,["door/door1.png","door/door2.png","door/door3.png","door/door4.png","door/door5.png"])
         },
-        O(cofre){
-            Ei(fechado,"cofre.png",(1000, 485),[100,100]),
-            E(aberto,"open_cofre.png",(1000, 485),[172,100])
+        O(cofre,(1000, 485),[172,100] ){
+            Ei(fechado,"cofre.png"),
+            E(aberto,"open_cofre.png")
         },
         O(chave,(1020,520),[50,25]){
             E(normal,"key.png"),
@@ -31,7 +31,7 @@ S(sala,[1300,700]){
             E(ativa,"active_lupa.png")
         },
             
-        O(porta3,(600,385),[100,200]){
+        O(porta3,(600,342),[225,300]){
             Ei(aberta,"open_door.png")
         }
     }

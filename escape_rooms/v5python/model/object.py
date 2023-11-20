@@ -43,4 +43,4 @@ class Object:
 
     def draw(self, screen):
         if self.current_state != None:
-            screen.blit(self.states[self.current_state].image, (self.position.x, self.position.y))
+            self.states[self.current_state].draw(screen)

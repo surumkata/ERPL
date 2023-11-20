@@ -29,7 +29,7 @@ class Item:
         return self.position.x <= x <= self.position.x + self.size.x and self.position.y <= y <= self.position.y + self.size.y
     
     def draw(self, screen):
-        screen.blit(self.state.image, (self.position.x,self.position.y))
+        screen.blit(self.state.images[0], (self.position.x,self.position.y))
         if self.in_use:
             pygame.draw.rect(screen, RED, (self.position.x, self.position.y, 10, 10))
             
