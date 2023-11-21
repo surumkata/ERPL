@@ -126,9 +126,8 @@ class EventPosConditionChangeScene(EventPosCondition):
         self.scene_id = scene_id
 
     def do(self,room,inventory):
-        scene_id = self.scene_id
-        room.er_state.current_scene_buffer = scene_id
-        debug("EVENT_CHANGE_SCENE: Mudando para cena "+scene_id+".")
+        room.er_state.current_scene_buffer = self.scene_id
+        debug("EVENT_CHANGE_SCENE: Mudando para cena "+self.scene_id+".")
 
 #ACTIVE_ITEM = 8
 class EventPosConditionActiveItem(EventPosCondition):
@@ -136,9 +135,8 @@ class EventPosConditionActiveItem(EventPosCondition):
         self.item_id = item_id
 
     def do(self,room,inventory):
-        item_id = self.item_id
-        inventory.active_item(item_id) #TODO: maybe need a buffer
-        debug("EVENT_ACTIVE_ITEM: Ativando item "+item_id+".")
+        inventory.active_item(self.item_id) #TODO: maybe need a buffer
+        debug("EVENT_ACTIVE_ITEM: Ativando item "+self.item_id+".")
 
 #DESACTIVE_ITEM = 8
 class EventPosConditionDesactiveItem(EventPosCondition):
@@ -146,9 +144,8 @@ class EventPosConditionDesactiveItem(EventPosCondition):
         self.item_id = item_id
     
     def do(self,room,inventory):
-        item_id = self.item_id
-        inventory.desactive_item(item_id) #TODO: maybe need a buffer
-        debug("EVENT_DESACTIVE_ITEM: Desativando item "+item_id+".")
+        inventory.desactive_item(self.item_id) #TODO: maybe need a buffer
+        debug("EVENT_DESACTIVE_ITEM: Desativando item "+self.item_id+".")
 
 #DELETE_ITEM = 8
 class EventPosConditionDeleteItem(EventPosCondition):
@@ -156,7 +153,13 @@ class EventPosConditionDeleteItem(EventPosCondition):
         self.item_id = item_id
 
     def do(self,room,inventory):
-        item_id = self.item_id
-        inventory.update_remove.append(item_id)
-        debug("EVENT_DELETE_ITEM: Removendo item "+item_id+".")
+        inventory.update_remove.append(self.item_id)
+        debug("EVENT_DELETE_ITEM: Removendo item "+self.item_id+".")
 
+class EventPosConditionPlaySound(EventPosCondition):
+    def __init__(self,sound_id):
+        self.sound_id = sound_id
+    
+    def do(self,room,inventory):
+        room.sounds[self.sound_id].play()
+        debug("EVENT_PLAY_SOUND: Tocando som "+self.sound_id+".")

@@ -3,11 +3,12 @@ from model.escape_room import EscapeRoom
 from model.scene import Scene
 from model.object import Object
 from model.state import State
-from model.utils import __images, Position, Size
+from model.utils import __sounds, __images, Position, Size
 from model.precondition_tree import PreConditionOperatorAnd, PreConditionOperatorNot, PreConditionOperatorOr, PreConditionTree, PreConditionVar
 from model.event import Event
 from model.precondition import EventPreConditionClickAfterEvent, EventPreConditionActiveWhenState, EventPreConditionActiveWhenItemInUse , EventPreConditionActiveWhenItemNotInUse, EventPreConditionActiveWhenNotState, EventPreConditionClick, EventPreConditionClickNot
-from model.poscondition import EventPosConditionChangeScene, EventPosConditionChangePosition, EventPosConditionChangeSize, EventPosConditionChangeState, EventPosConditionEndGame,EventPosConditionDeleteItem, EventPosConditionPutInventory,EventPosConditionShowMessage,EventPosConditionAskCode
+from model.poscondition import EventPosConditionPlaySound, EventPosConditionChangeScene, EventPosConditionChangePosition, EventPosConditionChangeSize, EventPosConditionChangeState, EventPosConditionEndGame,EventPosConditionDeleteItem, EventPosConditionPutInventory,EventPosConditionShowMessage,EventPosConditionAskCode
+from model.sound import Sound
 import sys
 
 def load_precondition(precondition):
@@ -57,6 +58,12 @@ def load_preconditions(preconditions):
     else: 
         return None
 
+def load_sounds(room, data_sounds):
+    for sound_id, src_sound in data_sounds.items():
+        src_sound = __sounds + src_sound
+        sound = Sound(sound_id,src_sound)
+        room.add_sound(sound)
+
 def load_events(room, data_events):
     for event_id, data_event in data_events.items():
         data_preconditions = data_event['precondicoes'] if 'precondicoes' in data_event else {}
@@ -100,6 +107,9 @@ def load_events(room, data_events):
             elif type == 'ChangeScene':
                 scene_id = data_action['scene']
                 event_poscondition = EventPosConditionChangeScene(scene_id)
+            elif type == 'PlaySound':
+                sound_id = data_action['sound']
+                event_poscondition = EventPosConditionPlaySound(sound_id)
             pos_conditions.append(event_poscondition)
 
         linked = 'linked' in data_event and data_event['linked']
@@ -130,7 +140,6 @@ def load_room(room_id,data_room):
             for os_id,os in obj_states.items():
                 os_filenames = os['filenames']
                 os_filenames = [__images + filename for filename in os_filenames]
-                print(os_filenames)
                 os_initial = os['initial']
                 (os_size_x,os_size_y) =  os['size'] if 'size' in os else (obj_size_x,obj_size_y)
                 (os_pos_x,os_pos_y) =  os['position'] if 'position' in os else (obj_pos_x,obj_pos_y)
@@ -150,11 +159,14 @@ def load(filename=None):
     
     data_map = escape_room_json['map']
     data_events = escape_room_json['events']
+    data_sounds = escape_room_json['sounds']
+
 
 
     (room_id,data_room) = [(room_id,data_room) for (room_id,data_room) in data_map.items()][0]
 
     room = load_room(room_id,data_room)
     load_events(room, data_events)
+    load_sounds(room, data_sounds)
 
     return room

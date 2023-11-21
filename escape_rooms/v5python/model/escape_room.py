@@ -3,6 +3,7 @@ from model.object import Object
 from model.event import Event
 from model.utils import Position, Size
 from model.scene import Scene
+from model.sound import Sound
 
 """CLASSE DE UMA ESCAPE ROOM"""
 class EscapeRoom:
@@ -15,6 +16,7 @@ class EscapeRoom:
         }
         self.events_buffer = {}
         self.er_state = EscapeRoomState() #ID DA CENA ATUAL
+        self.sounds = {}
 
     #Função que adiciona uma cena
     def add_scene(self,scene : Scene):
@@ -28,6 +30,10 @@ class EscapeRoom:
     #Função que adiciona um evento de cena
     def add_event(self, event : Event):
         self.events[event.id] = event
+
+    #Função que adiciona sons
+    def add_sound(self, sound : Sound):
+        self.sounds[sound.id] = sound
     
     #Função que adiciona um evento de cena
     def add_event_buffer(self, id,pre_conditions,pos_conditions,repeatable,linked):

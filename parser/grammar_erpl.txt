@@ -1,4 +1,4 @@
-start         : sala eventos?
+start         : sala sons? eventos?
 
 sala          : "Sala" ID tamanho cenas
 cenas         : ("contém" cena)+
@@ -9,6 +9,9 @@ objeto        : "Objeto" ID (posicao tamanho)? "{" estados "}"
 estados       : ("tem" estado)+
 estado        : "Estado" INICIAL? ID filename (posicao tamanho)?
               | "Estado" INICIAL? "animado" "(" NUM  "," NUM ")" ID "[" filenames "]" (posicao tamanho)? -> estado_animado
+
+sons          : "#Sons:" som+
+som           : "Som" ID ":" filename
 
 eventos       : "#Eventos:" evento+
 evento        : "Evento" ID "(" NUM? ")" ":" ("se"|"Se") precondicoes "," ("Então"|"então") poscondicoes "." -> evento_simples
@@ -36,6 +39,7 @@ poscondicao   : ID "muda para" ID                                               
               | ID "muda posição para" posicao                                                      -> muda_posicao
               | "muda para cena" ID                                                                 -> muda_cena
               | ID "é removid" ("o"|"a")                                                            -> remove
+              | "toca" ID                                                                           -> toca_som
 
 posicao       : "(" par ")"
 tamanho       : "[" par "]"

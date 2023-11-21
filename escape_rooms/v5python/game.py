@@ -3,7 +3,7 @@
 import pygame
 import sys
 from model.load import load
-from model.utils import WIDTH, HEIGHT, BLACK, WHITE, GREEN, RED, BLUE
+from model.utils import WIDTH, HEIGHT, BLACK, WHITE, GREEN, RED, BLUE, current_folder
 from model.inventory import Inventory
 
 from model.escape_room import EscapeRoom
@@ -35,8 +35,11 @@ def try_do_events(room : EscapeRoom, inventory : Inventory):
 def play_game(room, inventory):
     # Loop principal do jogo
     clock = pygame.time.Clock()
-    show_fps = False
+    show_info = False
     running = True
+    # Defina o volume inicial (0.5 para 50%)
+    volume = 0.5
+    pygame.mixer.music.set_volume(volume)
     # Loop principal do jogo
     while running:
         for pygame_event in pygame.event.get():
@@ -61,7 +64,15 @@ def play_game(room, inventory):
                         room.er_state.input_text += pygame_event.unicode  # Adiciona a tecla pressionada à entrada do jogador
                 else:
                     if pygame_event.unicode == 'f':
-                        show_fps = not show_fps
+                        show_info = not show_info
+                    elif pygame_event.key == pygame.K_F1:
+                        # Diminua o volume (não abaixo de 0)
+                        volume = max(0, volume - 0.1)
+                        pygame.mixer.music.set_volume(volume)
+                    elif pygame_event.key == pygame.K_F2:
+                        # Aumente o volume (não acima de 1)
+                        volume = min(1, volume + 0.1)
+                        pygame.mixer.music.set_volume(volume)
 
         try_do_events(room,inventory)
         room.er_state.click_events = []
@@ -102,7 +113,7 @@ def play_game(room, inventory):
         clock.tick(60)
 
         #Fps
-        if show_fps:
+        if show_info:
             # Calcule os FPS
             font = pygame.font.Font(None, 36)
             fps = int(clock.get_fps())
@@ -112,6 +123,11 @@ def play_game(room, inventory):
 
             # Desenhe o texto do FPS na tela
             screen.blit(fps_text, (10, 670))
+
+            # Renderize o texto na tela
+            volume_text = font.render(f"Volume: {int(volume * 100)}%", True, BLUE)
+            # Desenhe o texto na tela
+            screen.blit(volume_text, (120, 670))
 
         pygame.display.flip()
 
@@ -126,6 +142,12 @@ if __name__ == '__main__':
     pygame.init()
 
     # Configurações do jogo
+    # Configurar o mixer
+    pygame.mixer.init()
+    # Carregue a música de fundo
+    filename = f'{current_folder}/../../../soundtrack.mp3'
+    pygame.mixer.music.load(filename)
+    pygame.mixer.music.play(-1)
 
     screen = pygame.display.set_mode((WIDTH, HEIGHT))
     pygame.display.set_caption("Escape Room 2D")

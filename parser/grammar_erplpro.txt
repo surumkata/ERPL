@@ -1,4 +1,4 @@
-start         : sala eventos?
+start         : sala sons? eventos?
 
 sala          : "S""(" ID "," tamanho ")""{" cenas "}"
 cenas         : cena ("," cena)*
@@ -9,6 +9,9 @@ objeto        : "O""(" ID ("," posicao "," tamanho)? ")""{" estados "}"
 estados       : estado ("," estado)*
 estado        : "E" INICIAL? "(" ID "," filename ("," posicao "," tamanho)? ")"
               | "E" INICIAL? "animado" "(" NUM  "," NUM ")" "(" ID "," "[" filenames "]" ("," posicao "," tamanho)? ")" -> estado_animado
+
+sons          : "M" "{" som ("," som)* "}"
+som           : ID "(" filename ")"
 
 eventos       : "E{" evento+ "}"
 evento        : ID "(" NUM? ")" "{" precondicoes "}" "=>" "{" poscondicoes "}" -> evento_simples
@@ -37,6 +40,7 @@ poscondicao   : ID "@" ID                               -> muda_estado
               | ID ">>" posicao                         -> muda_posicao
               | "cena" "." ID                           -> muda_cena
               | "remove" "(" ID ")"                     -> remove
+              | "toca" "(" ID ")"                       -> toca_som
 
 posicao       : "(" par ")"
 tamanho       : "[" par "]"
