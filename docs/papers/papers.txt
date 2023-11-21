@@ -1,0 +1,8 @@
+Livro “Escape Rooms in Education - A Pratical Guide” de Julia Morris
+Pygame Docs - https://www.pygame.org/docs/
+P. -Y. Li, Y. -K. Chou, Y. -J. Chen and R. -S. Chiu, "Problem-based Learning (PBL) in Interactive Design: A Case Study of Escape the Room Puzzle Design," *2018 1st IEEE International Conference on Knowledge Innovation and Invention (ICKII)*, Jeju, Korea (South), 2018, pp. 250-253, doi: 10.1109/ICKII.2018.8569131.
+S. Andysa, M. Wildan, F. Sarasevia, W. Teguh and N. Limantara, "Escape Room Mobile Game Design for Remote Learning," 2022 International Conference on Information Management and Technology (ICIMTech), Semarang, Indonesia, 2022, pp. 339-344, doi: 10.1109/ICIMTech55957.2022.9915125.
+L. B. Melo, "Playing with Escape Room Games for Children : An online experience at home in times of pandemic," 2021 16th Iberian Conference on Information Systems and Technologies (CISTI), Chaves, Portugal, 2021, pp. 1-6, doi: 10.23919/CISTI52073.2021.9476343.
+S. Seebauer, S. Jahn and J. Mottok, "Learning from Escape Rooms? A Study Design Concept Measuring the Effect of a Cryptography Educational Escape Room," 2020 IEEE Global Engineering Education Conference (EDUCON), Porto, Portugal, 2020, pp. 1684-1685, doi: 10.1109/EDUCON45650.2020.9125333.
+K. Sánchez, K. Garcés and R. Casallas, "A DSL for rapid prototyping of cross-platform tower defense games," 2015 10th Computing Colombian Conference (10CCC), Bogota, Colombia, 2015, pp. 93-99, doi: 10.1109/ColumbianCC.2015.7333417.
+P. Herzig, K. Jugel, C. Momm, M. Ameling and A. Schill, "GaML - A Modeling Language for Gamification," 2013 IEEE/ACM 6th International Conference on Utility and Cloud Computing, Dresden, Germany, 2013, pp. 494-499, doi: 10.1109/UCC.2013.96.
