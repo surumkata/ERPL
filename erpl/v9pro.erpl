@@ -55,7 +55,7 @@ fim_de_jogo() {clique(porta) && porta@aberta} => {fim()}
 
 chave_inventario(1) {clique(chave) && cofre@aberto} => {chave>>inventário}
 
-tentar_abrir_cofre() {clique(cofre) && cofre@fechado} => {pede_código("8723","Qual é o código do cofre?",abrir_cofre,mostrar_erro)}
+tentar_abrir_cofre() {clique(cofre) && cofre@fechado} => {pede_código("8723","Qual é o código do cofre?",(1000, 485),abrir_cofre,mostrar_erro)}
 
 abrir_cofre(-) {} => {cofre@aberto && chave@normal}
 

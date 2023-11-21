@@ -34,7 +34,7 @@ poscondicao   : ID "muda para" ID                                               
               | ID "vai para o inventário"                                                          -> vai_inv
               | "fim de jogo"                                                                       -> fim_de_jogo
               | "mostra mensagem" TEXTO "em" posicao                                                -> mensagem   
-              | "pede código" TEXTO "com mensagem" TEXTO ", se acertar faz" ID "e se errar faz" ID  -> pede_codigo
+              | "pede código" TEXTO "com mensagem" TEXTO "em" posicao ", se acertar faz" ID "e se errar faz" ID  -> pede_codigo
               | ID "muda tamanho para" tamanho                                                      -> muda_tamanho
               | ID "muda posição para" posicao                                                      -> muda_posicao
               | "muda para cena" ID                                                                 -> muda_cena

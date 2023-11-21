@@ -38,6 +38,7 @@ Sala sala [1300,700]
 #Sons:
 
 Som porta_a_abrir: "door-1-open.mp3"
+Som porta-locked: "door-locked.mp3"
 
 #Eventos:
 
@@ -67,7 +68,7 @@ Então chave vai para o inventário.
 
 Evento tentar_abrir_cofre():
 Se clique cofre e cofre está fechado,
-então pede código "8723" com mensagem "Qual é o código do cofre?", se acertar faz abrir_cofre e se errar faz mostrar_erro.
+então pede código "8723" com mensagem "Qual é o código do cofre?" em (1000, 485) , se acertar faz abrir_cofre e se errar faz mostrar_erro.
 
 Evento abrir_cofre(-):
 cofre muda para aberto e chave muda para normal.
@@ -77,7 +78,7 @@ mostra mensagem "Código errado!" em (1000, 485).
 
 Evento mensagem_trancada():
 Se clique porta e porta está fechada e não chave está em uso,
-então mostra mensagem "porta trancada! procura uma chave!" em (600,385).
+então mostra mensagem "porta trancada! procura uma chave!" em (600,385) e toca porta-locked.
 
 Evento lupa_inventario(1):
 Se clique lupa,

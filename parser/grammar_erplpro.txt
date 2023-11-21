@@ -35,7 +35,7 @@ poscondicao   : ID "@" ID                               -> muda_estado
               | ID ">>" "inventário"                    -> vai_inv
               | "fim""("")"                             -> fim_de_jogo
               | "mensagem""("TEXTO","posicao")"         -> mensagem   
-              | "pede_código" "(" TEXTO "," TEXTO "," ID "," ID ")" -> pede_codigo
+              | "pede_código" "(" TEXTO "," TEXTO "," posicao "," ID "," ID ")" -> pede_codigo
               | ID ">>" tamanho                         -> muda_tamanho
               | ID ">>" posicao                         -> muda_posicao
               | "cena" "." ID                           -> muda_cena

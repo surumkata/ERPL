@@ -95,7 +95,8 @@ def load_events(room, data_events):
                 message = data_action['message']
                 sucess_event = data_action['sucess_event']
                 fail_event = data_action['fail_event']
-                event_poscondition = EventPosConditionAskCode(code,message,sucess_event,fail_event)
+                (pos_x,pos_y) = data_action['position']
+                event_poscondition = EventPosConditionAskCode(code,message,sucess_event,fail_event,Position(pos_x,pos_y))
             elif type == 'ChangeSize':
                 object_id = data_action['object']
                 (size_x,size_y) = data_action['size']

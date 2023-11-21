@@ -387,14 +387,15 @@ class Interpreter(Interpreter):
             }
 
     def pede_codigo(self,poscondicao):
-        '''poscondicao : "pede_código" "(" TEXTO "," TEXTO "," ID "," ID ")" '''
+        '''poscondicao : "pede_código" "(" TEXTO "," TEXTO "," posicao "," ID "," ID ")" -> pede_codigo'''
         elems = poscondicao.children
         return {
             'type' : 'AskCode',
             'code' : elems[0].value[1:-1],
             'message' : elems[1].value[1:-1],
-            'sucess_event' : elems[2].value,
-            'fail_event' : elems[3].value
+            'position' : self.visit(elems[2]),
+            'sucess_event' : elems[3].value,
+            'fail_event' : elems[4].value
             }
 
     def muda_tamanho(self,poscondicao):

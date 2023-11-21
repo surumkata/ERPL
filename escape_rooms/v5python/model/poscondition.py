@@ -1,6 +1,6 @@
 from enum import Enum
 from abc import ABC, abstractmethod
-from model.utils import debug, BalloonMessage
+from model.utils import debug, BalloonMessage, Position
 from model.precondition import EventPreConditionClickItem, EventPreConditionActiveWhenItemInUse, EventPreConditionActiveWhenItemNotInUse
 from model.precondition_tree import PreConditionTree, PreConditionOperatorAnd, PreConditionVar
 import sys
@@ -42,10 +42,8 @@ class EventPosConditionChangeState(EventPosCondition):
         self.state_id = state_id
 
     def do(self,room,inventory):
-        object_id = self.object_id
-        state_id = self.state_id
-        room.er_state.changed_objects_states[object_id] = state_id #colocar no buffer o estado do objeto para ser posteriormente alterado
-        debug("EVENT_CHANGE_STATE: Mudando o estado do objeto "+object_id+" para "+state_id+".")
+        room.er_state.changed_objects_states[self.object_id] = self.state_id #colocar no buffer o estado do objeto para ser posteriormente alterado
+        debug("EVENT_CHANGE_STATE: Mudando o estado do objeto "+self.object_id+" para "+self.state_id+".")
 
 #CHANGE_POSITION = 2
 class EventPosConditionChangePosition(EventPosCondition):
@@ -54,10 +52,8 @@ class EventPosConditionChangePosition(EventPosCondition):
         self.position = position
 
     def do(self,room,inventory):
-        object_id = self.object_id
-        pos = self.position
-        room.objects[object_id].change_position(pos)
-        debug("EVENT_CHANGE_POSITION: Mudando "+object_id +" para a posição ("+str(pos.x)+","+str(pos.y)+").")
+        room.objects[self.object_id].change_position(self.position)
+        debug("EVENT_CHANGE_POSITION: Mudando "+object_id +" para a posição ("+str(self.position.x)+","+str(self.position.y)+").")
 
 #CHANGE_SIZE = 3
 class EventPosConditionChangeSize(EventPosCondition):
@@ -78,25 +74,26 @@ class EventPosConditionShowMessage(EventPosCondition):
         self.message = message
 
     def do(self,room,inventory):
-        message = self.message
-        pos = self.position
-        room.er_state.messages.append(BalloonMessage(message,pos.x,pos.y))
-        debug("EVENT_MESSAGE: Mostrando mensagem '"+str(message)+"' na posição ("+str(pos.x)+","+str(pos.y)+").")
+        room.er_state.messages.append(BalloonMessage(self.message,self.position.x,self.position.y))
+        debug("EVENT_MESSAGE: Mostrando mensagem '"+str(self.message)+"' na posição ("+str(self.position.x)+","+str(self.position.y)+").")
 
 #ASK_CODE = 5
 class EventPosConditionAskCode(EventPosCondition):
-    def __init__(self, code, message, sucess_event, fail_event):
+    def __init__(self, code, message, sucess_event, fail_event, position):
         self.code = code
         self.message = message
         self.sucess_event = sucess_event
         self.fail_event = fail_event
+        self.position = position
 
     def do(self,room,inventory):
         room.er_state.input_active = True
         room.er_state.input_code = self.code
-        room.er_state.messages.append(BalloonMessage(self.message,300,300))
+        room.er_state.messages.append(BalloonMessage(self.message,self.position.x,self.position.y))
         room.er_state.input_sucess = self.sucess_event
         room.er_state.input_fail = self.fail_event
+        room.er_state.input_box.x = self.position.x
+        room.er_state.input_box.y = self.position.y + 50
         debug("EVENT_ASKCODE: Pedindo código "+self.code+".")
 
 #PUT_INVENTORY = 6
