@@ -162,9 +162,6 @@ class Interpreter(Interpreter):
             i+=1
         
         result['time_sprite'] = int(elems[i].value)
-        file = open("debug.txt","w+")
-        file.write(f"{result['time_sprite']}")
-        file.close()
         i+=1
         result['repeate'] = int(elems[i].value)
         i+=1

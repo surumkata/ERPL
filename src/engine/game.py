@@ -145,7 +145,7 @@ if __name__ == '__main__':
     # Configurar o mixer
     pygame.mixer.init()
     # Carregue a música de fundo
-    filename = f'{current_folder}/../../../soundtrack.mp3'
+    filename = f'{current_folder}/../../../assets/sounds/soundtrack.mp3'
     pygame.mixer.music.load(filename)
     pygame.mixer.music.play(-1)
 

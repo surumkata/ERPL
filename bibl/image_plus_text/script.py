@@ -7,7 +7,7 @@ def parse_arguments():
     parser.add_argument('--output_image'     ,'-oi'       ,type=str, nargs=1,required=True                                ,help='Output image file')
     parser.add_argument('--input_image'      ,'-ii'       ,type=str, nargs=1,required=True                                ,help='Input image file' )
     parser.add_argument('--text'             ,'-t'        ,type=str, nargs=1,required=True                                ,help='Text'             )
-    parser.add_argument('--font_path'        ,'-fp'       ,type=str, nargs=1,required=True                                ,help='Font path'        )
+    parser.add_argument('--font_path'        ,'-fp'       ,type=str, nargs=1                                              ,help='Font path'        )
     parser.add_argument('--text_color'       ,'-tc'       ,type=int, nargs=3                                              ,help='Text color (RGB)' )
     parser.add_argument('--min_font_size'    ,'-minfs'    ,type=int, nargs=1                                              ,help='Minimum font size')
     parser.add_argument('--max_font_size'    ,'-maxfs'    ,type=int, nargs=1                                              ,help='Maximum font size')
@@ -100,7 +100,7 @@ if __name__ == '__main__':
     image_path = args.input_image[0]
     output_path = args.output_image[0]
     text = args.text[0]
-    font_path = args.font_path[0]
+    font_path = args.font_path[0] if args.font_path else "arial.ttf"
     text_color = (args.text_color[0],args.text_color[1],args.text_color[2]) if args.text_color else (255, 255, 255)
     min_font_size = args.min_font_size[0] if args.min_font_size else 8
     max_font_size = args.max_font_size[0] if args.max_font_size else 100

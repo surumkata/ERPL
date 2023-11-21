@@ -12,8 +12,8 @@ BLACK = (0,0,0)
 BLUE = (0,0,255)
 
 current_folder = os.path.dirname(__file__)
-__images = f"{current_folder}/../../../images/"
-__sounds = f"{current_folder}/../../../sounds/"
+__images = f"{current_folder}/../../../assets/images/"
+__sounds = f"{current_folder}/../../../assets/sounds/"
 
 """CLASSE AUXIALIRES"""
 class Position():
