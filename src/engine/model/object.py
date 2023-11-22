@@ -17,12 +17,15 @@ class Object:
             self.current_state = state_id
             self.position = self.states[state_id].position
             self.size = self.states[state_id].size
+            self.states[state_id].repeate = self.states[state_id].repeateInit
+            self.states[state_id].current_sprite = 0
         else:
             self.current_state = None
 
     #Função que verifica se foi clicado na área do objeto
     def have_clicked(self, x : int, y : int):
-        return self.position.x <= x <= self.position.x + self.size.x and self.position.y <= y <= self.position.y + self.size.y
+        #TODO: melhor hit_box
+        return self.position.x + self.size.x * 0.1 <= x <= self.position.x + self.size.x * 0.9 and self.position.y + self.size.y * 0.1 <= y <= self.position.y  + self.size.y * 0.9
 
     #Função que muda a posição do objeto
     def change_position(self,position : Position):

@@ -20,13 +20,14 @@ class State:
 
         self.current_sprite = 0
         self.current_time_sprite = 0
-        self.repeate = repeate
+        self.repeateInit = repeate
+        self.repeate = self.repeateInit
 
     def change_size(self, size):
         self.size = size
         for i,image in enumerate(self.images):
-            image = pygame.image.load(self.src_images[i]) 
-            image = pygame.transform.scale(image, (self.size.x,self.size.y))
+            self.images[i] = pygame.image.load(self.src_images[i]) 
+            self.images[i] = pygame.transform.scale(self.images[i], (self.size.x,self.size.y))
 
     def change_position(self, position):
         self.position = position

@@ -97,7 +97,7 @@ class EscapeRoom:
     #
     #Função que devolve o state atual de um object
     def check_state_of_object(self, object_id : str, state_id : str):
-        return self.objects[object_id].current_state == state_id
+        return self.objects[object_id].current_state == state_id if object_id in self.objects else False
     
     def check_time (self, time):
         return time >= self.er_state.time

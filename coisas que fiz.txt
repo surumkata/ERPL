@@ -1,0 +1,4 @@
+> Excutável
+> Script para colocar texto no meio de uma imagem
+> Animações ao estado
+> Sons
