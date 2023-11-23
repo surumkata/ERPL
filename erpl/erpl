@@ -9,4 +9,4 @@ fi
 # Atribui o primeiro argumento a uma variável
 input_file="$1"
 
-cat "$input_file" | ./../src/parser/parser.py -gm1 | ./../src/engine/game.py
+./../src/parser/parser.py -gm1 -i "$input_file" | ./../src/engine/game.py

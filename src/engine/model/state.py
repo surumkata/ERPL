@@ -1,6 +1,6 @@
 import pygame
 from model.utils import Position, Size
-
+from PIL import Image
 
 """CLASSE DE UM ESTADO"""
 class State:
@@ -12,7 +12,7 @@ class State:
         # Carregando a imagem da porta
         self.images = []
         for src_image in self.src_images:
-            image = pygame.image.load(src_image)
+            image = pygame.image.load(src_image).convert_alpha()
             image = pygame.transform.scale(image, (self.size.x,self.size.y))  # Ajuste o tamanho conforme necessário
             self.images.append(image)
         
@@ -26,7 +26,7 @@ class State:
     def change_size(self, size):
         self.size = size
         for i,image in enumerate(self.images):
-            self.images[i] = pygame.image.load(self.src_images[i]) 
+            self.images[i] = pygame.image.load(self.src_images[i]).convert_alpha()
             self.images[i] = pygame.transform.scale(self.images[i], (self.size.x,self.size.y))
 
     def change_position(self, position):

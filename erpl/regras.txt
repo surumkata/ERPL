@@ -29,6 +29,7 @@ Então:
 -> OBJETO muda posição para POSIÇÃO
 -> muda para cena CENA
 -> OBJETO é removid(o|a)
+-> toca SOM
 
 
 programação_v2:
@@ -64,3 +65,4 @@ poscondiçoes:
 -> OBJETO>>POSIÇÃO                          #OBJETO muda posição para POSIÇÃO
 -> cena.CENA                                #muda para cena CENA
 -> remove(OBJETO)                           #OBJETO é removid(o|a)
+-> toca(SOM)                                #toca SOM

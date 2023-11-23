@@ -1,0 +1,3 @@
+> glob(ficheiros) numerados -v
+> permitir argumentos na linguagem
+> permitir image_plus_txt("img","txt") numa imagem
