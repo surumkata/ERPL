@@ -2,12 +2,12 @@
 build-backend = "flit_core.buildapi"
 
 [project]
-name = "image_plus_txt"
+name = "imageplustxt"
 authors = [{name = "surumkata", email = "a93277@uminho.pt"}]
 license = {file = "LICENSE"}
 classifiers = ["License :: OSI Approved :: MIT License"]
 dynamic = ["version", "description"]
-dependencies = ["PIL","argparse"]
+dependencies = ["Pillow","argparse"]
 readme = "readme.md"
 
 [project.scripts]
