@@ -9,6 +9,7 @@ objeto        : "Objeto" ID (posicao tamanho)? "{" estados "}"
 estados       : ("tem" estado)+
 estado        : "Estado" INICIAL? ID filename (posicao tamanho)?
               | "Estado" INICIAL? "animado" "(" NUM  "," NUM ")" ID "[" filenames "]" (posicao tamanho)? -> estado_animado
+              | "Estado" INICIAL? ID "image_plus_txt" "(" filename "," filename "," TEXTO ("," color)? ")" -> estado_img_plus_text
 
 sons          : "#Sons:" som+
 som           : "Som" ID ":" filename
@@ -46,6 +47,7 @@ tamanho       : "[" par "]"
 par           : NUM "," NUM
 filenames     : filename ("," filename)*
 filename      : TEXTO
+color         : "(" NUM "," NUM "," NUM ")"
 
 INICIAL : /inicial/
 

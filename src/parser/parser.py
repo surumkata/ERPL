@@ -6,6 +6,7 @@ import json
 import sys
 import argparse
 import os
+import src.bibl.image_plus_text.imgplustxt as imgplustxt
 
 def parse_arguments():
     '''Define and parse arguments using argparse'''
@@ -173,6 +174,33 @@ class Interpreter(Interpreter):
             result['position'] = self.visit(elems[i])
             result['size'] = self.visit(elems[i+1])
 
+        return (id,result)
+    
+    def estado_img_plus_txt(self,estado):
+        '''estado : "Estado" INICIAL? ID "image_plus_txt" "(" filename "," filename "," TEXTO ("," color)? ")"'''
+        elems = estado.children
+        result = {'initial' : False}
+
+        i = 0
+        if elems[i].type == 'INICIAL':
+            result['initial'] = True
+            i+=1
+        
+        id = elems[i].value
+        i+=1
+        input = self.visit(elems[i])
+        i+=1
+        output = self.visit(elems[i])
+        i+=1
+        text = self.visit(elems[i])
+        i+=1
+        color = (255,255,255)
+        if(len(elems) > i+1):
+            color = self.visit(elems[i])
+
+        imgplustxt.add_text_to_image(input,output,text,color)
+
+        result['filenames'] = [output]
         return (id,result)
     
     def sons (self, sons):
@@ -462,6 +490,11 @@ class Interpreter(Interpreter):
         '''filename : TEXTO'''
         elems = filename.children
         return elems[0].value[1:-1]
+    
+    def color (self, color):
+        '''color : "(" NUM "," NUM "," NUM ")"'''
+        elems = color.children
+        return (int(elems[0].value),int(elems[1].value),int(elems[2].value))
 
 
 def main():

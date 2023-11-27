@@ -1,7 +1,11 @@
 #!/usr/bin/python3
+"""Module to add text to an image
+"""
 
 from PIL import Image, ImageDraw, ImageFont
 import argparse
+
+__version__ = '0.1'
 
 def parse_arguments():
     '''Define and parse arguments using argparse'''
@@ -96,13 +100,13 @@ def add_text_to_image(image_path, output_path, text, text_color=(255, 255, 255),
 
     print(f'Imagem com texto salva em {output_path}')
 
-if __name__ == '__main__':
+def image_plus_txt():
     args = parse_arguments()
 
     image_path = args.input_image[0]
     output_path = args.output_image[0]
     text = args.text[0]
-    font_path = args.font_path[0] if args.font_path else "arial.ttf"
+    font_path = args.font_path[0] if args.font_path else "fonts/arial.ttf"
     text_color = (args.text_color[0],args.text_color[1],args.text_color[2]) if args.text_color else (255, 255, 255)
     min_font_size = args.min_font_size[0] if args.min_font_size else 8
     max_font_size = args.max_font_size[0] if args.max_font_size else 100
