@@ -2,11 +2,14 @@
 
 # Verifica se foi fornecido um argumento
 if [ "$#" -eq 0 ]; then
-    echo "Erro: Nenhum argumento fornecido."
+    echo "Erro: Nenhum argumento fornecido. Pelo menos 1 é necessário para input_file"
     exit 1
 fi
 
 # Atribui o primeiro argumento a uma variável
 input_file="$1"
 
-./../src/parser/parser.py -gm1 -i "$input_file" | ./../src/engine/game.py
+# Utiliza shift para remover o primeiro argumento (input_file)
+shift
+
+./../src/parser/parser.py -gm1 -i "$input_file" -args "$@" | ./../src/engine/game.py

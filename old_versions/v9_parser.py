@@ -7,14 +7,6 @@ import sys
 import argparse
 import os
 from imageplustxt import add_text_to_image
-import glob
-
-import re 
-def sorted_alphanum(l): 
-    """ Sort the given iterable in the way that humans expect.""" 
-    convert = lambda text: int(text) if text.isdigit() else text 
-    alphanum_key = lambda key: [ convert(c) for c in re.split('([0-9]+)', key) ] 
-    return sorted(l, key = alphanum_key)
 
 def parse_arguments():
     '''Define and parse arguments using argparse'''
@@ -22,8 +14,7 @@ def parse_arguments():
     parser.add_argument('--output','-o'            ,type=str, nargs=1,required=False                                , help='Output file')
     parser.add_argument('--input','-i'             ,type=str, nargs=1,required=False                                , help='Input file')
     parser.add_argument('--grammar_erpl','-gm1'    ,action='store_true'                                      , help='Grammar ERPL' )
-    parser.add_argument('--grammar_erplpro','-gm2' ,action='store_true'                                      , help='Grammar ERPL Pro' )
-    parser.add_argument('--args','-args'           ,nargs='+'                                                , help='Args')
+    parser.add_argument('--grammar_erplpro','-gm2'    ,action='store_true'                                      , help='Grammar ERPL Pro' )
     return parser.parse_args()
 
 class Interpreter(Interpreter):
@@ -32,7 +23,7 @@ class Interpreter(Interpreter):
 #--------------------------------   Rules   --------------------------------------
 #---------------------------------------------------------------------------------
 
-    def __init__(self,args):
+    def __init__(self):
         self.escape_room = {
             'map' : {},
             'events' : {},
@@ -40,7 +31,6 @@ class Interpreter(Interpreter):
         }
         self.__images = f"{os.path.dirname(__file__)}/../../assets/images/"
         self.__fonts = f"{os.path.dirname(__file__)}/../../assets/fonts/"
-        self.args = args
 
     def start(self,start):
         '''start : sala sons? eventos?'''
@@ -164,7 +154,7 @@ class Interpreter(Interpreter):
 
         return (id,result)
 
-    def estado_animado_lista(self,estado):
+    def estado_animado(self,estado):
         '''estado : "Estado" INICIAL? "animado" "(" NUM  "," NUM ")" ID "[" filenames "]" (posicao tamanho)?'''
         elems = estado.children
         result = {'initial' : False}
@@ -188,39 +178,8 @@ class Interpreter(Interpreter):
 
         return (id,result)
     
-    def estado_animado_glob(self,estado):
-        '''estado : "Estado" INICIAL? "animado" "(" NUM "," NUM ")" ID "glob" REVERSE? "(" text ")" (posicao tamanho)?'''
-        elems = estado.children
-        result = {'initial' : False}
-
-        i = 0
-        if elems[i].type == 'INICIAL':
-            result['initial'] = True
-            i+=1
-        
-        result['time_sprite'] = int(elems[i].value)
-        i+=1
-        result['repeate'] = int(elems[i].value)
-        i+=1
-        id = elems[i].value
-        i+=1
-        arg = self.visit(elems[i])
-        result['filenames'] = glob.glob(self.__images + arg)
-        result['filenames'] = sorted_alphanum([filename.replace(self.__images,"") for filename in result['filenames']])
-        
-        i+=1
-
-        if(len(elems) > i and elems[i].type == 'REVERSE'):
-            result['filenames'] = result['filenames'][::-1]
-        
-        if(len(elems) > i+1):
-            result['position'] = self.visit(elems[i])
-            result['size'] = self.visit(elems[i+1])
-
-        return (id,result)
-    
     def estado_img_plus_text(self,estado):
-        '''estado : "Estado" INICIAL? ID "image_plus_txt" "(" filename "," filename "," text "," filename ("," color)? ")" (posicao tamanho)? '''
+        '''estado : "Estado" INICIAL? ID "image_plus_txt" "(" filename "," filename "," TEXTO "," filename ("," color)? ")" (posicao tamanho)? '''
         elems = estado.children
         result = {'initial' : False}
 
@@ -235,7 +194,7 @@ class Interpreter(Interpreter):
         i+=1
         output = self.visit(elems[i])
         i+=1
-        text = self.visit(elems[i])
+        text = elems[i].value[1:-1]
         i+=1
         font = self.visit(elems[i])
         i+=1
@@ -446,28 +405,28 @@ class Interpreter(Interpreter):
             }
 
     def fim_de_jogo(self,poscondicao):
-        '''poscondicao : "fim""("")" '''
+        '''poscondicao : "mensagem""("TEXTO","posicao")" '''
         elems = poscondicao.children
         return {
             'type' : 'EndGame',
             }
 
     def mensagem(self,poscondicao):
-        '''poscondicao : "mensagem""("text","posicao")" '''
+        '''poscondicao : "fim""("")" '''
         elems = poscondicao.children
         return {
             'type' : 'ShowMessage',
-            'message' : self.visit(elems[0]),
+            'message' : elems[0].value[1:-1],
             'position' : self.visit(elems[1])
             }
 
     def pede_codigo(self,poscondicao):
-        '''poscondicao : "pede_código" "(" text "," text "," posicao "," ID "," ID ")" -> pede_codigo'''
+        '''poscondicao : "pede_código" "(" TEXTO "," TEXTO "," posicao "," ID "," ID ")" -> pede_codigo'''
         elems = poscondicao.children
         return {
             'type' : 'AskCode',
-            'code' : self.visit(elems[0]),
-            'message' : self.visit(elems[1]),
+            'code' : elems[0].value[1:-1],
+            'message' : elems[1].value[1:-1],
             'position' : self.visit(elems[2]),
             'sucess_event' : elems[3].value,
             'fail_event' : elems[4].value
@@ -537,24 +496,9 @@ class Interpreter(Interpreter):
     #    return result
 
     def filename (self, filename):
-        '''filename : text'''
+        '''filename : TEXTO'''
         elems = filename.children
-        return self.visit(elems[0])
-    
-    def text(self,text):
-        '''text : TEXTO'''
-        elems = text.children
         return elems[0].value[1:-1]
-    
-    def text_args(self,text):
-        '''text : ARG'''
-        elems = text.children
-        arg = elems[0].value[1:]
-        arg = int(arg)
-        try:
-            return self.args[arg]
-        except:
-            raise Exception(f"Não foi provido um arg: {arg}")
     
     def color (self, color):
         '''color : "(" NUM "," NUM "," NUM ")"'''
@@ -570,10 +514,8 @@ def main():
     elif args.grammar_erplpro:
         grammar = open(f"{current_folder}/grammar_erplpro.txt","r")
     else:
-        raise Exception("Nenhuma gramática escolhida! Use -gm1 or -gm2")
-    
-    if not args.args:
-        args.args = []
+        print("ERRO! Nenhuma gramática escolhida")
+        return
 
     # ficheiro com a frase para analisar
     if args.input:
@@ -586,7 +528,7 @@ def main():
     # analisar frase com a gramatica definida
     p = Lark(grammar)
     parse_tree = p.parse(code)
-    it = Interpreter(args.args)
+    it = Interpreter()
     data = it.visit(parse_tree)
 
     #Serializing json

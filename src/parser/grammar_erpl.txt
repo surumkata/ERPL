@@ -8,8 +8,9 @@ objeto        : "Objeto" ID (posicao tamanho)? "{" estados "}"
 
 estados       : ("tem" estado)+
 estado        : "Estado" INICIAL? ID filename (posicao tamanho)?
-              | "Estado" INICIAL? "animado" "(" NUM  "," NUM ")" ID "[" filenames "]" (posicao tamanho)? -> estado_animado
-              | "Estado" INICIAL? ID "image_plus_txt" "(" filename "," filename "," TEXTO "," filename ("," color)? ")" (posicao tamanho)? -> estado_img_plus_text
+              | "Estado" INICIAL? "animado" "(" NUM "," NUM ")" ID "[" filenames "]" (posicao tamanho)?  -> estado_animado_lista
+              | "Estado" INICIAL? "animado" "(" NUM "," NUM ")" ID "glob" "(" text ")" REVERSE? (posicao tamanho)? -> estado_animado_glob
+              | "Estado" INICIAL? ID "image_plus_txt" "(" filename "," filename "," text "," filename ("," color)? ")" (posicao tamanho)? -> estado_img_plus_text
 
 sons          : "#Sons:" som+
 som           : "Som" ID ":" filename
@@ -34,8 +35,8 @@ poscondicoes  : poscondicao ("e" poscondicao)*
 poscondicao   : ID "muda para" ID                                                                   -> muda_estado
               | ID "vai para o inventário"                                                          -> vai_inv
               | "fim de jogo"                                                                       -> fim_de_jogo
-              | "mostra mensagem" TEXTO "em" posicao                                                -> mensagem   
-              | "pede código" TEXTO "com mensagem" TEXTO "em" posicao ", se acertar faz" ID "e se errar faz" ID  -> pede_codigo
+              | "mostra mensagem" text "em" posicao                                                -> mensagem   
+              | "pede código" text "com mensagem" text "em" posicao ", se acertar faz" ID "e se errar faz" ID  -> pede_codigo
               | ID "muda tamanho para" tamanho                                                      -> muda_tamanho
               | ID "muda posição para" posicao                                                      -> muda_posicao
               | "muda para cena" ID                                                                 -> muda_cena
@@ -46,15 +47,19 @@ posicao       : "(" par ")"
 tamanho       : "[" par "]"
 par           : NUM "," NUM
 filenames     : filename ("," filename)*
-filename      : TEXTO
+filename      : text
+text          : TEXTO
+              | ARG -> text_args
 color         : "(" NUM "," NUM "," NUM ")"
 
 INICIAL : /inicial/
+REVERSE : /\.reverse\(\)/
 
 
 ID            : /[\w\-_]+/
 TEXTO         : /"[^"]*"/
 NUM           : /\d+/
+ARG           : /\$\d+/
 
 %import common.WS
 %ignore WS

@@ -8,7 +8,9 @@ objeto        : "O""(" ID ("," posicao "," tamanho)? ")""{" estados "}"
 
 estados       : estado ("," estado)*
 estado        : "E" INICIAL? "(" ID "," filename ("," posicao "," tamanho)? ")"
-              | "E" INICIAL? "animado" "(" NUM  "," NUM ")" "(" ID "," "[" filenames "]" ("," posicao "," tamanho)? ")" -> estado_animado
+              | "E" INICIAL? "animado" "(" NUM  "," NUM ")" "(" ID "," "[" filenames "]" ("," posicao "," tamanho)? ")" -> estado_animado_lista
+              | "E" INICIAL? "animado" "(" NUM "," NUM ")" "(" ID "," "glob" "(" text ")" REVERSE? ("," posicao "," tamanho)? ")" -> estado_animado_glob
+              | "E" INICIAL? "(" ID "," "image_plus_txt" "(" filename "," filename "," text "," filename ("," color)? ")" ("," posicao "," tamanho)? ")" -> estado_img_plus_text
 
 sons          : "M" "{" som ("," som)* "}"
 som           : ID "(" filename ")"
@@ -34,8 +36,8 @@ poscondicoes  : poscondicao ("&&" poscondicao)*
 poscondicao   : ID "@" ID                               -> muda_estado
               | ID ">>" "inventário"                    -> vai_inv
               | "fim""("")"                             -> fim_de_jogo
-              | "mensagem""("TEXTO","posicao")"         -> mensagem   
-              | "pede_código" "(" TEXTO "," TEXTO "," posicao "," ID "," ID ")" -> pede_codigo
+              | "mensagem""("text","posicao")"         -> mensagem   
+              | "pede_código" "(" text "," text "," posicao "," ID "," ID ")" -> pede_codigo
               | ID ">>" tamanho                         -> muda_tamanho
               | ID ">>" posicao                         -> muda_posicao
               | "cena" "." ID                           -> muda_cena
@@ -46,13 +48,18 @@ posicao       : "(" par ")"
 tamanho       : "[" par "]"
 par           : NUM "," NUM
 filenames     : filename ("," filename)*
-filename      : TEXTO
+filename      : text
+text          : TEXTO
+              | ARG -> text_args
+color         : "(" NUM "," NUM "," NUM ")"
 
 INICIAL : /i/
+REVERSE : /\.reverse\(\)/
 
 ID            : /[\w\-_]+/
 TEXTO         : /"[^"]*"/
 NUM           : /\d+/
+ARG           : /\$\d+/
 
 %import common.WS
 %ignore WS
