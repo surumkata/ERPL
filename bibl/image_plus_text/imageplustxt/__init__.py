@@ -4,8 +4,10 @@
 
 from PIL import Image, ImageDraw, ImageFont
 import argparse
+import os
 
-__version__ = '0.1'
+current_folder = os.path.dirname(__file__)
+__version__ = '0.1.4'
 
 def parse_arguments():
     '''Define and parse arguments using argparse'''
@@ -98,15 +100,13 @@ def add_text_to_image(image_path, output_path, text, text_color=(255, 255, 255),
     # Salva a imagem resultante
     original_image.save(output_path)
 
-    print(f'Imagem com texto salva em {output_path}')
-
-def image_plus_txt():
+def imageplustxt():
     args = parse_arguments()
 
     image_path = args.input_image[0]
     output_path = args.output_image[0]
     text = args.text[0]
-    font_path = args.font_path[0] if args.font_path else "fonts/arial.ttf"
+    font_path = args.font_path[0] if args.font_path else f"{current_folder}/fonts/arial.ttf"
     text_color = (args.text_color[0],args.text_color[1],args.text_color[2]) if args.text_color else (255, 255, 255)
     min_font_size = args.min_font_size[0] if args.min_font_size else 8
     max_font_size = args.max_font_size[0] if args.max_font_size else 100
@@ -116,3 +116,5 @@ def image_plus_txt():
 
     add_text_to_image(image_path=image_path, output_path=output_path, text=text, text_color=text_color, linebreaker=linebreaker,
                        font_path=font_path, min_font_size=min_font_size, max_font_size=max_font_size, width_percentage= width_percentage, height_percentage=height_percentage)
+
+    print(f'Imagem com texto salva em {output_path}')

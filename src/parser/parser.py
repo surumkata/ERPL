@@ -6,7 +6,7 @@ import json
 import sys
 import argparse
 import os
-import src.bibl.image_plus_text.imgplustxt as imgplustxt
+from imageplustxt import add_text_to_image
 
 def parse_arguments():
     '''Define and parse arguments using argparse'''
@@ -29,6 +29,8 @@ class Interpreter(Interpreter):
             'events' : {},
             'sounds' : {}
         }
+        self.__images = f"{os.path.dirname(__file__)}/../../assets/images/"
+        self.__fonts = f"{os.path.dirname(__file__)}/../../assets/fonts/"
 
     def start(self,start):
         '''start : sala sons? eventos?'''
@@ -36,7 +38,7 @@ class Interpreter(Interpreter):
         #visitar mapa
         self.escape_room['map'] = self.visit(elems[0])
         i = 1
-        if elems[i].data == 'sons':
+        if len(elems) > i and elems[i].data == 'sons':
             self.escape_room['sounds'] = self.visit(elems[i])
             i+=1
         if len(elems) > i:      
@@ -176,8 +178,8 @@ class Interpreter(Interpreter):
 
         return (id,result)
     
-    def estado_img_plus_txt(self,estado):
-        '''estado : "Estado" INICIAL? ID "image_plus_txt" "(" filename "," filename "," TEXTO ("," color)? ")"'''
+    def estado_img_plus_text(self,estado):
+        '''estado : "Estado" INICIAL? ID "image_plus_txt" "(" filename "," filename "," TEXTO "," filename ("," color)? ")" (posicao tamanho)? '''
         elems = estado.children
         result = {'initial' : False}
 
@@ -192,13 +194,20 @@ class Interpreter(Interpreter):
         i+=1
         output = self.visit(elems[i])
         i+=1
-        text = self.visit(elems[i])
+        text = elems[i].value[1:-1]
+        i+=1
+        font = self.visit(elems[i])
         i+=1
         color = (255,255,255)
-        if(len(elems) > i+1):
+        if len(elems) > i and elems[i].data == 'color':
             color = self.visit(elems[i])
+            i+=1
 
-        imgplustxt.add_text_to_image(input,output,text,color)
+        if(len(elems) > i+1):
+            result['position'] = self.visit(elems[i])
+            result['size'] = self.visit(elems[i+1])
+
+        add_text_to_image(self.__images + input,self.__images + output,text,color, self.__fonts + font)
 
         result['filenames'] = [output]
         return (id,result)

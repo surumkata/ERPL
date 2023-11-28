@@ -17,11 +17,11 @@ Sala sala [1300,700]
             tem Estado normal "key.png"
             tem Estado ativa "active_key.png"
         }
-        contém Objeto nota (400,600) [30,30] {
-            tem Estado inicial normal "nota.png"
+        contém Objeto nota {
+            tem Estado inicial normal "nota.png" (400,600) [30,30]
         }
         contém Objeto nota_lupa (300,500) [200,200] {
-            tem Estado visivel "lupa_nota.png"
+            tem Estado visivel image_plus_txt("nota.png","nota_nova.png","JN","arial.ttf",(255,255,255)) 
         }
     }
     contém Cena cena2 {

@@ -39,8 +39,18 @@ class Object:
         for state in self.states.values():
             state.change_size(size)
 
+    def position_is_none(self):
+        return self.position.x == None or self.position.y == None
+    
+    def size_is_none(self):
+        return self.size.x == None or self.size.y == None
+
     def add_state(self, state : State, initial : bool = False):
         self.states[state.id] = state
+        if self.position_is_none():
+            self.position = Position(state.position.x,state.position.y)
+        if self.size_is_none():
+            self.size = Size(state.size.x,state.size.y)
         if initial:
             self.change_current_state(state.id)
 
