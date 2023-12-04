@@ -12,4 +12,10 @@ input_file="$1"
 # Utiliza shift para remover o primeiro argumento (input_file)
 shift
 
-./../src/parser/parser.py -gm1 -i "$input_file" -args "$@" | ./../src/engine/game.py
+# Constrói a string de argumentos apenas se houver argumentos restantes
+args_string=""
+if [ "$#" -gt 0 ]; then
+    args_string="-args $@"
+fi
+
+./../src/parser/parser.py -gm1 -i "$input_file" $args_string | ./../src/engine/game.py

@@ -12,8 +12,8 @@ Sala sala [1300,700]
         }
         contém Objeto left_cabinet (457,433) [143,157] {
             tem Estado inicial fechada "left_cabinet/cabinet0.png"
-            tem Estado animado(3,1) aberta ["left_cabinet/cabinet1.png","left_cabinet/cabinet2.png","left_cabinet/cabinet3.png","left_cabinet/cabinet4.png","left_cabinet/cabinet5.png"]
-            tem Estado animado(3,1) fechar ["left_cabinet/cabinet4.png","left_cabinet/cabinet3.png","left_cabinet/cabinet2.png","left_cabinet/cabinet1.png","left_cabinet/cabinet0.png"]
+            tem Estado animado(3,1) aberta glob("left_cabinet/*.png")
+            tem Estado animado(3,1) fechar glob("left_cabinet/*.png").reverse()
         }
         contém Objeto rug (280,600) [110,60] {
             tem Estado inicial normal "rug/rug0.png"
