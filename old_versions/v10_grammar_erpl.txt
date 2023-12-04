@@ -1,7 +1,4 @@
-start         : atrbs? sala sons? eventos?
-
-atrbs         : atrb+
-atrb          : ARG "=" value
+start         : sala sons? eventos?
 
 sala          : "Sala" ID tamanho cenas
 cenas         : ("contém" cena)+
@@ -11,15 +8,15 @@ objeto        : "Objeto" ID (posicao tamanho)? "{" estados "}"
 
 estados       : ("tem" estado)+
 estado        : "Estado" INICIAL? ID filename (posicao tamanho)?
-              | "Estado" INICIAL? "animado" "(" numero "," numero ")" ID "[" filenames "]" (posicao tamanho)?  -> estado_animado_lista
-              | "Estado" INICIAL? "animado" "(" numero "," numero ")" ID "glob" "(" text ")" REVERSE? (posicao tamanho)? -> estado_animado_glob
+              | "Estado" INICIAL? "animado" "(" NUM "," NUM ")" ID "[" filenames "]" (posicao tamanho)?  -> estado_animado_lista
+              | "Estado" INICIAL? "animado" "(" NUM "," NUM ")" ID "glob" "(" text ")" REVERSE? (posicao tamanho)? -> estado_animado_glob
               | "Estado" INICIAL? ID "image_plus_txt" "(" filename "," filename "," text "," filename ("," color)? ")" (posicao tamanho)? -> estado_img_plus_text
 
 sons          : "#Sons:" som+
 som           : "Som" ID ":" filename
 
 eventos       : "#Eventos:" evento+
-evento        : "Evento" ID "(" numero? ")" ":" ("se"|"Se") precondicoes "," ("Então"|"então") poscondicoes "." -> evento_simples
+evento        : "Evento" ID "(" NUM? ")" ":" ("se"|"Se") precondicoes "," ("Então"|"então") poscondicoes "." -> evento_simples
               | "Evento" ID "(""-"")" ":" poscondicoes "." -> evento_ligado
 
 precondicoes  : precondicao                             -> precondicoes_simples
@@ -46,38 +43,23 @@ poscondicao   : ID "muda para" ID                                               
               | ID "é removid" ("o"|"a")                                                            -> remove
               | "toca" ID                                                                           -> toca_som
 
-posicao       : posicao_value
-              | ARG          -> posicao_arg
-posicao_value : "(" par ")"
-tamanho       : tamanho_value
-              | ARG          -> tamanho_arg
-tamanho_value : "[" par "]"
-par           : numero "," numero
+posicao       : "(" par ")"
+tamanho       : "[" par "]"
+par           : NUM "," NUM
 filenames     : filename ("," filename)*
 filename      : text
 text          : TEXTO
-              | ARGN -> text_argn
-              | ARG -> text_arg
-
-numero        : NUM
-              | ARG -> num_arg
-
-color         : "(" numero "," numero "," numero ")"
-
-value         : TEXTO                            -> value_text
-              | posicao_value                    -> value_posicao
-              | tamanho_value                    -> value_tamanho
-              | NUM                              -> value_num
-
+              | ARG -> text_args
+color         : "(" NUM "," NUM "," NUM ")"
 
 INICIAL : /inicial/
 REVERSE : /\.reverse\(\)/
 
+
 ID            : /[\w\-_]+/
 TEXTO         : /"[^"]*"/
 NUM           : /\d+/
-ARGN          : /\$\d+/
-ARG           : /\$[a-zA-Z]\w+/
+ARG           : /\$\d+/
 
 %import common.WS
 %ignore WS

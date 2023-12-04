@@ -40,22 +40,14 @@ class Interpreter(Interpreter):
         }
         self.__images = f"{os.path.dirname(__file__)}/../../assets/images/"
         self.__fonts = f"{os.path.dirname(__file__)}/../../assets/fonts/"
-        self.argsn = args
-        self.args = {}
-
+        self.args = args
 
     def start(self,start):
-        '''start : atrbs? sala sons? eventos?'''
+        '''start : sala sons? eventos?'''
         elems = start.children
-        i = 0
-        #visitar args
-        if elems[i].data == 'atrbs':
-            self.visit(elems[i])
-            i+=1
         #visitar mapa
-        self.escape_room['map'] = self.visit(elems[i])
-        i+=1
-        #visitar sounds
+        self.escape_room['map'] = self.visit(elems[0])
+        i = 1
         if len(elems) > i and elems[i].data == 'sons':
             self.escape_room['sounds'] = self.visit(elems[i])
             i+=1
@@ -63,50 +55,6 @@ class Interpreter(Interpreter):
         #visitar todos os eventos
             self.escape_room['events'] = self.visit(elems[i])
         return self.escape_room
-    
-    def atrbs(self,atrbs):
-        '''atrbs : atrb+'''
-        elems = atrbs.children
-        for elem in elems:
-            self.visit(elem)
-
-    def atrb(self,atrb):
-        '''atrb : ARG "=" value'''
-        elems = atrb.children
-        arg = elems[0].value[1:]
-        type,value = self.visit(elems[1])
-        self.args[arg] = {
-            'type' : type,
-            'value' : value
-        }
-
-    def value_text(self, value_text):
-        '''value : TEXT'''
-        elems = value_text.children
-        type = 'text'
-        value = elems[0].value[1:-1]
-        return (type,value)
-    
-    def value_posicao(self, value_posicao):
-        '''value : posicao'''
-        elems = value_posicao.children
-        type = 'position'
-        value = self.visit(elems[0])
-        return (type,value)
-    
-    def value_tamanho(self, value_tamanho):
-        '''value : tamanho'''
-        elems = value_tamanho.children
-        type = 'size'
-        value = self.visit(elems[0])
-        return (type,value)
-    
-    def value_num(self, value_num):
-        '''value : TEXT'''
-        elems = value_num.children
-        type = 'num'
-        value = int(elems[0].value)
-        return (type,value)
     
     def sala(self,sala):
         '''sala : "S""(" ID "," tamanho ")""{" cenas "}"'''
@@ -217,18 +165,18 @@ class Interpreter(Interpreter):
         return (id,result)
 
     def estado_animado_lista(self,estado):
-        '''estado : "Estado" INICIAL? "animado" "(" numero  "," numero ")" ID "[" filenames "]" (posicao tamanho)?'''
+        '''estado : "Estado" INICIAL? "animado" "(" NUM  "," NUM ")" ID "[" filenames "]" (posicao tamanho)?'''
         elems = estado.children
         result = {'initial' : False}
 
         i = 0
-        if hasattr(elems[i], 'type') and elems[i].type == 'INICIAL':
+        if elems[i].type == 'INICIAL':
             result['initial'] = True
             i+=1
         
-        result['time_sprite'] = self.visit(elems[i])
+        result['time_sprite'] = int(elems[i].value)
         i+=1
-        result['repeate'] = self.visit(elems[i])
+        result['repeate'] = int(elems[i].value)
         i+=1
         id = elems[i].value
         i+=1
@@ -241,18 +189,18 @@ class Interpreter(Interpreter):
         return (id,result)
     
     def estado_animado_glob(self,estado):
-        '''estado : "Estado" INICIAL? "animado" "(" numero "," numero ")" ID "glob" REVERSE? "(" text ")" (posicao tamanho)?'''
+        '''estado : "Estado" INICIAL? "animado" "(" NUM "," NUM ")" ID "glob" REVERSE? "(" text ")" (posicao tamanho)?'''
         elems = estado.children
         result = {'initial' : False}
 
         i = 0
-        if hasattr(elems[i], 'type') and elems[i].type == 'INICIAL':
+        if elems[i].type == 'INICIAL':
             result['initial'] = True
             i+=1
         
-        result['time_sprite'] = self.visit(elems[i])
+        result['time_sprite'] = int(elems[i].value)
         i+=1
-        result['repeate'] = self.visit(elems[i])
+        result['repeate'] = int(elems[i].value)
         i+=1
         id = elems[i].value
         i+=1
@@ -336,14 +284,14 @@ class Interpreter(Interpreter):
         return result
     
     def evento_simples(self,evento):
-        '''evento : ID "(" numero? ")" "{" precondicoes "}" "=>" "{" poscondicoes "}"'''
+        '''evento : ID "(" NUM? ")" "{" precondicoes "}" "=>" "{" poscondicoes "}"'''
         elems = evento.children
         id = elems[0].value
 
         result = {}
         i = 1
         if (len(elems) == 4):
-            result['repetivel'] = self.visit(elems[i])
+            result['repetivel'] = int(elems[i].value)
             i+=1
         else:
             result['repetivel'] = sys.maxsize
@@ -568,49 +516,17 @@ class Interpreter(Interpreter):
             }
     
     def posicao (self, posicao):
-        '''posicao : posicao_value'''
-        return self.visit(posicao.children[0])
-
-    def tamanho (self,tamanho):
-        '''tamanho : tamanho_value'''
-        return self.visit(tamanho.children[0])
-    
-    def posicao_arg (self, posicao):
-        '''posicao : ARG'''
-        elems = posicao.children
-        arg = elems[0].value[1:]
-        if arg in self.args:
-            if self.args[arg]['type'] == 'position':
-                return self.args[arg]['value']
-            else:
-                raise Exception(f"Tipo de {arg} errado!\n {self.args[arg]['type']} != Position")
-        else:
-            raise Exception(f"Argumento {arg} não definido")
-
-    def tamanho_arg (self,tamanho):
-        '''tamanho : ARG'''
-        elems = tamanho.children
-        arg = elems[0].value[1:]
-        if arg in self.args:
-            if self.args[arg]['type'] == 'size':
-                return self.args[arg]['value']
-            else:
-                raise Exception(f"Tipo de {arg} errado!\n {self.args[arg]['type']} != Size")
-        else:
-            raise Exception(f"Argumento {arg} não definido")
-    
-    def posicao_value (self, posicao):
         '''posicao : "(" par ")"'''
         return self.visit(posicao.children[0])
 
-    def tamanho_value (self,tamanho):
+    def tamanho (self,tamanho):
         '''tamanho : "[" par "]"'''
         return self.visit(tamanho.children[0])
 
     def par(self,par):
-        '''par : numero "," numero'''
+        '''par : NUM "," NUM'''
         elems = par.children
-        return (self.visit(elems[0]),self.visit(elems[1]))
+        return (int(elems[0].value),int(elems[1].value))
     
     #def filenames (self, filenames):
     #    '''filenames : filename ("," filename)*'''
@@ -630,49 +546,20 @@ class Interpreter(Interpreter):
         elems = text.children
         return elems[0].value[1:-1]
     
-    def numero(self,numero):
-        '''numero : NUM'''
-        elems = numero.children
-        return int(elems[0].value)
-    
-    def num_arg(self,num_arg):
-        '''numero : ARG'''
-        elems = num_arg.children
-        arg = elems[0].value[1:]
-        if arg in self.args:
-            if self.args[arg]['type'] == 'num':
-                return self.args[arg]['value']
-            else:
-                raise Exception(f"Tipo de {arg} errado!\n {self.args[arg]['type']} != Num")
-        else:
-            raise Exception(f"Argumento {arg} não definido")
-
-    def text_argn(self,text):
-        '''text : ARGN'''
+    def text_args(self,text):
+        '''text : ARG'''
         elems = text.children
         arg = elems[0].value[1:]
         arg = int(arg)
         try:
-            return self.argsn[arg]
+            return self.args[arg]
         except:
             raise Exception(f"Não foi provido um arg: {arg}")
     
-    def text_arg(self,text):
-        '''text : ARG'''
-        elems = text.children
-        arg = elems[0].value[1:]
-        if arg in self.args:
-            if self.args[arg]['type'] == 'text':
-                return self.args[arg]['value']
-            else:
-                raise Exception(f"Tipo de {arg} errado!\n {self.args[arg]['type']} != Text")
-        else:
-            raise Exception(f"Argumento {arg} não definido")
-
     def color (self, color):
-        '''color : "(" numero "," numero "," numero ")"'''
+        '''color : "(" NUM "," NUM "," NUM ")"'''
         elems = color.children
-        return (self.visit(elems[0]),self.visit(elems[1]),self.visit(elems[2]))
+        return (int(elems[0].value),int(elems[1].value),int(elems[2].value))
 
 
 def main():

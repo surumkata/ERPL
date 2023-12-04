@@ -1,1 +1,0 @@
-{'initial': False, 'position': (300, 500), 'size': (200, 200)}
