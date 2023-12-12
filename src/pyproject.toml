@@ -1,0 +1,18 @@
+[build-system]
+build-backend = "flit_core.buildapi"
+
+[project]
+name = "erpl"
+authors = [{name = "surumkata", email = "a93277@uminho.pt"}]
+license = {file = "LICENSE"}
+classifiers = ["License :: OSI Approved :: MIT License"]
+dynamic = ["version", "description"]
+dependencies = ["imageplustxt","lark","argparse","pygame","Pillow"]
+readme = "readme.md"
+
+[project.scripts]
+
+erpl = "erpl:erpl"
+erparse = "erpl:erparse"
+erengine = "erpl:erengine"
+erpe = "erpl:erpe"

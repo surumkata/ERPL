@@ -4,7 +4,7 @@ $posicao = (1000,485)
 $num = 100
 $codigo = "932"
 
-Sala sala [1300,700]
+Sala sala [1300,700] 
     contém Cena cena {
         tem Estado inicial background $room
         contém Objeto porta (600,342) $tamanho {
@@ -22,20 +22,20 @@ Sala sala [1300,700]
         contém Objeto chave (1020,520) [50,25] {
             tem Estado normal "key.png"
             tem Estado ativa "active_key.png"
-        }
+        }   
         contém Objeto nota {
             tem Estado inicial normal "nota.png" (400,600) [30,30]
         }
         contém Objeto nota_lupa (300,500) [200,200] {
             tem Estado visivel image_plus_txt("nota.png","nota_nova.png",$codigo,"arial.ttf",(255,255,255)) 
         }
-    }
-    contém Cena cena2 {
-        tem Estado inicial background "room.png"
         contém Objeto lupa (200,500) [40,40] {
             tem Estado inicial normal "lupa.png"
             tem Estado ativa "active_lupa.png"
         }
+    }
+    contém Cena cena2 {
+        tem Estado inicial background "room.png"
         contém Objeto porta3 (600,342) [225,300] {
             tem Estado inicial aberta "open_door.png"
         }
@@ -86,13 +86,15 @@ Evento mensagem_trancada():
 Se clique porta e porta está fechada e não chave está em uso,
 então mostra mensagem "porta trancada! procura uma chave!" em (600,385) e toca porta-locked.
 
-Evento lupa_inventario(1):
+Evento arrasta_lupa():
 Se clique lupa,
-Então lupa vai para o inventário.
+Então arrasta lupa, se deixar em cima de nota faz aumentar_nota e se não faz move_lupa. 
 
-Evento aumentar_nota():
-Se clique nota e lupa está em uso,
-então nota_lupa muda para visivel.
+Evento aumentar_nota(-):
+nota_lupa muda para visivel.
+
+Evento move_lupa(-):
+lupa muda posição para (200,500).
 
 Evento desaparecer_nota_lupa():
 Se clique não nota_lupa e nota_lupa está visivel,

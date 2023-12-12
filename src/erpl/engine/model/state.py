@@ -1,5 +1,5 @@
 import pygame
-from model.utils import Position, Size
+from .utils import Position, Size
 from PIL import Image
 
 """CLASSE DE UM ESTADO"""

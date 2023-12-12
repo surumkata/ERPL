@@ -2,15 +2,15 @@
 
 import pygame
 import sys
-from model.load import load
-from model.utils import WIDTH, HEIGHT, BLACK, WHITE, GREEN, RED, BLUE, current_folder, Position, Size
-from model.inventory import Inventory
+from .model.load import load
+from .model.utils import WIDTH, HEIGHT, BLACK, WHITE, GREEN, RED, BLUE, current_folder, Position, Size
+from .model.inventory import Inventory
 import math
 
-from model.escape_room import EscapeRoom
+from .model.escape_room import EscapeRoom
 import argparse
 
-def parse_arguments():
+def pe_parse_arguments():
     '''Define and parse arguments using argparse'''
     parser = argparse.ArgumentParser(description='Engine')
     parser.add_argument('--input','-i'             ,type=str, nargs=1                                , help='Input file')
@@ -33,7 +33,7 @@ def distance(x1,y1,x2,y2):
 
 
 
-def play_game(room, inventory):
+def play_game(screen,room, inventory):
     # Loop principal do jogo
     clock = pygame.time.Clock()
     show_info = True
@@ -279,9 +279,7 @@ def play_game(room, inventory):
     pygame.quit()
     sys.exit()
 
-if __name__ == '__main__':
-    args = parse_arguments()
-
+def init_pe(args):
     # Inicialização do Pygame
     pygame.init()
 
@@ -296,5 +294,10 @@ if __name__ == '__main__':
 
     # Inicializar o inventário
     inventory = Inventory()
-    play_game(room, inventory)
+    play_game(screen,room, inventory)
+
+if __name__ == '__main__':
+    args = pe_parse_arguments()
+    init_pe(args)
+    
 

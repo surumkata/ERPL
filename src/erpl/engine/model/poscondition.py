@@ -1,8 +1,8 @@
 from enum import Enum
 from abc import ABC, abstractmethod
-from model.utils import debug, BalloonMessage, Position
-from model.precondition import EventPreConditionClickItem, EventPreConditionActiveWhenItemInUse, EventPreConditionActiveWhenItemNotInUse
-from model.precondition_tree import PreConditionTree, PreConditionOperatorAnd, PreConditionVar
+from .utils import debug, BalloonMessage, Position
+from .precondition import EventPreConditionClickItem, EventPreConditionActiveWhenItemInUse, EventPreConditionActiveWhenItemNotInUse
+from .precondition_tree import PreConditionTree, PreConditionOperatorAnd, PreConditionVar
 import sys
 
 #"""TIPOS DE then EVENTOS"""
@@ -53,7 +53,7 @@ class EventPosConditionChangePosition(EventPosCondition):
 
     def do(self,room,inventory):
         room.objects[self.object_id].change_position(self.position)
-        debug("EVENT_CHANGE_POSITION: Mudando "+object_id +" para a posição ("+str(self.position.x)+","+str(self.position.y)+").")
+        debug("EVENT_CHANGE_POSITION: Mudando "+self.object_id +" para a posição ("+str(self.position.x)+","+str(self.position.y)+").")
 
 #CHANGE_SIZE = 3
 class EventPosConditionChangeSize(EventPosCondition):
@@ -160,3 +160,18 @@ class EventPosConditionPlaySound(EventPosCondition):
     def do(self,room,inventory):
         room.sounds[self.sound_id].play()
         debug("EVENT_PLAY_SOUND: Tocando som "+self.sound_id+".")
+
+class EventPosConditionMoveObject(EventPosCondition):
+    def __init__(self,object_id, object_trigger, sucess_event, fail_event):
+        self.object_id = object_id
+        self.object_trigger = object_trigger
+        self.sucess_event = sucess_event
+        self.fail_event = fail_event
+
+    def do(self,room,inventory):
+        room.er_state.motion_activated = True
+        room.er_state.object_motion = self.object_id
+        room.er_state.trigger_motion = self.object_trigger
+        room.er_state.motion_sucess_event = self.sucess_event
+        room.er_state.motion_fail_event = self.fail_event
+        debug("EVENT_POSCONDITION_MOVE_OBJECT: Arrasta objeto "+self.object_id+".")

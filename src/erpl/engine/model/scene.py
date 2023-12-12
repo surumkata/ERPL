@@ -1,4 +1,4 @@
-from model.state import State
+from .state import State
 
 """CLASSE DE CENA"""
 class Scene:

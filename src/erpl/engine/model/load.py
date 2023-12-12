@@ -1,14 +1,14 @@
 import json
-from model.escape_room import EscapeRoom
-from model.scene import Scene
-from model.object import Object
-from model.state import State
-from model.utils import __sounds, __images, Position, Size
-from model.precondition_tree import PreConditionOperatorAnd, PreConditionOperatorNot, PreConditionOperatorOr, PreConditionTree, PreConditionVar
-from model.event import Event
-from model.precondition import EventPreConditionClickAfterEvent, EventPreConditionActiveWhenState, EventPreConditionActiveWhenItemInUse , EventPreConditionActiveWhenItemNotInUse, EventPreConditionActiveWhenNotState, EventPreConditionClick, EventPreConditionClickNot
-from model.poscondition import EventPosConditionPlaySound, EventPosConditionChangeScene, EventPosConditionChangePosition, EventPosConditionChangeSize, EventPosConditionChangeState, EventPosConditionEndGame,EventPosConditionDeleteItem, EventPosConditionPutInventory,EventPosConditionShowMessage,EventPosConditionAskCode
-from model.sound import Sound
+from .escape_room import EscapeRoom
+from .scene import Scene
+from .object import Object
+from .state import State
+from .utils import __sounds, __images, Position, Size
+from .precondition_tree import PreConditionOperatorAnd, PreConditionOperatorNot, PreConditionOperatorOr, PreConditionTree, PreConditionVar
+from .event import Event
+from .precondition import EventPreConditionClickAfterEvent, EventPreConditionActiveWhenState, EventPreConditionActiveWhenItemInUse , EventPreConditionActiveWhenItemNotInUse, EventPreConditionActiveWhenNotState, EventPreConditionClick, EventPreConditionClickNot
+from .poscondition import EventPosConditionMoveObject, EventPosConditionPlaySound, EventPosConditionChangeScene, EventPosConditionChangePosition, EventPosConditionChangeSize, EventPosConditionChangeState, EventPosConditionEndGame,EventPosConditionDeleteItem, EventPosConditionPutInventory,EventPosConditionShowMessage,EventPosConditionAskCode
+from .sound import Sound
 import sys
 
 def load_precondition(precondition):
@@ -111,6 +111,13 @@ def load_events(room, data_events):
             elif type == 'PlaySound':
                 sound_id = data_action['sound']
                 event_poscondition = EventPosConditionPlaySound(sound_id)
+            elif type == 'MoveObject':
+                object_id = data_action['object']
+                object_trigger = data_action['object_trigger']
+                sucess_event = data_action['sucess_event']
+                fail_event = data_action['fail_event']
+                event_poscondition = EventPosConditionMoveObject(object_id,object_trigger,sucess_event,fail_event)
+
             pos_conditions.append(event_poscondition)
 
         linked = 'linked' in data_event and data_event['linked']

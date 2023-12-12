@@ -16,6 +16,8 @@ class EscapeRoomState:
         self.input_code = None
         self.input_box = pygame.Rect(100, 100, 140, 32)
         self.input_text = ""
+        self.motion_activated = False
+        self.last_motion = None
 
     def first_scene(self, scene_id : str):
         if self.current_scene == None:

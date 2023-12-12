@@ -1,9 +1,9 @@
-from model.er_state import EscapeRoomState
-from model.object import Object
-from model.event import Event
-from model.utils import Position, Size
-from model.scene import Scene
-from model.sound import Sound
+from .er_state import EscapeRoomState
+from .object import Object
+from .event import Event
+from .utils import Position, Size
+from .scene import Scene
+from .sound import Sound
 
 """CLASSE DE UMA ESCAPE ROOM"""
 class EscapeRoom:

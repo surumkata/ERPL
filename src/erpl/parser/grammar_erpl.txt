@@ -1,4 +1,4 @@
-start         : atrbs? sala sons? eventos?
+start         : atrbs? sala sons? eventos? 
 
 atrbs         : atrb+
 atrb          : ARG "=" value
@@ -40,6 +40,7 @@ poscondicao   : ID "muda para" ID                                               
               | "fim de jogo"                                                                       -> fim_de_jogo
               | "mostra mensagem" text "em" posicao                                                -> mensagem   
               | "pede código" text "com mensagem" text "em" posicao ", se acertar faz" ID "e se errar faz" ID  -> pede_codigo
+              | "arrasta" ID ", se deixar em cima de" ID "faz" ID "e se não faz" ID                     -> arrasta_objeto
               | ID "muda tamanho para" tamanho                                                      -> muda_tamanho
               | ID "muda posição para" posicao                                                      -> muda_posicao
               | "muda para cena" ID                                                                 -> muda_cena

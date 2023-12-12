@@ -1,6 +1,6 @@
 
-from model.utils import Position, Size
-from model.state import State
+from .utils import Position, Size
+from .state import State
 
 """CLASSE DE UM OBJETO"""
 class Object:

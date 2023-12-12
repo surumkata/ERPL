@@ -18,4 +18,4 @@ if [ "$#" -gt 0 ]; then
     args_string="-args $@"
 fi
 
-./../src/parser/parser.py -gm1 -i "$input_file" $args_string | ./../src/engine/game.py
+./../src/erpl/parser/parser.py -gm1 -i "$input_file" $args_string | ./../src/erpl/engine/game.py

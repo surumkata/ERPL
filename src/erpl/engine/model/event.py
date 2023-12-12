@@ -1,5 +1,5 @@
-from model.precondition_tree import PreConditionTree
-from model.poscondition import EventPosCondition
+from .precondition_tree import PreConditionTree
+from .poscondition import EventPosCondition
 
 class Event:
     def __init__(self, id : str, pre_conditions : PreConditionTree, pos_conditions : [EventPosCondition], repeatable : int, linked : bool = False):

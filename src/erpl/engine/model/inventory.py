@@ -1,7 +1,7 @@
 import pygame
 
-from model.utils import Position, Size, RED, GREEN
-from model.state import State
+from .utils import Position, Size, RED, GREEN
+from .state import State
 
 
 class Item:

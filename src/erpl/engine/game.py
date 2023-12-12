@@ -2,14 +2,14 @@
 
 import pygame
 import sys
-from model.load import load
-from model.utils import WIDTH, HEIGHT, BLACK, WHITE, GREEN, RED, BLUE, current_folder
-from model.inventory import Inventory
+from .model.load import load
+from .model.utils import WIDTH, HEIGHT, BLACK, WHITE, GREEN, RED, BLUE, current_folder, Position
+from .model.inventory import Inventory
 
-from model.escape_room import EscapeRoom
+from .model.escape_room import EscapeRoom
 import argparse
 
-def parse_arguments():
+def game_parse_arguments():
     '''Define and parse arguments using argparse'''
     parser = argparse.ArgumentParser(description='Engine')
     parser.add_argument('--input','-i'             ,type=str, nargs=1                                , help='Input file')
@@ -28,11 +28,9 @@ def try_do_events(room : EscapeRoom, inventory : Inventory):
             continue
         if event.pre_conditions.test_tree(room, inventory):
             do_event(event=event, room=room, inventory=inventory)
-        
 
 
-
-def play_game(room, inventory):
+def play_game(screen,room, inventory):
     # Loop principal do jogo
     clock = pygame.time.Clock()
     show_info = False
@@ -73,6 +71,21 @@ def play_game(room, inventory):
                         # Aumente o volume (não acima de 1)
                         volume = min(1, volume + 0.1)
                         pygame.mixer.music.set_volume(volume)
+            elif pygame_event.type == pygame.MOUSEMOTION:
+                if room.er_state.motion_activated:
+                    room.er_state.last_motion = Position(pygame_event.pos[0],pygame_event.pos[1])
+                    object = room.objects[room.er_state.object_motion]
+                    object.change_position(room.er_state.last_motion)
+            elif pygame_event.type == pygame.MOUSEBUTTONUP:
+                if room.er_state.motion_activated and room.er_state.last_motion is not None:
+                    trigger_object = room.objects[room.er_state.trigger_motion]
+                    if(trigger_object.have_clicked(room.er_state.last_motion.x,room.er_state.last_motion.y)):
+                        do_event(room.events[room.er_state.motion_sucess_event],room,inventory)
+                    else:
+                        do_event(room.events[room.er_state.motion_fail_event],room,inventory)
+                room.er_state.motion_activated = False
+                room.er_state.last_motion = None
+
 
         try_do_events(room,inventory)
         room.er_state.click_events = []
@@ -135,9 +148,7 @@ def play_game(room, inventory):
     pygame.quit()
     sys.exit()
 
-if __name__ == '__main__':
-    args = parse_arguments()
-
+def init_game(args = None):
     # Inicialização do Pygame
     pygame.init()
 
@@ -145,7 +156,7 @@ if __name__ == '__main__':
     # Configurar o mixer
     pygame.mixer.init()
     # Carregue a música de fundo
-    filename = f'{current_folder}/../../../assets/sounds/soundtrack.mp3'
+    filename = f'{current_folder}/../../../../assets/sounds/soundtrack.mp3'
     pygame.mixer.music.load(filename)
     pygame.mixer.music.play(-1)
 
@@ -153,12 +164,18 @@ if __name__ == '__main__':
     pygame.display.set_caption("Escape Room 2D")
 
     # Loading do modelo
-    if args.input:
+    if args and args.input:
         room = load(args.input[0])
     else:
         room = load()
 
     # Inicializar o inventário
     inventory = Inventory()
-    play_game(room, inventory)
+
+    # Play Game
+    play_game(screen,room, inventory)
+
+if __name__ == '__main__':
+    args = game_parse_arguments()
+    init_game(args)
 

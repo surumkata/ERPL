@@ -16,7 +16,7 @@ def sorted_alphanum(l):
     alphanum_key = lambda key: [ convert(c) for c in re.split('([0-9]+)', key) ] 
     return sorted(l, key = alphanum_key)
 
-def parse_arguments():
+def parser_parse_arguments():
     '''Define and parse arguments using argparse'''
     parser = argparse.ArgumentParser(description='ERPL Parser')
     parser.add_argument('--output','-o'            ,type=str, nargs=1,required=False                                , help='Output file')
@@ -38,13 +38,12 @@ class Interpreter(Interpreter):
             'events' : {},
             'sounds' : {}
         }
-        self.__images = f"{os.path.dirname(__file__)}/../../assets/images/"
-        self.__fonts = f"{os.path.dirname(__file__)}/../../assets/fonts/"
+        self.__images = f"{os.path.dirname(__file__)}/../../../assets/images/"
+        self.__fonts = f"{os.path.dirname(__file__)}/../../../assets/fonts/"
         self.argsn = args
         self.args = {}
 
-
-    def start(self,start):
+    def start(self,start : str):
         '''start : atrbs? sala sons? eventos?'''
         elems = start.children
         i = 0
@@ -514,7 +513,7 @@ class Interpreter(Interpreter):
             }
 
     def pede_codigo(self,poscondicao):
-        '''poscondicao : "pede_código" "(" text "," text "," posicao "," ID "," ID ")" -> pede_codigo'''
+        '''poscondicao : "pede_código" "(" text "," text "," posicao "," ID "," ID ")"'''
         elems = poscondicao.children
         return {
             'type' : 'AskCode',
@@ -524,6 +523,18 @@ class Interpreter(Interpreter):
             'sucess_event' : elems[3].value,
             'fail_event' : elems[4].value
             }
+    
+    def arrasta_objeto(self,poscondicao):
+        '''poscondicao : "arrasta" ID ", se deixar em cima de" ID "faz" ID "se não faz" ID'''
+        elems = poscondicao.children
+        return {
+            'type' : 'MoveObject',
+            'object' : elems[0].value,
+            'object_trigger' : elems[1].value,
+            'sucess_event' : elems[2].value,
+            'fail_event' : elems[3].value
+            }
+
 
     def muda_tamanho(self,poscondicao):
         '''poscondicao : ID ">>" tamanho '''
@@ -675,16 +686,15 @@ class Interpreter(Interpreter):
         return (self.visit(elems[0]),self.visit(elems[1]),self.visit(elems[2]))
 
 
-def main():
+def parse(args):
     current_folder = os.path.dirname(__file__)
-    args = parse_arguments()
     if args.grammar_erpl:
         grammar = open(f"{current_folder}/grammar_erpl.txt","r")
     elif args.grammar_erplpro:
         grammar = open(f"{current_folder}/grammar_erplpro.txt","r")
     else:
         raise Exception("Nenhuma gramática escolhida! Use -gm1 or -gm2")
-    
+
     if not args.args:
         args.args = []
 
@@ -708,6 +718,11 @@ def main():
             json.dump(data, outfile, indent = 3)
     else:
         print(json.dumps(data))
+
+def main():
+    args = parser_parse_arguments()
+    parse(args)
+    
 
 if __name__ == '__main__':
     main()
