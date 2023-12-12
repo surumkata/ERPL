@@ -14,8 +14,10 @@ def erpl():
     args = parser_parse_arguments()
     if args.output:
         print("ERROR!")
+    args.output = "tmp.json"
     parse(args)
-    init_game()
+    args.input = "tmp.json"
+    init_game(args)
 
 def erparse():
     args = parser_parse_arguments()
@@ -26,5 +28,10 @@ def erengine():
     init_game(args)
 
 def erpe():
-    args = pe_parse_arguments()
+    args = parser_parse_arguments()
+    if args.output:
+        print("ERROR!")
+    args.output = "tmp.json"
+    parse(args)
+    args.input = "tmp.json"
     init_pe(args)

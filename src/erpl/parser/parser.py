@@ -38,8 +38,8 @@ class Interpreter(Interpreter):
             'events' : {},
             'sounds' : {}
         }
-        self.__images = f"{os.path.dirname(__file__)}/../../../assets/images/"
-        self.__fonts = f"{os.path.dirname(__file__)}/../../../assets/fonts/"
+        self.__images = f"{os.path.dirname(__file__)}/../assets/images/"
+        self.__fonts = f"{os.path.dirname(__file__)}/../assets/fonts/"
         self.argsn = args
         self.args = {}
 

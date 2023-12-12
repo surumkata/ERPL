@@ -1,5 +1,10 @@
 #!/usr/bin/python3
 
+import os
+
+# Configuração para ocultar a mensagem de boas-vindas do Pygame
+os.environ["PYGAME_HIDE_SUPPORT_PROMPT"] = "1"
+
 import pygame
 import sys
 from .model.load import load

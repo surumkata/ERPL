@@ -1,0 +1,592 @@
+{
+   "map": {
+      "sala": {
+         "size": [
+            1300,
+            700
+         ],
+         "scenes": {
+            "cena": {
+               "states": {
+                  "background": {
+                     "initial": true,
+                     "filenames": [
+                        "room.png"
+                     ]
+                  }
+               },
+               "objects": {
+                  "porta": {
+                     "position": [
+                        600,
+                        342
+                     ],
+                     "size": [
+                        225,
+                        300
+                     ],
+                     "states": {
+                        "fechada": {
+                           "initial": true,
+                           "filenames": [
+                              "door.png"
+                           ]
+                        },
+                        "aberta": {
+                           "initial": false,
+                           "time_sprite": 3,
+                           "repeate": 1,
+                           "filenames": [
+                              "door/door1.png",
+                              "door/door2.png",
+                              "door/door3.png",
+                              "door/door4.png",
+                              "door/door5.png"
+                           ]
+                        }
+                     }
+                  },
+                  "porta2": {
+                     "position": [
+                        0,
+                        342
+                     ],
+                     "size": [
+                        225,
+                        300
+                     ],
+                     "states": {
+                        "fechada": {
+                           "initial": true,
+                           "filenames": [
+                              "door/door0.png"
+                           ]
+                        },
+                        "aberta": {
+                           "initial": false,
+                           "time_sprite": 3,
+                           "repeate": 1,
+                           "filenames": [
+                              "doort/door8.png",
+                              "doort/door9.png",
+                              "doort/door10.png",
+                              "doort/door11.png",
+                              "doort/door12.png",
+                              "doort/door13.png"
+                           ]
+                        }
+                     }
+                  },
+                  "cofre": {
+                     "position": [
+                        1000,
+                        485
+                     ],
+                     "size": [
+                        172,
+                        100
+                     ],
+                     "states": {
+                        "fechado": {
+                           "initial": true,
+                           "filenames": [
+                              "cofre.png"
+                           ]
+                        },
+                        "aberto": {
+                           "initial": false,
+                           "filenames": [
+                              "open_cofre.png"
+                           ]
+                        }
+                     }
+                  },
+                  "chave": {
+                     "position": [
+                        1020,
+                        520
+                     ],
+                     "size": [
+                        50,
+                        25
+                     ],
+                     "states": {
+                        "normal": {
+                           "initial": false,
+                           "filenames": [
+                              "key.png"
+                           ]
+                        },
+                        "ativa": {
+                           "initial": false,
+                           "filenames": [
+                              "active_key.png"
+                           ]
+                        }
+                     }
+                  },
+                  "nota": {
+                     "states": {
+                        "normal": {
+                           "initial": true,
+                           "filenames": [
+                              "nota.png"
+                           ],
+                           "position": [
+                              400,
+                              600
+                           ],
+                           "size": [
+                              30,
+                              30
+                           ]
+                        }
+                     }
+                  },
+                  "nota_lupa": {
+                     "position": [
+                        300,
+                        500
+                     ],
+                     "size": [
+                        200,
+                        200
+                     ],
+                     "states": {
+                        "visivel": {
+                           "initial": false,
+                           "filenames": [
+                              "nota_nova.png"
+                           ]
+                        }
+                     }
+                  },
+                  "lupa": {
+                     "position": [
+                        200,
+                        500
+                     ],
+                     "size": [
+                        40,
+                        40
+                     ],
+                     "states": {
+                        "normal": {
+                           "initial": true,
+                           "filenames": [
+                              "lupa.png"
+                           ]
+                        },
+                        "ativa": {
+                           "initial": false,
+                           "filenames": [
+                              "active_lupa.png"
+                           ]
+                        }
+                     }
+                  }
+               }
+            },
+            "cena2": {
+               "states": {
+                  "background": {
+                     "initial": true,
+                     "filenames": [
+                        "room.png"
+                     ]
+                  }
+               },
+               "objects": {
+                  "porta3": {
+                     "position": [
+                        600,
+                        342
+                     ],
+                     "size": [
+                        225,
+                        300
+                     ],
+                     "states": {
+                        "aberta": {
+                           "initial": true,
+                           "filenames": [
+                              "open_door.png"
+                           ]
+                        }
+                     }
+                  }
+               }
+            }
+         }
+      }
+   },
+   "events": {
+      "abrir_porta": {
+         "repetivel": 1,
+         "precondicoes": {
+            "operator": "e",
+            "left": {
+               "operator": "e",
+               "left": {
+                  "variavel": {
+                     "type": "Click",
+                     "object": "porta"
+                  }
+               },
+               "right": {
+                  "variavel": {
+                     "type": "WhenStateObject",
+                     "object": "porta",
+                     "state": "fechada"
+                  }
+               }
+            },
+            "right": {
+               "variavel": {
+                  "type": "ItemActived",
+                  "item": "chave"
+               }
+            }
+         },
+         "poscondicoes": [
+            {
+               "type": "ChangeState",
+               "object": "porta",
+               "state": "aberta"
+            },
+            {
+               "type": "DeleteItem",
+               "item": "chave"
+            },
+            {
+               "type": "PlaySound",
+               "sound": "porta_a_abrir"
+            }
+         ],
+         "linked": false
+      },
+      "abrir_porta2": {
+         "repetivel": 1,
+         "precondicoes": {
+            "operator": "e",
+            "left": {
+               "variavel": {
+                  "type": "Click",
+                  "object": "porta2"
+               }
+            },
+            "right": {
+               "variavel": {
+                  "type": "WhenStateObject",
+                  "object": "porta2",
+                  "state": "fechada"
+               }
+            }
+         },
+         "poscondicoes": [
+            {
+               "type": "ChangeState",
+               "object": "porta2",
+               "state": "aberta"
+            },
+            {
+               "type": "PlaySound",
+               "sound": "porta_a_abrir"
+            }
+         ],
+         "linked": false
+      },
+      "muda_cena": {
+         "repetivel": 9223372036854775807,
+         "precondicoes": {
+            "operator": "e",
+            "left": {
+               "variavel": {
+                  "type": "Click",
+                  "object": "porta2"
+               }
+            },
+            "right": {
+               "variavel": {
+                  "type": "WhenStateObject",
+                  "object": "porta2",
+                  "state": "aberta"
+               }
+            }
+         },
+         "poscondicoes": [
+            {
+               "type": "ChangeScene",
+               "scene": "cena2"
+            }
+         ],
+         "linked": false
+      },
+      "muda_cena2": {
+         "repetivel": 9223372036854775807,
+         "precondicoes": {
+            "operator": "e",
+            "left": {
+               "variavel": {
+                  "type": "Click",
+                  "object": "porta3"
+               }
+            },
+            "right": {
+               "variavel": {
+                  "type": "WhenStateObject",
+                  "object": "porta3",
+                  "state": "aberta"
+               }
+            }
+         },
+         "poscondicoes": [
+            {
+               "type": "ChangeScene",
+               "scene": "cena"
+            }
+         ],
+         "linked": false
+      },
+      "fim": {
+         "repetivel": 1,
+         "precondicoes": {
+            "operator": "e",
+            "left": {
+               "variavel": {
+                  "type": "Click",
+                  "object": "porta"
+               }
+            },
+            "right": {
+               "variavel": {
+                  "type": "WhenStateObject",
+                  "object": "porta",
+                  "state": "aberta"
+               }
+            }
+         },
+         "poscondicoes": [
+            {
+               "type": "EndGame"
+            }
+         ],
+         "linked": false
+      },
+      "chave_inventario": {
+         "repetivel": 1,
+         "precondicoes": {
+            "operator": "e",
+            "left": {
+               "variavel": {
+                  "type": "Click",
+                  "object": "chave"
+               }
+            },
+            "right": {
+               "variavel": {
+                  "type": "WhenStateObject",
+                  "object": "cofre",
+                  "state": "aberto"
+               }
+            }
+         },
+         "poscondicoes": [
+            {
+               "type": "PutInInventory",
+               "object": "chave"
+            }
+         ],
+         "linked": false
+      },
+      "tentar_abrir_cofre": {
+         "repetivel": 9223372036854775807,
+         "precondicoes": {
+            "operator": "e",
+            "left": {
+               "variavel": {
+                  "type": "Click",
+                  "object": "cofre"
+               }
+            },
+            "right": {
+               "variavel": {
+                  "type": "WhenStateObject",
+                  "object": "cofre",
+                  "state": "fechado"
+               }
+            }
+         },
+         "poscondicoes": [
+            {
+               "type": "AskCode",
+               "code": "932",
+               "message": "Qual \u00e9 o c\u00f3digo do cofre?",
+               "position": [
+                  1000,
+                  485
+               ],
+               "sucess_event": "abrir_cofre",
+               "fail_event": "mostrar_erro"
+            }
+         ],
+         "linked": false
+      },
+      "abrir_cofre": {
+         "precondicoes": {},
+         "poscondicoes": [
+            {
+               "type": "ChangeState",
+               "object": "cofre",
+               "state": "aberto"
+            },
+            {
+               "type": "ChangeState",
+               "object": "chave",
+               "state": "normal"
+            }
+         ],
+         "repetivel": 9223372036854775807,
+         "linked": true
+      },
+      "mostrar_erro": {
+         "precondicoes": {},
+         "poscondicoes": [
+            {
+               "type": "ShowMessage",
+               "message": "C\u00f3digo errado!",
+               "position": [
+                  1000,
+                  485
+               ]
+            }
+         ],
+         "repetivel": 9223372036854775807,
+         "linked": true
+      },
+      "mensagem_trancada": {
+         "repetivel": 9223372036854775807,
+         "precondicoes": {
+            "operator": "e",
+            "left": {
+               "operator": "e",
+               "left": {
+                  "variavel": {
+                     "type": "Click",
+                     "object": "porta"
+                  }
+               },
+               "right": {
+                  "variavel": {
+                     "type": "WhenStateObject",
+                     "object": "porta",
+                     "state": "fechada"
+                  }
+               }
+            },
+            "right": {
+               "operator": "nao",
+               "left": {
+                  "variavel": {
+                     "type": "ItemActived",
+                     "item": "chave"
+                  }
+               },
+               "right": null
+            }
+         },
+         "poscondicoes": [
+            {
+               "type": "ShowMessage",
+               "message": "porta trancada! procura uma chave!",
+               "position": [
+                  600,
+                  385
+               ]
+            },
+            {
+               "type": "PlaySound",
+               "sound": "porta-locked"
+            }
+         ],
+         "linked": false
+      },
+      "arrasta_lupa": {
+         "repetivel": 9223372036854775807,
+         "precondicoes": {
+            "variavel": {
+               "type": "Click",
+               "object": "lupa"
+            }
+         },
+         "poscondicoes": [
+            {
+               "type": "MoveObject",
+               "object": "lupa",
+               "object_trigger": "nota",
+               "sucess_event": "aumentar_nota",
+               "fail_event": "move_lupa"
+            }
+         ],
+         "linked": false
+      },
+      "aumentar_nota": {
+         "precondicoes": {},
+         "poscondicoes": [
+            {
+               "type": "ChangeState",
+               "object": "nota_lupa",
+               "state": "visivel"
+            }
+         ],
+         "repetivel": 9223372036854775807,
+         "linked": true
+      },
+      "move_lupa": {
+         "precondicoes": {},
+         "poscondicoes": [
+            {
+               "type": "ChangePosition",
+               "object": "lupa",
+               "position": [
+                  200,
+                  500
+               ]
+            }
+         ],
+         "repetivel": 9223372036854775807,
+         "linked": true
+      },
+      "desaparecer_nota_lupa": {
+         "repetivel": 9223372036854775807,
+         "precondicoes": {
+            "operator": "e",
+            "left": {
+               "variavel": {
+                  "type": "ClickNot",
+                  "object": "nota_lupa"
+               }
+            },
+            "right": {
+               "variavel": {
+                  "type": "WhenStateObject",
+                  "object": "nota_lupa",
+                  "state": "visivel"
+               }
+            }
+         },
+         "poscondicoes": [
+            {
+               "type": "ChangeState",
+               "object": "nota_lupa",
+               "state": "null"
+            }
+         ],
+         "linked": false
+      }
+   },
+   "sounds": {
+      "porta_a_abrir": "door-1-open.mp3",
+      "porta-locked": "door-locked.mp3"
+   }
+}
