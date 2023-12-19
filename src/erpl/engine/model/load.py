@@ -127,7 +127,7 @@ def load_events(room, data_events):
 def load_room(room_id,data_room):
     (size_x,size_y) = data_room['size']
     scenes = data_room['scenes']
-    room = EscapeRoom(room_id)
+    room = EscapeRoom(room_id, Size(size_x,size_y))
     for scene_id,data_scene in scenes.items():
         scene = Scene(scene_id)
         scene_states = data_scene['states']

@@ -3,7 +3,7 @@ start         : atrbs? sala sons? eventos?
 atrbs         : atrb+
 atrb          : ARG "=" value
 
-sala          : "Sala" ID tamanho cenas
+sala          : "Sala" ID tamanho "{" cenas "}"
 cenas         : ("contém" cena)+
 cena          : "Cena" ID "{" estobjs "}"
 estobjs       : (("tem" estado)|("contém" objeto))+

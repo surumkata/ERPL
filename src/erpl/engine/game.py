@@ -161,7 +161,7 @@ def init_game(args = None):
     # Configurar o mixer
     pygame.mixer.init()
     # Carregue a música de fundo
-    filename = f'{current_folder}/../../../../assets/sounds/soundtrack.mp3'
+    filename = f'{current_folder}/../../assets/sounds/soundtrack.mp3'
     pygame.mixer.music.load(filename)
     pygame.mixer.music.play(-1)
 
@@ -177,10 +177,12 @@ def init_game(args = None):
     # Inicializar o inventário
     inventory = Inventory()
 
-    # Play Game
-    play_game(screen,room, inventory)
+    return screen,room, inventory
+
 
 if __name__ == '__main__':
     args = game_parse_arguments()
-    init_game(args)
+    screen,room, inventory = init_game(args)
+    # Play Game
+    play_game(screen,room, inventory)
 

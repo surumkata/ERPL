@@ -20,9 +20,8 @@ def parser_parse_arguments():
     '''Define and parse arguments using argparse'''
     parser = argparse.ArgumentParser(description='ERPL Parser')
     parser.add_argument('--output','-o'            ,type=str, nargs=1,required=False                                , help='Output file')
-    parser.add_argument('--input','-i'             ,type=str, nargs=1,required=False                                , help='Input file')
-    parser.add_argument('--grammar_erpl','-gm1'    ,action='store_true'                                      , help='Grammar ERPL' )
-    parser.add_argument('--grammar_erplpro','-gm2' ,action='store_true'                                      , help='Grammar ERPL Pro' )
+    parser.add_argument('--input','-i'             ,type=str, nargs=1,required=True                                , help='Input file')
+    parser.add_argument('--grammar_erplpro','-gmpro' ,action='store_true'                                      , help='Grammar ERPL Pro' )
     parser.add_argument('--args','-args'           ,nargs='+'                                                , help='Args')
     return parser.parse_args()
 
@@ -688,12 +687,11 @@ class Interpreter(Interpreter):
 
 def parse(args):
     current_folder = os.path.dirname(__file__)
-    if args.grammar_erpl:
-        grammar = open(f"{current_folder}/grammar_erpl.txt","r")
-    elif args.grammar_erplpro:
+    if args.grammar_erplpro:
         grammar = open(f"{current_folder}/grammar_erplpro.txt","r")
     else:
-        raise Exception("Nenhuma gramática escolhida! Use -gm1 or -gm2")
+        grammar = open(f"{current_folder}/grammar_erpl.txt","r")
+        #raise Exception("Nenhuma gramática escolhida! Use -gm1 or -gm2")
 
     if not args.args:
         args.args = []
@@ -718,6 +716,8 @@ def parse(args):
             json.dump(data, outfile, indent = 3)
     else:
         print(json.dumps(data))
+
+    return code
 
 def main():
     args = parser_parse_arguments()

@@ -38,7 +38,7 @@ def distance(x1,y1,x2,y2):
 
 
 
-def play_game(screen,room, inventory):
+def play_editor(screen,room, inventory):
     # Loop principal do jogo
     clock = pygame.time.Clock()
     show_info = True
@@ -261,6 +261,7 @@ def play_game(screen,room, inventory):
             pygame.draw.circle(screen, BLACK, (master_position.x + master_size.x, master_position.y + master_size.y) ,r) #CANTO INFERIOR DIREITO
 
         clock.tick(60)
+        
 
         #Fps
         if show_info:
@@ -299,10 +300,10 @@ def init_pe(args):
 
     # Inicializar o inventário
     inventory = Inventory()
-    play_game(screen,room, inventory)
+    return screen,room, inventory
 
 if __name__ == '__main__':
     args = pe_parse_arguments()
-    init_pe(args)
-    
-
+    screen,room,inventory = init_pe(args)
+    # Play Editor
+    play_editor(screen,room, inventory)

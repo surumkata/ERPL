@@ -8,7 +8,7 @@ from .sound import Sound
 """CLASSE DE UMA ESCAPE ROOM"""
 class EscapeRoom:
     #Construtor de escape room
-    def __init__(self, title : str):
+    def __init__(self, title : str, size : Size):
         self.title = title #TITULO
         self.scenes = {} 
         self.objects = {}
@@ -17,6 +17,7 @@ class EscapeRoom:
         self.events_buffer = {}
         self.er_state = EscapeRoomState() #ID DA CENA ATUAL
         self.sounds = {}
+        self.size = size
 
     #Função que adiciona uma cena
     def add_scene(self,scene : Scene):

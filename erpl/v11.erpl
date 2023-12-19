@@ -4,7 +4,7 @@ $posicao = (1000,485)
 $num = 100
 $codigo = "932"
 
-Sala sala [1300,700] 
+Sala sala [1300,700] {
     contém Cena cena {
         tem Estado inicial background $room
         contém Objeto porta (600,342) $tamanho {
@@ -40,6 +40,7 @@ Sala sala [1300,700]
             tem Estado inicial aberta "open_door.png"
         }
     }
+}
 
 #Sons:
 
