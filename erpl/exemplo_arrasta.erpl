@@ -34,28 +34,18 @@ Sala sala [1300,700] {
             tem Estado ativa "active_lupa.png"
         }
     }
-    contém Cena cena2 {
-        tem Estado inicial background "room.png"
-        contém Objeto porta3 (600,342) [225,300] {
-            tem Estado inicial aberta "open_door.png"
-        }
-    }
 }
 
-#Sons:
-
-Som porta_a_abrir: "door-1-open.mp3"
-Som porta-locked: "door-locked.mp3"
 
 #Eventos:
 
 Evento abrir_porta(1):
 Se clique porta e porta está fechada e chave está em uso,
-então porta muda para aberta e chave é removida e toca porta_a_abrir.
+então porta muda para aberta e chave é removida.
 
 Evento abrir_porta2(1):
 Se clique porta2 e porta2 está fechada,
-então porta2 muda para aberta e toca porta_a_abrir.
+então porta2 muda para aberta.
 
 Evento muda_cena():
 Se clique porta2 e porta2 está aberta,

@@ -1,4 +1,4 @@
-Sala sala [1300,700]
+Sala sala [1300,700] {
     contém Cena cena {
         tem Estado inicial background "room.png"
         contém Objeto porta (150,293) [270,360] {
@@ -15,17 +15,11 @@ Sala sala [1300,700]
             tem Estado animado(3,1) aberta glob("left_cabinet/*.png")
             tem Estado animado(3,1) fechar glob("left_cabinet/*.png").reverse()
         }
-        contém Objeto rug (280,600) [110,60] {
-            tem Estado inicial normal "rug/rug0.png"
-            tem Estado levantado "rug/rug1.png"
-        }
-        contém Objeto rug_zoom (350,590) [80,80]{
-            tem Estado visivel "rug/rug_zoom.png"
-        }
         contém Objeto lupa (535,523) [35,35] {
             tem Estado normal "lupa.png"
         }
     }
+}
 
 #Sons:
 
@@ -63,14 +57,6 @@ Evento fechar_right_cabinet():
 Se clique right_cabinet e right_cabinet está aberta,
 então right_cabinet muda para fechar e toca porta_a_abrir.
 
-Evento levantar_tapete():
-Se clique rug e rug está normal,
-então rug muda para levantado.
-
-Evento baixar_tapete():
-Se clique rug e rug está levantado e não (lupa está em uso),
-então rug muda para normal.
-
 Evento fim(1):
 se clique porta e porta está aberta,
 então fim de jogo.
@@ -82,11 +68,3 @@ então mostra mensagem "porta trancada! procura uma chave!" em (600,385) e toca 
 Evento lupa_inventario(1):
 Se clique lupa e left_cabinet está aberta,
 Então lupa vai para o inventário.
-
-Evento aumentar_tapete():
-Se clique rug e rug está levantado e lupa está em uso,
-então rug_zoom muda para visivel.
-
-Evento zoom_out_tapete():
-Se clique não rug_zoom e rug_zoom está visivel,
-então rug_zoom muda para null.

@@ -1,0 +1,30 @@
+Sala sala [1300,700] {
+    contém Cena cena {
+        tem Estado inicial background "room.png"
+        contém Objeto porta (600,342) [225,300] {
+            tem Estado inicial fechada "door.png"
+            tem Estado aberta "open_door.png"
+        }
+        contém Objeto chave (1020,520) [50,25] {
+            tem Estado inicial normal "key.png"
+            tem Estado ativa "active_key.png"
+        }
+    }
+}
+
+#Eventos:
+Evento abrir_porta(1):
+Se clique porta e porta está fechada e chave está em uso,
+então porta muda para aberta e chave é removida.
+
+Evento fim(1):
+se clique porta e porta está aberta,
+então fim de jogo.
+
+Evento chave_inventario(1):
+Se clique chave,
+Então chave vai para o inventário.
+
+Evento mensagem_trancada():
+Se clique porta e porta está fechada e não chave está em uso,
+então mostra mensagem "porta trancada! procura uma chave!" em (600,385).

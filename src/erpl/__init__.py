@@ -39,7 +39,7 @@ def erpe():
     if args.output:
         print("ERROR!")
     args.output = ['tmp.json']
-
+    parse(args)
     args.input = ['tmp.json']
     screen,room,inventory = init_pe(args)
     os.remove('tmp.json')

@@ -29,33 +29,29 @@ Sala sala [1300,700] {
         contém Objeto nota_lupa (300,500) [200,200] {
             tem Estado visivel image_plus_txt("nota.png","nota_nova.png",$codigo,"arial.ttf",(255,255,255)) 
         }
-        contém Objeto lupa (200,500) [40,40] {
-            tem Estado inicial normal "lupa.png"
-            tem Estado ativa "active_lupa.png"
-        }
     }
     contém Cena cena2 {
         tem Estado inicial background "room.png"
         contém Objeto porta3 (600,342) [225,300] {
             tem Estado inicial aberta "open_door.png"
         }
+        contém Objeto lupa (200,500) [40,40] {
+            tem Estado inicial normal "lupa.png"
+            tem Estado ativa "active_lupa.png"
+        }
     }
 }
 
-#Sons:
-
-Som porta_a_abrir: "door-1-open.mp3"
-Som porta-locked: "door-locked.mp3"
 
 #Eventos:
 
 Evento abrir_porta(1):
 Se clique porta e porta está fechada e chave está em uso,
-então porta muda para aberta e chave é removida e toca porta_a_abrir.
+então porta muda para aberta e chave é removida.
 
 Evento abrir_porta2(1):
 Se clique porta2 e porta2 está fechada,
-então porta2 muda para aberta e toca porta_a_abrir.
+então porta2 muda para aberta.
 
 Evento muda_cena():
 Se clique porta2 e porta2 está aberta,
@@ -85,17 +81,15 @@ mostra mensagem "Código errado!" em (1000, 485).
 
 Evento mensagem_trancada():
 Se clique porta e porta está fechada e não chave está em uso,
-então mostra mensagem "porta trancada! procura uma chave!" em (600,385) e toca porta-locked.
+então mostra mensagem "porta trancada! procura uma chave!" em (600,385).
 
-Evento arrasta_lupa():
+Evento lupa_inventario(1):
 Se clique lupa,
-Então arrasta lupa, se deixar em cima de nota faz aumentar_nota e se não faz move_lupa. 
+então lupa vai para o inventário.
 
-Evento aumentar_nota(-):
-nota_lupa muda para visivel.
-
-Evento move_lupa(-):
-lupa muda posição para (200,500).
+Evento aumentar_nota():
+Se clique nota e lupa está em uso,
+então nota_lupa muda para visivel.
 
 Evento desaparecer_nota_lupa():
 Se clique não nota_lupa e nota_lupa está visivel,
