@@ -1,4 +1,3 @@
-from enum import Enum
 from abc import ABC, abstractmethod
 
 
@@ -29,14 +28,14 @@ class EventPreConditionClick(EventPreCondition):
     def __init__(self, object_id):
         self.object_id = object_id
 
-    def test(self,room,inventory):
+    def test(self,room,inventory,state):
         tested = False
         object_id = self.object_id
         if not object_id in room.objects:
             return tested
         object = room.objects[object_id]
-        if object.reference == room.er_state.current_scene:
-            for (px,py) in room.er_state.click_events:
+        if object.reference == state.current_scene:
+            for (px,py) in state.buffer_click_events:
                 tested = object.have_clicked(px,py)
                 if tested:
                     break
@@ -48,7 +47,7 @@ class EventPreConditionClickAfterEvent(EventPreCondition):
         self.object_id = object_id
         self.event_id = event_id
 
-    def test(self,room,inventory):
+    def test(self,room,inventory,state):
         tested = False
         return tested
 
@@ -57,7 +56,7 @@ class EventPreConditionActiveByEvent(EventPreCondition):
     def __init__(self, event_id):
         self.event_id = event_id
 
-    def test(self,room,inventory):
+    def test(self,room,inventory,state):
         tested = False
         return tested
 
@@ -66,13 +65,13 @@ class EventPreConditionActiveAfterEvent(EventPreCondition):
     def __init__(self, event_id):
         self.event_id = event_id
 
-    def test(self,room,inventory):
+    def test(self,room,inventory,state):
         tested = False
         object_id = self.object_id
         object = room.objects[object_id]
         clicked = False
-        if object.reference == room.er_state.current_scene:
-            for (px,py) in room.er_state.click_events:
+        if object.reference == state.current_scene:
+            for (px,py) in state.buffer_click_events:
                 clicked = object.have_clicked(px,py)
                 if clicked:
                     break
@@ -86,7 +85,7 @@ class EventPreConditionActiveAfterTime(EventPreCondition):
     def __init__(self, time):
         self.time = time
 
-    def test(self,room,inventory):
+    def test(self,room,inventory,state):
         tested = False
         return tested
 
@@ -96,7 +95,7 @@ class EventPreConditionActiveWhenState(EventPreCondition):
         self.object_id = object_id
         self.state_id = state_id
 
-    def test(self,room,inventory):
+    def test(self,room,inventory,state):
         object_id = self.object_id
         state_id = self.state_id
         tested = room.check_state_of_object(object_id,state_id)
@@ -108,7 +107,7 @@ class EventPreConditionActiveWhenNotState(EventPreCondition):
         self.object_id = object_id
         self.state_id = state_id
 
-    def test(self,room,inventory):
+    def test(self,room,inventory,state):
         object_id = self.object_id
         state_id = self.state_id
         tested = not room.check_state_of_object(object_id,state_id)
@@ -119,7 +118,7 @@ class EventPreConditionActiveWhenItemInUse(EventPreCondition):
     def __init__(self, item_id):
         self.item_id = item_id
 
-    def test(self,room,inventory):
+    def test(self,room,inventory,state):
         item_id = self.item_id
         tested = inventory.check_item_in_use(item_id)
         return tested
@@ -129,7 +128,7 @@ class EventPreConditionActiveWhenItemNotInUse(EventPreCondition):
     def __init__(self, item_id):
         self.item_id = item_id
 
-    def test(self,room,inventory):
+    def test(self,room,inventory,state):
         item_id = self.item_id
         tested = inventory.exist_item(item_id)
         tested = tested and not inventory.check_item_in_use(item_id)
@@ -140,12 +139,12 @@ class EventPreConditionClickItem(EventPreCondition):
     def __init__(self, item_id):
         self.item_id = item_id
     
-    def test(self,room,inventory):
+    def test(self,room,inventory,state):
         tested = False
         item_id = self.item_id
         item = inventory.get_item(item_id)
         if item != None:
-            for (px,py) in room.er_state.click_events:
+            for (px,py) in state.buffer_click_events:
                 tested = item.have_clicked(px,py)
                 if tested: break
         return tested
@@ -155,15 +154,15 @@ class EventPreConditionClickNot(EventPreCondition):
     def __init__(self, object_id):
         self.object_id = object_id
 
-    def test(self,room,inventory):
+    def test(self,room,inventory,state):
         tested = False
         object_id = self.object_id
-        if not object_id in room.objects or len(room.er_state.click_events) == 0:
+        if not object_id in room.objects or len(state.buffer_click_events) == 0:
             return tested
         object = room.objects[object_id]
         tested = True
-        if object.reference == room.er_state.current_scene:
-            for (px,py) in room.er_state.click_events:
+        if object.reference == state.current_scene:
+            for (px,py) in state.buffer_click_events:
                 tested = tested and not object.have_clicked(px,py)
         return tested
     

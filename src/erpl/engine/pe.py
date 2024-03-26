@@ -8,7 +8,7 @@ os.environ["PYGAME_HIDE_SUPPORT_PROMPT"] = "1"
 import pygame
 import sys
 from .model.load import load
-from .model.utils import WIDTH, HEIGHT, BLACK, WHITE, GREEN, RED, BLUE, current_folder, Position, Size
+from .model.utils import WIDTH, HEIGHT, Color, current_folder, Position, Size
 from .model.inventory import Inventory
 import math
 
@@ -239,8 +239,8 @@ def play_editor(screen,room, inventory):
 
         if master_object is not None:
 
-            size_text = font.render(f"Size: {master_size.x,master_size.y}", True, GREEN)
-            position_text = font.render(f"Position: {master_position.x,master_position.y}", True, GREEN)
+            size_text = font.render(f"Size: {master_size.x,master_size.y}", True, Color.GREEN)
+            position_text = font.render(f"Position: {master_position.x,master_position.y}", True, Color.GREEN)
 
             #width = room.objects[master_object].states[room.objects[master_object].current_state].image_width
             #height = room.objects[master_object].states[room.objects[master_object].current_state].image_height
@@ -249,16 +249,16 @@ def play_editor(screen,room, inventory):
             screen.blit(size_text, (10, 500))
             screen.blit(position_text, (10, 530))
             #screen.blit(hitbox_text, (10, 560))
-            rect_color = GREEN if shift_pressed else RED
+            rect_color = Color.GREEN if shift_pressed else Color.RED
             if motion_size:
                 pygame.draw.rect(screen, rect_color, (master_position.x, master_position.y, master_size.x, master_size.y))
             else:
                 pygame.draw.rect(screen, rect_color, (master_position.x, master_position.y, master_size.x, master_size.y),2)
             #pygame.draw.rect(screen, BLACK, (master_position.x, master_position.y, width, height))
-            pygame.draw.circle(screen, RED, (master_position.x, master_position.y) ,r) #CANTO SUPERIOR ESQUERDO
-            pygame.draw.circle(screen, GREEN, (master_position.x + master_size.x, master_position.y) ,r) #CANTO SUPERIOR DIREITO
-            pygame.draw.circle(screen, BLUE, (master_position.x, master_position.y + master_size.y) ,r) #CANTO INFERIOR ESQUERDO
-            pygame.draw.circle(screen, BLACK, (master_position.x + master_size.x, master_position.y + master_size.y) ,r) #CANTO INFERIOR DIREITO
+            pygame.draw.circle(screen, Color.RED, (master_position.x, master_position.y) ,r) #CANTO SUPERIOR ESQUERDO
+            pygame.draw.circle(screen, Color.GREEN, (master_position.x + master_size.x, master_position.y) ,r) #CANTO SUPERIOR DIREITO
+            pygame.draw.circle(screen, Color.BLUE, (master_position.x, master_position.y + master_size.y) ,r) #CANTO INFERIOR ESQUERDO
+            pygame.draw.circle(screen, Color.BLACK, (master_position.x + master_size.x, master_position.y + master_size.y) ,r) #CANTO INFERIOR DIREITO
 
         clock.tick(60)
         
@@ -270,12 +270,12 @@ def play_editor(screen,room, inventory):
             fps = int(clock.get_fps())
 
             # Renderize o texto do FPS na tela
-            fps_text = font.render(f"FPS: {fps}", True, RED)
+            fps_text = font.render(f"FPS: {fps}", True, Color.RED)
             # Desenhe o texto do FPS na tela
             screen.blit(fps_text, (10, 440))
 
             # Renderize o texto na tela
-            object_text = font.render(f"Object: {master_object}", True, BLUE)
+            object_text = font.render(f"Object: {master_object}", True, Color.BLUE)
             # Desenhe o texto na tela
             screen.blit(object_text, (10, 470))
 

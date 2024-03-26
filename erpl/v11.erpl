@@ -1,51 +1,80 @@
-$room = "room.png"
-$tamanho = [225,300]
-$posicao = (1000,485)
-$num = 100
-$codigo = "932"
+bp{
+import glob
+import os
+from imageplustxt import add_text_to_image
+
+def dotpng(string):
+    current_folder = os.getcwd()
+    return current_folder+"/../assets/images/"+string+".png"
+
+def dotttf(string):
+    current_folder = os.getcwd()
+    return current_folder+"/../assets/fonts/"+string+".ttf"
+
+def dotmp3(string):
+    current_folder = os.getcwd()
+    return current_folder+"/../assets/sounds/"+string+".mp3"
+
+
+posicao = (1000,485)
+room = dotpng("room")
+num = 100
+tamanho = [225,300]
+codigo = "932"
+current_folder = os.getcwd()
+door = glob.glob(f"{current_folder}/../assets/images/door/*.png")
+add_text_to_image(dotpng("nota"),dotpng("nota_nova"),"932",(255,255,255),dotttf("arial"))
+}ep
+
+$room = pfunc_dotpng("room")
+$tamanho = plocal_tamanho
+$posicao = plocal_posicao
+$num = plocal_num
+$codigo = plocal_codigo
+$lista = plocal_door
 
 Sala sala [1300,700] {
     contém Cena cena {
         tem Estado inicial background $room
         contém Objeto porta (600,342) $tamanho {
-            tem Estado inicial fechada "door.png"
-            tem Estado animado(3,1) aberta ["door/door1.png","door/door2.png","door/door3.png","door/door4.png","door/door5.png"]
+            tem Estado inicial fechada pfunc_dotpng("door")
+            tem Estado animado(3,1) aberta $lista
         }
         contém Objeto porta2 (0,342) $tamanho {
-            tem Estado inicial fechada "door/door0.png"
-            tem Estado animado(3,1) aberta glob("doort/*.png")
+            tem Estado inicial fechada pfunc_dotpng("door/door0")
+            tem Estado animado(3,1) aberta $lista
         }
         contém Objeto cofre $posicao [172,$num] {
-            tem Estado inicial fechado "cofre.png"
-            tem Estado aberto "open_cofre.png"
+            tem Estado inicial fechado pfunc_dotpng("cofre")
+            tem Estado aberto pfunc_dotpng("open_cofre")
         }
         contém Objeto chave (1020,520) [50,25] {
-            tem Estado normal "key.png"
-            tem Estado ativa "active_key.png"
+            tem Estado normal pfunc_dotpng("key")
+            tem Estado ativa pfunc_dotpng("active_key")
         }   
         contém Objeto nota {
-            tem Estado inicial normal "nota.png" (400,600) [30,30]
+            tem Estado inicial normal pfunc_dotpng("nota") (400,600) [30,30]
         }
         contém Objeto nota_lupa (300,500) [200,200] {
-            tem Estado visivel image_plus_txt("nota.png","nota_nova.png",$codigo,"arial.ttf",(255,255,255)) 
+            tem Estado visivel pfunc_dotpng("nota_nova")
         }
         contém Objeto lupa (200,500) [40,40] {
-            tem Estado inicial normal "lupa.png"
-            tem Estado ativa "active_lupa.png"
+            tem Estado inicial normal pfunc_dotpng("lupa")
+            tem Estado ativa pfunc_dotpng("active_lupa")
         }
     }
     contém Cena cena2 {
-        tem Estado inicial background "room.png"
+        tem Estado inicial background pfunc_dotpng("room")
         contém Objeto porta3 (600,342) [225,300] {
-            tem Estado inicial aberta "open_door.png"
+            tem Estado inicial aberta pfunc_dotpng("open_door")
         }
     }
 }
 
 #Sons:
 
-Som porta_a_abrir: "door-1-open.mp3"
-Som porta-locked: "door-locked.mp3"
+Som porta_a_abrir: pfunc_dotmp3("door-1-open")
+Som porta-locked: pfunc_dotmp3("door-locked")
 
 #Eventos:
 

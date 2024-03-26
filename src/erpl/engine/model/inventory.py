@@ -1,6 +1,6 @@
 import pygame
 
-from .utils import Position, Size, RED, GREEN
+from .utils import Position, Size, Color
 from .state import State
 
 
@@ -31,7 +31,7 @@ class Item:
     def draw(self, screen):
         screen.blit(self.state.images[0], (self.position.x,self.position.y))
         if self.in_use:
-            pygame.draw.rect(screen, RED, (self.position.x, self.position.y, 10, 10))
+            pygame.draw.rect(screen, Color.RED, (self.position.x, self.position.y, 10, 10))
             
 
 # Classe Inventário
@@ -107,12 +107,12 @@ class Inventory:
         return False
 
     def draw(self, screen):
-        pygame.draw.rect(screen, RED, (0, 0, 1300, 100))
+        pygame.draw.rect(screen, Color.RED, (0, 0, 1300, 100))
         i = 1
         while True:
             x = 10+((i-1)*90)
             if x < 1300 - 80:
-                pygame.draw.rect(screen, GREEN, (x, 10, 80, 80))
+                pygame.draw.rect(screen, Color.GREEN, (x, 10, 80, 80))
                 i+=1
             else:
                 break

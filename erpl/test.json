@@ -11,7 +11,7 @@
                   "background": {
                      "initial": true,
                      "filenames": [
-                        "room.png"
+                        "/mnt/c/Users/35191/Desktop/MyEscapeRoom/erpl/../assets/images/room.png"
                      ]
                   }
                },
@@ -29,7 +29,7 @@
                         "fechada": {
                            "initial": true,
                            "filenames": [
-                              "door.png"
+                              "/mnt/c/Users/35191/Desktop/MyEscapeRoom/erpl/../assets/images/door.png"
                            ]
                         },
                         "aberta": {
@@ -37,11 +37,12 @@
                            "time_sprite": 3,
                            "repeate": 1,
                            "filenames": [
-                              "door/door1.png",
-                              "door/door2.png",
-                              "door/door3.png",
-                              "door/door4.png",
-                              "door/door5.png"
+                              "/mnt/c/Users/35191/Desktop/MyEscapeRoom/erpl/../assets/images/door/door0.png",
+                              "/mnt/c/Users/35191/Desktop/MyEscapeRoom/erpl/../assets/images/door/door1.png",
+                              "/mnt/c/Users/35191/Desktop/MyEscapeRoom/erpl/../assets/images/door/door2.png",
+                              "/mnt/c/Users/35191/Desktop/MyEscapeRoom/erpl/../assets/images/door/door3.png",
+                              "/mnt/c/Users/35191/Desktop/MyEscapeRoom/erpl/../assets/images/door/door4.png",
+                              "/mnt/c/Users/35191/Desktop/MyEscapeRoom/erpl/../assets/images/door/door5.png"
                            ]
                         }
                      }
@@ -59,7 +60,7 @@
                         "fechada": {
                            "initial": true,
                            "filenames": [
-                              "door/door0.png"
+                              "/mnt/c/Users/35191/Desktop/MyEscapeRoom/erpl/../assets/images/door/door0.png"
                            ]
                         },
                         "aberta": {
@@ -67,12 +68,12 @@
                            "time_sprite": 3,
                            "repeate": 1,
                            "filenames": [
-                              "doort/door8.png",
-                              "doort/door9.png",
-                              "doort/door10.png",
-                              "doort/door11.png",
-                              "doort/door12.png",
-                              "doort/door13.png"
+                              "/mnt/c/Users/35191/Desktop/MyEscapeRoom/erpl/../assets/images/door/door0.png",
+                              "/mnt/c/Users/35191/Desktop/MyEscapeRoom/erpl/../assets/images/door/door1.png",
+                              "/mnt/c/Users/35191/Desktop/MyEscapeRoom/erpl/../assets/images/door/door2.png",
+                              "/mnt/c/Users/35191/Desktop/MyEscapeRoom/erpl/../assets/images/door/door3.png",
+                              "/mnt/c/Users/35191/Desktop/MyEscapeRoom/erpl/../assets/images/door/door4.png",
+                              "/mnt/c/Users/35191/Desktop/MyEscapeRoom/erpl/../assets/images/door/door5.png"
                            ]
                         }
                      }
@@ -90,13 +91,13 @@
                         "fechado": {
                            "initial": true,
                            "filenames": [
-                              "cofre.png"
+                              "/mnt/c/Users/35191/Desktop/MyEscapeRoom/erpl/../assets/images/cofre.png"
                            ]
                         },
                         "aberto": {
                            "initial": false,
                            "filenames": [
-                              "open_cofre.png"
+                              "/mnt/c/Users/35191/Desktop/MyEscapeRoom/erpl/../assets/images/open_cofre.png"
                            ]
                         }
                      }
@@ -114,13 +115,13 @@
                         "normal": {
                            "initial": false,
                            "filenames": [
-                              "key.png"
+                              "/mnt/c/Users/35191/Desktop/MyEscapeRoom/erpl/../assets/images/key.png"
                            ]
                         },
                         "ativa": {
                            "initial": false,
                            "filenames": [
-                              "active_key.png"
+                              "/mnt/c/Users/35191/Desktop/MyEscapeRoom/erpl/../assets/images/active_key.png"
                            ]
                         }
                      }
@@ -130,7 +131,7 @@
                         "normal": {
                            "initial": true,
                            "filenames": [
-                              "nota.png"
+                              "/mnt/c/Users/35191/Desktop/MyEscapeRoom/erpl/../assets/images/nota.png"
                            ],
                            "position": [
                               400,
@@ -156,7 +157,7 @@
                         "visivel": {
                            "initial": false,
                            "filenames": [
-                              "nota_nova.png"
+                              "/mnt/c/Users/35191/Desktop/MyEscapeRoom/erpl/../assets/images/nota_nova.png"
                            ]
                         }
                      }
@@ -174,13 +175,13 @@
                         "normal": {
                            "initial": true,
                            "filenames": [
-                              "lupa.png"
+                              "/mnt/c/Users/35191/Desktop/MyEscapeRoom/erpl/../assets/images/lupa.png"
                            ]
                         },
                         "ativa": {
                            "initial": false,
                            "filenames": [
-                              "active_lupa.png"
+                              "/mnt/c/Users/35191/Desktop/MyEscapeRoom/erpl/../assets/images/active_lupa.png"
                            ]
                         }
                      }
@@ -192,7 +193,7 @@
                   "background": {
                      "initial": true,
                      "filenames": [
-                        "room.png"
+                        "/mnt/c/Users/35191/Desktop/MyEscapeRoom/erpl/../assets/images/room.png"
                      ]
                   }
                },
@@ -210,7 +211,7 @@
                         "aberta": {
                            "initial": true,
                            "filenames": [
-                              "open_door.png"
+                              "/mnt/c/Users/35191/Desktop/MyEscapeRoom/erpl/../assets/images/open_door.png"
                            ]
                         }
                      }
@@ -419,13 +420,14 @@
          },
          "poscondicoes": [
             {
-               "type": "AskCode",
-               "code": "932",
-               "message": "Qual \u00e9 o c\u00f3digo do cofre?",
-               "position": [
-                  1000,
-                  485
-               ],
+               "type": "Connections",
+               "connections": {
+                  "1": "1",
+                  "2": "2",
+                  "3": "3",
+                  "4": "4"
+               },
+               "question": "Conecta corretamente",
                "sucess_event": "abrir_cofre",
                "fail_event": "mostrar_erro"
             }
@@ -469,30 +471,30 @@
          "precondicoes": {
             "operator": "e",
             "left": {
+               "variavel": {
+                  "type": "Click",
+                  "object": "porta"
+               }
+            },
+            "right": {
                "operator": "e",
                "left": {
-                  "variavel": {
-                     "type": "Click",
-                     "object": "porta"
-                  }
-               },
-               "right": {
                   "variavel": {
                      "type": "WhenStateObject",
                      "object": "porta",
                      "state": "fechada"
                   }
-               }
-            },
-            "right": {
-               "operator": "nao",
-               "left": {
-                  "variavel": {
-                     "type": "ItemActived",
-                     "item": "chave"
-                  }
                },
-               "right": null
+               "right": {
+                  "operator": "nao",
+                  "left": {
+                     "variavel": {
+                        "type": "ItemActived",
+                        "item": "chave"
+                     }
+                  },
+                  "right": null
+               }
             }
          },
          "poscondicoes": [
@@ -586,7 +588,7 @@
       }
    },
    "sounds": {
-      "porta_a_abrir": "door-1-open.mp3",
-      "porta-locked": "door-locked.mp3"
+      "porta_a_abrir": "/mnt/c/Users/35191/Desktop/MyEscapeRoom/erpl/../assets/sounds/door-1-open.mp3",
+      "porta-locked": "/mnt/c/Users/35191/Desktop/MyEscapeRoom/erpl/../assets/sounds/door-locked.mp3"
    }
 }

@@ -3,12 +3,13 @@ from .escape_room import EscapeRoom
 from .scene import Scene
 from .object import Object
 from .state import State
-from .utils import __sounds, __images, Position, Size
+from .utils import Position, Size
 from .precondition_tree import PreConditionOperatorAnd, PreConditionOperatorNot, PreConditionOperatorOr, PreConditionTree, PreConditionVar
 from .event import Event
 from .precondition import EventPreConditionClickAfterEvent, EventPreConditionActiveWhenState, EventPreConditionActiveWhenItemInUse , EventPreConditionActiveWhenItemNotInUse, EventPreConditionActiveWhenNotState, EventPreConditionClick, EventPreConditionClickNot
-from .poscondition import EventPosConditionMoveObject, EventPosConditionPlaySound, EventPosConditionChangeScene, EventPosConditionChangePosition, EventPosConditionChangeSize, EventPosConditionChangeState, EventPosConditionEndGame,EventPosConditionDeleteItem, EventPosConditionPutInventory,EventPosConditionShowMessage,EventPosConditionAskCode
+from .poscondition import EventPosConditionSlidePuzzle, EventPosConditionPuzzle, EventPosConditionOrder, EventPosConditionConnections, EventPosConditionMultipleChoice,EventPosConditionMoveObject, EventPosConditionPlaySound, EventPosConditionChangeScene, EventPosConditionChangePosition, EventPosConditionChangeSize, EventPosConditionChangeState, EventPosConditionEndGame,EventPosConditionDeleteItem, EventPosConditionPutInventory,EventPosConditionShowMessage,EventPosConditionAskCode
 from .sound import Sound
+from .game_state import GameState
 import sys
 
 def load_precondition(precondition):
@@ -60,7 +61,6 @@ def load_preconditions(preconditions):
 
 def load_sounds(room, data_sounds):
     for sound_id, src_sound in data_sounds.items():
-        src_sound = __sounds + src_sound
         sound = Sound(sound_id,src_sound)
         room.add_sound(sound)
 
@@ -117,6 +117,34 @@ def load_events(room, data_events):
                 sucess_event = data_action['sucess_event']
                 fail_event = data_action['fail_event']
                 event_poscondition = EventPosConditionMoveObject(object_id,object_trigger,sucess_event,fail_event)
+            elif type == 'MultipleChoice':
+                question = data_action['question']
+                answer = data_action['answer']
+                multiple_choices = data_action['multiple_choices']
+                sucess_event = data_action['sucess_event']
+                fail_event = data_action['fail_event']
+                event_poscondition = EventPosConditionMultipleChoice(question,answer,multiple_choices,sucess_event,fail_event)
+            elif type == 'Connections':
+                question = data_action['question']
+                connections = data_action['connections']
+                sucess_event = data_action['sucess_event']
+                fail_event = data_action['fail_event']
+                event_poscondition = EventPosConditionConnections(connections,question,sucess_event,fail_event)
+            elif type == 'Order':
+                question = data_action['question']
+                order = data_action['order']
+                sucess_event = data_action['sucess_event']
+                fail_event = data_action['fail_event']
+                event_poscondition = EventPosConditionOrder(order,question,sucess_event,fail_event)
+            elif type == 'Puzzle':
+                image = data_action['puzzle']
+                sucess_event = data_action['sucess_event']
+                event_poscondition = EventPosConditionPuzzle(image,sucess_event)
+            elif type == 'SlidePuzzle':
+                image = data_action['puzzle']
+                sucess_event = data_action['sucess_event']
+                event_poscondition = EventPosConditionSlidePuzzle(image,sucess_event)
+
 
             pos_conditions.append(event_poscondition)
 
@@ -125,6 +153,7 @@ def load_events(room, data_events):
         room.add_event(Event(event_id,pre_conditions,pos_conditions,repeatable, linked))
 
 def load_room(room_id,data_room):
+    state = GameState()
     (size_x,size_y) = data_room['size']
     scenes = data_room['scenes']
     room = EscapeRoom(room_id, Size(size_x,size_y))
@@ -133,12 +162,13 @@ def load_room(room_id,data_room):
         scene_states = data_scene['states']
         for ss_id,ss in scene_states.items():
             ss_filenames = ss['filenames']
-            ss_filenames = [__images + filename for filename in ss_filenames]
+            #ss_filenames = [__images + filename for filename in ss_filenames]
             ss_initial = ss['initial']
             time_sprite = ss['time_sprite'] if 'time_sprite' in ss else 0
             repeate = ss['repeate'] if 'repeate' in ss else 0
             scene.add_state(State(ss_id,ss_filenames,Size(size_x,size_y),Position(0,0),time_sprite, repeate),ss_initial)
         room.add_scene(scene)
+        state.first_scene(scene_id)
         objects = data_scene['objects']
         for object_id,data_object in objects.items():
             (obj_size_x,obj_size_y) = data_object['size'] if 'size' in data_object else (None,None)
@@ -147,7 +177,7 @@ def load_room(room_id,data_room):
             object = Object(object_id, scene_id, Position(obj_pos_x,obj_pos_y),Size(obj_size_x,obj_size_y))
             for os_id,os in obj_states.items():
                 os_filenames = os['filenames']
-                os_filenames = [__images + filename for filename in os_filenames]
+                #os_filenames = [__images + filename for filename in os_filenames]
                 os_initial = os['initial']
                 (os_size_x,os_size_y) =  os['size'] if 'size' in os else (obj_size_x,obj_size_y)
                 (os_pos_x,os_pos_y) =  os['position'] if 'position' in os else (obj_pos_x,obj_pos_y)
@@ -155,7 +185,7 @@ def load_room(room_id,data_room):
                 repeate = os['repeate'] if 'repeate' in os else 0
                 object.add_state(State(os_id,os_filenames,Size(os_size_x,os_size_y),Position(os_pos_x,os_pos_y),time_sprite, repeate),os_initial) #TODO: estado para items
             room.add_object(object)
-    return room
+    return room,state
 
 def load(filename=None):
     if filename is not None:
@@ -173,8 +203,8 @@ def load(filename=None):
 
     (room_id,data_room) = [(room_id,data_room) for (room_id,data_room) in data_map.items()][0]
 
-    room = load_room(room_id,data_room)
+    room,state = load_room(room_id,data_room)
     load_events(room, data_events)
     load_sounds(room, data_sounds)
 
-    return room
+    return room,state

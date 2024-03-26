@@ -1,6 +1,5 @@
 import pygame
 from .utils import Position, Size
-from PIL import Image
 
 """CLASSE DE UM ESTADO"""
 class State:
@@ -46,3 +45,27 @@ class State:
         screen.blit(self.images[self.current_sprite], (self.position.x, self.position.y))
         if self.repeate > 0: self.change_sprite()
     
+
+class StatePeace(State):
+    def __init__(self,id,buffer, size : Size, position : Position):
+        self.id = id
+        self.position = position
+        self.size = size
+        image = pygame.image.load_extended(buffer).convert_alpha()
+        image = pygame.transform.scale(image, (self.size.x,self.size.y))  # Ajuste o tamanho conforme necessário
+        self.images = [image]
+
+        self.time_sprite = 0
+        self.current_sprite = 0
+        self.current_time_sprite = 0
+        self.repeateInit = 0
+        self.repeate = self.repeateInit
+
+    def change_size(self, size):
+        return super().change_size(size)
+    
+    def change_position(self, position):
+        return super().change_position(position)
+    
+    def draw(self, screen):
+        screen.blit(self.images[self.current_sprite], (self.position.x, self.position.y))

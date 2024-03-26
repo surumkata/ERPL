@@ -1,13 +1,12 @@
 #!/usr/bin/python3
-
 from lark.visitors import Interpreter
 from lark import Lark
 import json
 import sys
 import argparse
 import os
-from imageplustxt import add_text_to_image
 import glob
+import ast
 
 import re 
 def sorted_alphanum(l): 
@@ -37,15 +36,37 @@ class Interpreter(Interpreter):
             'events' : {},
             'sounds' : {}
         }
-        self.__images = f"{os.path.dirname(__file__)}/../assets/images/"
-        self.__fonts = f"{os.path.dirname(__file__)}/../assets/fonts/"
+        self.challenges = {}
         self.argsn = args
         self.args = {}
+        self.locals_python = {}
+        self.globals_python = {}
+        self.namespace = {}
+
+    def get_value_type(self,value):
+        if type(value) == str:
+            t = 'text'
+        elif type(value) == tuple and len(value) == 2 and all(isinstance(element, (int, float)) for element in value):
+            t = 'position'
+        elif type(value) == list and len(value) == 2 and all(isinstance(element, (int, float)) for element in value):
+            t = 'size'
+        elif type(value) == list and all(isinstance(element, str) for element in value):
+            t = 'text_list'
+        elif type(value) == int or type(value) == float:
+            t = 'num'
+        else:
+            t = type(value)
+        return t
 
     def start(self,start : str):
-        '''start : atrbs? sala sons? eventos?'''
+        '''start : python_block? atrbs? sala sons? desafios? eventos?'''
         elems = start.children
         i = 0
+        #visitar python_block
+        if elems[i].data == 'python_block':
+            self.visit(elems[i])
+            i+=1
+
         #visitar args
         if elems[i].data == 'atrbs':
             self.visit(elems[i])
@@ -57,11 +78,27 @@ class Interpreter(Interpreter):
         if len(elems) > i and elems[i].data == 'sons':
             self.escape_room['sounds'] = self.visit(elems[i])
             i+=1
+        #visitar sounds
+        if len(elems) > i and elems[i].data == 'desafios':
+            self.visit(elems[i])
+            i+=1
         if len(elems) > i:      
         #visitar todos os eventos
             self.escape_room['events'] = self.visit(elems[i])
         return self.escape_room
     
+    def python_block(self,python_block):
+        '''python_block  : "python{" python_code "}"'''
+        elems = python_block.children
+        code = elems[0].value
+        code = code[3:-3]
+        exec(code,self.namespace)
+        # Dicionário de variáveis locais após a execução
+        self.locals_python = {key: value for key, value in self.namespace.items() if key in code}
+
+        # Dicionário de variáveis globais após a execução
+        self.globals_python = globals().copy()
+
     def atrbs(self,atrbs):
         '''atrbs : atrb+'''
         elems = atrbs.children
@@ -85,6 +122,34 @@ class Interpreter(Interpreter):
         value = elems[0].value[1:-1]
         return (type,value)
     
+    def value_text_list(self, value_text_list):
+        '''value : text_list_value'''
+        elems = value_text_list.children
+        type = 'text_list'
+        value = self.visit(elems[0])
+        return (type,value)
+    
+    def value_pglobal(self, value_pglobal):
+        '''value : "pglobal_" ID '''
+        elems = value_pglobal.children
+        id = elems[0].value
+        value = self.globals_python[id]
+        return (self.get_value_type(value),value)
+    
+    def value_plocal(self, value_plocal):
+        '''value : "pglobal_" ID '''
+        elems = value_plocal.children
+        id = elems[0].value
+        value = self.locals_python[id]
+        return (self.get_value_type(value),value)
+    
+    def value_pfunc(self, value_pfunc):
+        '''value : "pfunc_" FUNC '''
+        elems = value_pfunc.children
+        func = elems[0].value
+        value = eval(func,self.namespace)
+        return (self.get_value_type(value),value)
+
     def value_posicao(self, value_posicao):
         '''value : posicao'''
         elems = value_posicao.children
@@ -215,7 +280,7 @@ class Interpreter(Interpreter):
         return (id,result)
 
     def estado_animado_lista(self,estado):
-        '''estado : "Estado" INICIAL? "animado" "(" numero  "," numero ")" ID "[" filenames "]" (posicao tamanho)?'''
+        '''estado : "Estado" INICIAL? "animado" "(" numero  "," numero ")" ID filenames (posicao tamanho)?'''
         elems = estado.children
         result = {'initial' : False}
 
@@ -238,71 +303,6 @@ class Interpreter(Interpreter):
 
         return (id,result)
     
-    def estado_animado_glob(self,estado):
-        '''estado : "Estado" INICIAL? "animado" "(" numero "," numero ")" ID "glob" REVERSE? "(" text ")" (posicao tamanho)?'''
-        elems = estado.children
-        result = {'initial' : False}
-
-        i = 0
-        if hasattr(elems[i], 'type') and elems[i].type == 'INICIAL':
-            result['initial'] = True
-            i+=1
-        
-        result['time_sprite'] = self.visit(elems[i])
-        i+=1
-        result['repeate'] = self.visit(elems[i])
-        i+=1
-        id = elems[i].value
-        i+=1
-        arg = self.visit(elems[i])
-        result['filenames'] = glob.glob(self.__images + arg)
-        result['filenames'] = sorted_alphanum([filename.replace(self.__images,"") for filename in result['filenames']])
-        
-        i+=1
-
-        if(len(elems) > i and elems[i].type == 'REVERSE'):
-            result['filenames'] = result['filenames'][::-1]
-        
-        if(len(elems) > i+1):
-            result['position'] = self.visit(elems[i])
-            result['size'] = self.visit(elems[i+1])
-
-        return (id,result)
-    
-    def estado_img_plus_text(self,estado):
-        '''estado : "Estado" INICIAL? ID "image_plus_txt" "(" filename "," filename "," text "," filename ("," color)? ")" (posicao tamanho)? '''
-        elems = estado.children
-        result = {'initial' : False}
-
-        i = 0
-        if elems[i].type == 'INICIAL':
-            result['initial'] = True
-            i+=1
-        
-        id = elems[i].value
-        i+=1
-        input = self.visit(elems[i])
-        i+=1
-        output = self.visit(elems[i])
-        i+=1
-        text = self.visit(elems[i])
-        i+=1
-        font = self.visit(elems[i])
-        i+=1
-        color = (255,255,255)
-        if len(elems) > i and elems[i].data == 'color':
-            color = self.visit(elems[i])
-            i+=1
-
-        if(len(elems) > i+1):
-            result['position'] = self.visit(elems[i])
-            result['size'] = self.visit(elems[i+1])
-
-        add_text_to_image(self.__images + input,self.__images + output,text,color, self.__fonts + font)
-
-        result['filenames'] = [output]
-        return (id,result)
-    
     def sons (self, sons):
         '''sons : "M" "{" som ("," som)* "}"'''
         elems = sons.children
@@ -321,6 +321,109 @@ class Interpreter(Interpreter):
         src = self.visit(elems[1])
 
         return (id,src)
+
+    def desafios (self, eventos):
+        '''"#Desafios:" desafio+'''
+        elems = eventos.children
+        #visitar todos os eventos
+        for elem in elems:
+            (id, desafio) = self.visit(elem)
+            self.challenges[id] = desafio
+    
+    def desafio(self, desafio):
+        '''desafio : "Desafio" ID ":" des'''
+        elems = desafio.children
+        id = elems[0].value
+        des = self.visit(elems[1])
+        return id,des
+
+    def pede_codigo(self,des):
+        '''des : "pede_código" "(" text "," text "," posicao "," ID "," ID ")"'''
+        elems = des.children
+        return {
+            'type' : 'AskCode',
+            'code' : self.visit(elems[0]),
+            'message' : self.visit(elems[1]),
+            'position' : self.visit(elems[2]),
+            'sucess_event' : elems[3].value,
+            'fail_event' : elems[4].value
+            }
+    
+    def arrasta_objeto(self,des):
+        '''des : "arrasta" ID ", se deixar em cima de" ID "faz" ID "se não faz" ID'''
+        elems = des.children
+        return {
+            'type' : 'MoveObject',
+            'object' : elems[0].value,
+            'object_trigger' : elems[1].value,
+            'sucess_event' : elems[2].value,
+            'fail_event' : elems[3].value
+            }
+    
+    def escolha_multipla(self,des):
+        '''des : "pergunta" text "com as escolhas múltiplas" "[" text "," text "," text "," text "]" "em que a respota é" text ", se acertar faz" ID "e se errar faz" ID'''
+        elems = des.children
+        return {
+            'type' : 'MultipleChoice',
+            'question' : self.visit(elems[0]),
+            'multiple_choices' : [self.visit(elems[1]),self.visit(elems[2]),self.visit(elems[3]),self.visit(elems[4])],
+            'answer' : self.visit(elems[5]),
+            'sucess_event' : elems[6].value,
+            'fail_event' : elems[7].value
+        }
+
+    def ligacoes(self,des):
+        '''des : "conecta" "[" text "," text "," text "," text "]" "a" "[" text "," text "," text "," text "]" "com mensagem" text ", se acertar faz" ID "e se errar faz" ID'''
+        elems = des.children
+        return {
+            'type' : 'Connections',
+            'connections' : {
+                self.visit(elems[0]):self.visit(elems[1]),
+                self.visit(elems[2]):self.visit(elems[3]),
+                self.visit(elems[4]):self.visit(elems[5]),
+                self.visit(elems[6]):self.visit(elems[7]),
+                },
+            'question' : self.visit(elems[8]),
+            'sucess_event' : elems[9].value,
+            'fail_event' : elems[10].value
+        }
+    
+    def ordem(self,des):
+        '''des : "escolhe em ordem" "[" text "," text "," text ","  text "]" "com mensagem" text ", se acertar faz" ID "e se errar faz" ID'''
+        elems = des.children
+        return {
+            'type' : 'Order',
+            'order' : [
+                self.visit(elems[0]),
+                self.visit(elems[1]),
+                self.visit(elems[2]),
+                self.visit(elems[3]),
+                ],
+            'question' : self.visit(elems[4]),
+            'sucess_event' : elems[5].value,
+            'fail_event' : elems[6].value
+        }
+    
+    def puzzle(self,des):
+        '''des : "puzzle" text, se completar faz ID'''
+        elems = des.children
+        return {
+            'type' : 'Puzzle',
+            'puzzle' : self.visit(elems[0]),
+            'sucess_event' : elems[1].value,
+            'fail_event' : None
+        }
+
+    def slide_puzzle(self,des):
+        '''des : "slidepuzzle" text, se completar faz ID'''
+        elems = des.children
+        return {
+            'type' : 'SlidePuzzle',
+            'puzzle' : self.visit(elems[0]),
+            'sucess_event' : elems[1].value,
+            'fail_event' : None
+        }
+
 
     def eventos (self, eventos):
         '''eventos : "E{" evento+ "}"'''
@@ -511,29 +614,6 @@ class Interpreter(Interpreter):
             'position' : self.visit(elems[1])
             }
 
-    def pede_codigo(self,poscondicao):
-        '''poscondicao : "pede_código" "(" text "," text "," posicao "," ID "," ID ")"'''
-        elems = poscondicao.children
-        return {
-            'type' : 'AskCode',
-            'code' : self.visit(elems[0]),
-            'message' : self.visit(elems[1]),
-            'position' : self.visit(elems[2]),
-            'sucess_event' : elems[3].value,
-            'fail_event' : elems[4].value
-            }
-    
-    def arrasta_objeto(self,poscondicao):
-        '''poscondicao : "arrasta" ID ", se deixar em cima de" ID "faz" ID "se não faz" ID'''
-        elems = poscondicao.children
-        return {
-            'type' : 'MoveObject',
-            'object' : elems[0].value,
-            'object_trigger' : elems[1].value,
-            'sucess_event' : elems[2].value,
-            'fail_event' : elems[3].value
-            }
-
 
     def muda_tamanho(self,poscondicao):
         '''poscondicao : ID ">>" tamanho '''
@@ -577,6 +657,14 @@ class Interpreter(Interpreter):
                 'sound' : elems[0].value
             }
     
+    def comeca_desafio(self,poscondicao):
+        '''poscondicao : "começa desafio" "(" ID ")"'''
+        elems = poscondicao.children
+        id = elems[0].value
+        if id in self.challenges:
+            return self.challenges[id]
+        return {}
+
     def posicao (self, posicao):
         '''posicao : posicao_value'''
         return self.visit(posicao.children[0])
@@ -622,18 +710,28 @@ class Interpreter(Interpreter):
         elems = par.children
         return (self.visit(elems[0]),self.visit(elems[1]))
     
-    #def filenames (self, filenames):
-    #    '''filenames : filename ("," filename)*'''
-    #    elems = filenames.children
-    #    result = []
-    #    for elem in elems:
-    #        result.append(self.visit(elem))
-    #    return result
+    def text_list(self, text_list):
+        return self.visit(text_list.children[0])
 
-    def filename (self, filename):
-        '''filename : text'''
-        elems = filename.children
-        return self.visit(elems[0])
+    def text_list_value (self, text_list_value):
+        '''text_list_value : "[" text ("," text)* "]"'''
+        elems = text_list_value.children
+        result = []
+        for elem in elems:
+            result.append(self.visit(elem))
+        return result
+    
+    def text_list_arg(self,text_list_arg):
+        '''text_list : ARG'''
+        elems = text_list_arg.children
+        arg = elems[0].value[1:]
+        if arg in self.args:
+            if self.args[arg]['type'] == 'text_list':
+                return self.args[arg]['value']
+            else:
+                raise Exception(f"Tipo de {arg} errado!\n {self.args[arg]['type']} != List Text")
+        else:
+            raise Exception(f"Argumento {arg} não definido")
     
     def text(self,text):
         '''text : TEXTO'''
@@ -678,12 +776,32 @@ class Interpreter(Interpreter):
                 raise Exception(f"Tipo de {arg} errado!\n {self.args[arg]['type']} != Text")
         else:
             raise Exception(f"Argumento {arg} não definido")
+    
+    def text_pfunc(self,text_pfunc):
+        '''text : "pfunc_" FUNC'''
+        elems = text_pfunc.children
+        func = elems[0].value
+        value = eval(func,self.namespace)
+        t = self.get_value_type(value)
+        if t == 'text':
+            return value
+        else:
+            raise Exception(f"Tipo de {arg} errado!\n {t} != Text")
 
     def color (self, color):
         '''color : "(" numero "," numero "," numero ")"'''
         elems = color.children
         return (self.visit(elems[0]),self.visit(elems[1]),self.visit(elems[2]))
-
+    
+    def python_code(self, code):
+        code = code[0]
+        try:
+            # Avalia o código Python inserido
+            evaluated_code = ast.literal_eval(code)
+            return evaluated_code
+        except SyntaxError:
+            # Se não for uma expressão Python, executa o código diretamente
+            exec(code, globals(), self.variables)
 
 def parse(args):
     current_folder = os.path.dirname(__file__)
