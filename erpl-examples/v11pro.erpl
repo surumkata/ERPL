@@ -1,0 +1,78 @@
+$room = "room.png"
+$tamanho = [225,300]
+$posicao = (1020,520)
+$num = 600
+$codigo = "932"
+
+S(sala,[1300,700]){
+    C(cena){
+        Ei(background,$room),
+        O(porta,($num,342),$tamanho){
+            Ei(fechada,"door.png"),
+            E animado(3,1) (aberta,["door/door1.png","door/door2.png","door/door3.png","door/door4.png","door/door5.png"])
+        },
+        O(porta2,(0,342),$tamanho){
+            Ei(fechada,"door.png"),
+            E animado(3,1) (aberta,["door/door1.png","door/door2.png","door/door3.png","door/door4.png","door/door5.png"])
+        },
+        O(cofre,(1000, 485),[172,100] ){
+            Ei(fechado,"cofre.png"),
+            E(aberto,"open_cofre.png")
+        },
+        O(chave,$posicao,[50,25]){
+            E(normal,"key.png"),
+            E(ativa,"active_key.png")
+        },
+        O(nota,(400,600),[30,30]){
+            Ei(normal,"nota.png")
+        },
+        O(nota_lupa,(300,500),[200,200]){
+            E(visivel,image_plus_txt("nota.png","nota_nova.png",$codigo,"arial.ttf",(255,255,255)))
+        }
+    },
+    C(cena2){
+        Ei(background,"room.png"),
+        O(lupa,(200,500),[40,40]){
+            Ei(normal,"lupa.png"),
+            E(ativa,"active_lupa.png")
+        },
+            
+        O(porta3,(600,342),[225,300]){
+            Ei(aberta,"open_door.png")
+        }
+    }
+}
+
+M{
+    porta_a_abrir("door-1-open.mp3")
+}
+
+E{
+
+abrir_porta(1) {clique(porta) && porta@fechada && uso(chave)} => {porta@aberta && remove(chave) && toca(porta_a_abrir)}
+
+abrir_porta2(1) {clique(porta2) && porta2@fechada} => {porta2@aberta && toca(porta_a_abrir)}
+
+muda_cena() {clique(porta2) && porta2@aberta} => {cena.cena2}
+
+muda_cena2() {clique(porta3) && porta3@aberta} => {cena.cena}
+
+fim_de_jogo() {clique(porta) && porta@aberta} => {fim()}
+
+chave_inventario(1) {clique(chave) && cofre@aberto} => {chave>>inventário}
+
+tentar_abrir_cofre() {clique(cofre) && cofre@fechado} => {pede_código($codigo,"Qual é o código do cofre?",(1000, 485),abrir_cofre,mostrar_erro)}
+
+abrir_cofre(-) {} => {cofre@aberto && chave@normal}
+
+mostrar_erro(-) {} => {mensagem("Código errado!",(1000, 485))}
+
+mensagem_trancada() {clique(porta) && porta@fechada && ~uso(chave)} => {mensagem("porta trancada! procura uma chave!",(600,385))}
+
+lupa_inventario(1) {clique(lupa)} => {lupa>>inventário}
+
+aumentar_nota() {clique(nota) && uso(lupa)} => {nota_lupa@visivel}
+
+desaparecer_nota_lupa() {clique_não(nota_lupa) && nota_lupa@visivel} => {nota_lupa@null}
+
+}

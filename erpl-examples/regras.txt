@@ -1,0 +1,68 @@
+programação_simples:
+
+Se precondiçoes, então poscondiçoes.
+
+precondicoes suporta:
+    - "e" condicional
+    - "ou" condicional
+    - "não" condicional
+    - "()" para agrupar expressões
+
+poscondiçoes: poscondiçao ("e" poscondiçao)*
+
+Se:
+
+-> OBJETO está ESTADO
+-> clique OBJETO
+-> clique não OBJETO
+-> clique OBJETO depois de EVENTO ter acontecido
+-> OBJETO está em uso
+
+Então:
+
+-> OBJETO muda para ESTADO
+-> OBJETO vai para o inventário
+-> fim de jogo
+-> mostra mensagem TEXTO em POSIÇÃO
+-> pede código TEXTO com mensagem TEXTO, se acertar faz EVENTO e se errar faz EVENTO
+-> OBJETO muda tamanho para TAMANHO
+-> OBJETO muda posição para POSIÇÃO
+-> muda para cena CENA
+-> OBJETO é removid(o|a)
+-> toca SOM
+
+
+programação_v2:
+
+precondiçoes => poscondiçoes
+     {}      =>      {}
+
+precondicoes:
+    suporta:
+        - &&  #"e" condicional
+        - ||  #"ou" condicional
+        - ~   #"não" condicional
+        - ()  #agrupar expressões
+
+poscondiçoes: poscondiçao ("&&" poscondiçao)*
+
+precondiçoes:
+
+-> OBJETO@ESTADO                     #OBJETO está ESTADO
+-> clique(OBJETO)                    #clique OBJETO
+-> clique_não(OBJETO)                #clique não OBJETO
+-> clique_depois(OBJETO, EVENTO)     #clique OBJETO depois de EVENTO ter acontecido
+-> uso(OBJETO)                       #OBJETO está em uso
+
+poscondiçoes:
+
+-> OBJETO@ESTADO                            #OBJETO muda para ESTADO
+-> OBJETO>>inventário                       #OBJETO vai para o inventário
+-> fim()                                    #fim de jogo
+-> mensagem(TEXTO,POSIÇÃO)                  #mostra mensagem TEXTO em POSIÇÃO
+-> pede_código(TEXTO,TEXTO,EVENTO,EVENTO)   #pede código TEXTO com mensagem TEXTO, se acertar faz EVENTO e se errar faz EVENTO
+-> OBJETO>>TAMANHO                          #OBJETO muda tamanho para TAMANHO
+-> OBJETO>>POSIÇÃO                          #OBJETO muda posição para POSIÇÃO
+-> cena.CENA                                #muda para cena CENA
+-> remove(OBJETO)                           #OBJETO é removid(o|a)
+-> toca(SOM)                                #toca SOM

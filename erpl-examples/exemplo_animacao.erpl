@@ -1,0 +1,70 @@
+Sala sala [1300,700] {
+    contém Cena cena {
+        tem Estado inicial background "room.png"
+        contém Objeto porta (150,293) [270,360] {
+            tem Estado inicial fechada "door.png"
+            tem Estado animado(3,1) aberta ["door/door1.png","door/door2.png","door/door3.png","door/door4.png","door/door5.png"]
+        }
+        contém Objeto right_cabinet (600,433) [143,157] {
+            tem Estado inicial fechada "right_cabinet/cabinet0.png"
+            tem Estado animado(3,1) aberta ["right_cabinet/cabinet1.png","right_cabinet/cabinet2.png","right_cabinet/cabinet3.png","right_cabinet/cabinet4.png","right_cabinet/cabinet5.png"]
+            tem Estado animado(3,1) fechar ["right_cabinet/cabinet4.png","right_cabinet/cabinet3.png","right_cabinet/cabinet2.png","right_cabinet/cabinet1.png","right_cabinet/cabinet0.png"]
+        }
+        contém Objeto left_cabinet (457,433) [143,157] {
+            tem Estado inicial fechada "left_cabinet/cabinet0.png"
+            tem Estado animado(3,1) aberta glob("left_cabinet/*.png")
+            tem Estado animado(3,1) fechar glob("left_cabinet/*.png").reverse()
+        }
+        contém Objeto lupa (535,523) [35,35] {
+            tem Estado normal "lupa.png"
+        }
+    }
+}
+
+#Sons:
+
+Som porta_a_abrir: "door-1-open.mp3"
+Som porta-locked: "door-locked.mp3"
+
+
+#Eventos:
+
+Evento abrir_porta(1):
+Se clique porta e porta está fechada e chave está em uso,
+então porta muda para aberta e chave é removida e toca porta_a_abrir.
+
+Evento abrir_left_cabinet():
+Se clique left_cabinet e (left_cabinet está fechada ou left_cabinet está fechar),
+então left_cabinet muda para aberta e toca porta_a_abrir.
+
+Evento mostrar_lupa():
+Se clique left_cabinet e (left_cabinet está fechada ou left_cabinet está fechar) e não (lupa está normal),
+então lupa muda para normal.
+
+Evento apagar_lupa():
+Se clique left_cabinet e left_cabinet está aberta e lupa está normal,
+então lupa muda para null.
+
+Evento fechar_left_cabinet():
+Se clique left_cabinet e left_cabinet está aberta e não (clique lupa),
+então left_cabinet muda para fechar e toca porta_a_abrir.
+
+Evento abrir_right_cabinet():
+Se clique right_cabinet e (right_cabinet está fechar ou right_cabinet está fechada),
+então right_cabinet muda para aberta e toca porta_a_abrir.
+
+Evento fechar_right_cabinet():
+Se clique right_cabinet e right_cabinet está aberta,
+então right_cabinet muda para fechar e toca porta_a_abrir.
+
+Evento fim(1):
+se clique porta e porta está aberta,
+então fim de jogo.
+
+Evento mensagem_trancada():
+Se clique porta e porta está fechada e não chave está em uso,
+então mostra mensagem "porta trancada! procura uma chave!" em (600,385) e toca porta-locked.
+
+Evento lupa_inventario(1):
+Se clique lupa e left_cabinet está aberta,
+Então lupa vai para o inventário.

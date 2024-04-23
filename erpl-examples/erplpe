@@ -1,0 +1,12 @@
+#!/bin/bash
+
+# Verifica se foi fornecido um argumento
+if [ "$#" -eq 0 ]; then
+    echo "Erro: Nenhum argumento fornecido."
+    exit 1
+fi
+
+# Atribui o primeiro argumento a uma variável
+input_file="$1"
+
+./../src/parser/parser.py -gm1 -i "$input_file" | ./../src/engine/pe.py

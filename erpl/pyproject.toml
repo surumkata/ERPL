@@ -1,0 +1,17 @@
+[tool.poetry]
+name = "erpl"
+version = "0.1.2"
+description = "DSL for escape rooms"
+authors = ["surumkata <a93277@uminho.pt>"]
+readme = "README.md"
+packages = [{include = "erpl"}]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+lark = "^1.1.9"
+pillow = "^10.3.0"
+pygame = "^2.5.2"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

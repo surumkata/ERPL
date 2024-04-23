@@ -1,0 +1,8 @@
+Estados:
+- Estado aberto:
+    - Imagem: "open_cofre.png"
+- Estado fechado:
+    - Imagem: "cofre.png"
+Estado inicial: fechado
+Posição: (0,0)
+Tamanho: [172,100]
