@@ -44,13 +44,13 @@ class EventPreCondition:
         self.type = type
 
 #CLICK = 0
-class EventPreConditionClick(EventPreCondition):
+class EventPreConditionClickedObject(EventPreCondition):
     def __init__(self, object_id):
         super().__init__(EventPreConditionsType.CLICK)
         self.object_id = object_id
 
 #CLICK_AFTER_EVENT = 1
-class EventPreConditionClickAfterEvent(EventPreCondition):
+class EventPreConditionAfterEvent(EventPreCondition):
     def __init__(self, object_id, event_id):
         super().__init__(EventPreConditionsType.CLICK_AFTER_EVENT)
         self.object_id = object_id
@@ -75,7 +75,7 @@ class EventPreConditionActiveAfterTime(EventPreCondition):
         self.time = time
 
 #ACTIVE_WHEN_STATE = 5
-class EventPreConditionActiveWhenState(EventPreCondition):
+class EventPreConditionWhenObjectIsState(EventPreCondition):
     def __init__(self, object_id, state_id):
         super().__init__(EventPreConditionsType.ACTIVE_WHEN_STATE)
         self.object_id = object_id
@@ -89,25 +89,25 @@ class EventPreConditionActiveWhenNotState(EventPreCondition):
         self.state_id = state_id
 
 #ACTIVE_WHEN_ITEM_IN_USE = 7  
-class EventPreConditionActiveWhenItemInUse(EventPreCondition):
+class EventPreConditionItemIsInUse(EventPreCondition):
     def __init__(self, item_id):
         super().__init__(EventPreConditionsType.ACTIVE_WHEN_ITEM_IN_USE)
         self.item_id = item_id
 
 #ACTIVE_WHEN_ITEM_NOT_IN_USE = 8
-class EventPreConditionActiveWhenItemNotInUse(EventPreCondition):
+class EventPreConditionItemNotInUse(EventPreCondition):
     def __init__(self, item_id):
         super().__init__(EventPreConditionsType.ACTIVE_WHEN_ITEM_NOT_IN_USE)
         self.item_id = item_id
 
 #CLICK_ITEM = 9
-class EventPreConditionClickItem(EventPreCondition):
+class EventPreConditionClickedItem(EventPreCondition):
    def __init__(self, item_id):
         super().__init__(EventPreConditionsType.CLICK_ITEM)
         self.item_id = item_id 
 
 #CLICKNOT = 10
-class EventPreConditionClickNot(EventPreCondition):
+class EventPreConditionClickedNotObject(EventPreCondition):
     def __init__(self, object_id):
         super().__init__(EventPreConditionsType.CLICK_NOT)
         self.object_id = object_id
@@ -123,21 +123,21 @@ class EventPosConditionEndGame(EventPosCondition):
         #self.message = message
 
 #CHANGE_STATE = 1
-class EventPosConditionChangeState(EventPosCondition):
+class EventPosConditionObjChangeState(EventPosCondition):
     def __init__(self, object_id, state_id):
         super().__init__(EventPosConditionsType.CHANGE_STATE)
         self.object_id = object_id
         self.state_id = state_id
 
 #CHANGE_POSITION = 2
-class EventPosConditionChangePosition(EventPosCondition):
+class EventPosConditionObjChangePosition(EventPosCondition):
     def __init__(self, object_id, position):
         super().__init__(EventPosConditionsType.CHANGE_POSITION)
         self.object_id = object_id
         self.position = position
 
 #CHANGE_SIZE = 3
-class EventPosConditionChangeSize(EventPosCondition):
+class EventPosConditionObjChangeSize(EventPosCondition):
     def __init__(self, object_id, size):
         super().__init__(EventPosConditionsType.CHANGE_SIZE)
         self.object_id = object_id
@@ -151,7 +151,7 @@ class EventPosConditionShowMessage(EventPosCondition):
         self.message = message
 
 #ASK_CODE = 5
-class EventPosConditionAskCode(EventPosCondition):
+class EventPosConditionQuestion(EventPosCondition):
     def __init__(self, code, message, sucess_event, fail_event):
         super().__init__(EventPosConditionsType.ASK_CODE)
         self.code = code
@@ -160,7 +160,7 @@ class EventPosConditionAskCode(EventPosCondition):
         self.fail_event = fail_event
 
 #PUT_INVENTORY = 6
-class EventPosConditionPutInventory(EventPosCondition):
+class EventPosConditionObjPutInventory(EventPosCondition):
     def __init__(self, object_id):
         super().__init__(EventPosConditionsType.PUT_INVENTORY)
         self.object_id = object_id
@@ -493,7 +493,7 @@ class Inventory:
 
     def add(self, object, slot):
         self.slots[slot] = Item(object.id,object.size,object.states[object.current_state], slot)
-        pre = EventPreConditionClickItem(object.id)
+        pre = EventPreConditionClickedItem(object.id)
         pos = EventPosConditionMotionItem(object.id,self.slots[slot].position,"nota","aumentar_nota")
 
         room.add_event(Event("arrastar",[pre],[pos],True))
@@ -628,15 +628,15 @@ for event_id, data_event in data_events.items():
         type = data_condition['type']
         if type == "Click":
             object_id = data_condition['object']
-            event_precondition = EventPreConditionClick(object_id)
+            event_precondition = EventPreConditionClickedObject(object_id)
         elif type == "ClickNot":
             object_id = data_condition['object']
-            event_precondition = EventPreConditionClickNot(object_id)
+            event_precondition = EventPreConditionClickedNotObject(object_id)
 
         elif type == "WhenStateObject":
             object_id = data_condition['object']
             state_id = data_condition['state']
-            event_precondition = EventPreConditionActiveWhenState(object_id,state_id)
+            event_precondition = EventPreConditionWhenObjectIsState(object_id,state_id)
 
         elif type == "WhenNotStateObject":
             object_id = data_condition['object']
@@ -646,13 +646,13 @@ for event_id, data_event in data_events.items():
         elif type == "ClickAfterEvent":
             object_id = data_condition['object']
             after_event_id = data_condition['event']
-            event_precondition = EventPreConditionClickAfterEvent(object_id,after_event_id)
+            event_precondition = EventPreConditionAfterEvent(object_id,after_event_id)
         elif type == 'ItemNotActived':
             item_id = data_condition['item']
-            event_precondition = EventPreConditionActiveWhenItemNotInUse(item_id)
+            event_precondition = EventPreConditionItemNotInUse(item_id)
         elif type == 'ItemActived':
             item_id = data_condition['item']
-            event_precondition = EventPreConditionActiveWhenItemInUse(item_id)
+            event_precondition = EventPreConditionItemIsInUse(item_id)
         
         pre_conditions.append(event_precondition)
 
@@ -661,12 +661,12 @@ for event_id, data_event in data_events.items():
         if type == "ChangeState":
             object_id = data_action['object']
             state_id = data_action['state']
-            event_poscondition = EventPosConditionChangeState(object_id,state_id)
+            event_poscondition = EventPosConditionObjChangeState(object_id,state_id)
         elif type == "EndGame":
             event_poscondition = EventPosConditionEndGame()
         elif type == "PutInInventory":
             object_id = data_action['object']
-            event_poscondition = EventPosConditionPutInventory(object_id)
+            event_poscondition = EventPosConditionObjPutInventory(object_id)
         elif type == "DeleteItem":
             item_id = data_action['item']
             event_poscondition = EventPosConditionDeleteItem(item_id)
@@ -679,15 +679,15 @@ for event_id, data_event in data_events.items():
             message = data_action['message']
             sucess_event = data_action['sucess_event']
             fail_event = data_action['fail_event']
-            event_poscondition = EventPosConditionAskCode(code,message,sucess_event,fail_event)
+            event_poscondition = EventPosConditionQuestion(code,message,sucess_event,fail_event)
         elif type == 'ChangeSize':
             object_id = data_action['object']
             (size_x,size_y) = data_action['size']
-            event_poscondition = EventPosConditionChangeSize(object_id,Size(size_x,size_y))
+            event_poscondition = EventPosConditionObjChangeSize(object_id,Size(size_x,size_y))
         elif type == 'ChangePosition':
             object_id = data_action['object']
             (pos_x,pos_y) = data_action['position']
-            event_poscondition = EventPosConditionChangePosition(object_id,Position(size_x,size_y))
+            event_poscondition = EventPosConditionObjChangePosition(object_id,Position(size_x,size_y))
         elif type == 'ChangeScene':
             scene_id = data_action['scene']
             event_poscondition = EventPosConditionChangeScene(scene_id)
@@ -779,8 +779,8 @@ def do_poscondition(poscondition):
         slot = inventory.find_empty_slot()
         inventory.update_add.append((object,slot))
         
-        #room.add_event_buffer(Event("desativar_"+object_id,[EventPreConditionClickItem(object_id),EventPreConditionActiveWhenItemInUse(object_id)],[EventPosConditionDesactiveItem(object_id)],True,False))
-        #room.add_event_buffer(Event("ativar"+object_id,[EventPreConditionClickItem(object_id),EventPreConditionActiveWhenItemNotInUse(object_id)],[EventPosConditionActiveItem(object_id)],True,False))
+        #room.add_event_buffer(Event("desativar_"+object_id,[EventPreConditionClickedItem(object_id),EventPreConditionItemIsInUse(object_id)],[EventPosConditionDesactiveItem(object_id)],True,False))
+        #room.add_event_buffer(Event("ativar"+object_id,[EventPreConditionClickedItem(object_id),EventPreConditionItemNotInUse(object_id)],[EventPosConditionActiveItem(object_id)],True,False))
         debug("EVENT_PUT_IN_INVENTORY: Colocando item "+object_id+" no slot "+str(slot)+" do inventário.")
     elif type == EventPosConditionsType.ACTIVE_ITEM:
         item_id = poscondition.item_id

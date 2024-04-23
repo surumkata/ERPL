@@ -1,101 +1,212 @@
-start         : python_block? atrbs? sala sons? desafios? eventos?
+start         : er imports? decls? python_block?
 
-atrbs         : atrb+
-atrb          : ARG "=" value
+er            : "EscapeRoom(" er_parameters ")"
+er_parameters : param_titulo "," param_tamanho "," param_cenarios "," param_eventos "," param_transicoes
 
-sala          : "Sala" ID tamanho "{" cenas "}"
-cenas         : ("contém" cena)+
-cena          : "Cena" ID "{" estobjs "}"
-estobjs       : (("tem" estado)|("contém" objeto))+
-objeto        : "Objeto" ID (posicao tamanho)? "{" estados "}"
+imports       : import_obj+
+import_obj    : "importa Objeto." ID
 
-estados       : ("tem" estado)+
-estado        : "Estado" INICIAL? ID text (posicao tamanho)?
-              | "Estado" INICIAL? "animado" "(" numero "," numero ")" ID text_list (posicao tamanho)?  -> estado_animado_lista
+decls          : (var|decl)+
+decl           : adiciona_estado|adiciona_objeto|adiciona_som
 
-sons          : "#Sons:" som+
-som           : "Som" ID ":" text
+adiciona_estado : "." ID         ".adiciona_Estado" "(" estado ")"
+adiciona_som    : "." ID         ".adiciona_Som"    "(" som    ")"
+adiciona_objeto : "." cenario_id ".adiciona_Objeto" "(" objeto ")"
 
 
-desafios      : "#Desafios:" desafio+
-desafio       : "Desafio" ID ":" des "."
-des           : "pede código" text "com mensagem" text "em" posicao ", se acertar faz" ID "e se errar faz" ID  -> pede_codigo
-              | "arrasta" ID ", se deixar em cima de" ID "faz" ID "e se não faz" ID                            -> arrasta_objeto
-              | "pergunta" text "com as escolhas múltiplas" "[" text "," text "," text "," text "]" "em que a respota é" text ", se acertar faz" ID "e se errar faz" ID  -> escolha_multipla
-              | "conecta" "[" text ":" text "," text ":" text "," text ":" text "," text ":" text "]" "com mensagem" text ", se acertar faz" ID "e se errar faz" ID -> ligacoes
-              | "escolhe em ordem" "[" text "," text "," text ","  text "]" "com mensagem" text ", se acertar faz" ID "e se errar faz" ID -> ordem
-              | "puzzle" text ", se completar faz" ID -> puzzle
-              | "slidepuzzle" text ", se completar faz" ID -> slide_puzzle
+var            : VAR "=" value
+value          : ID|python_call|lista_texto_constructor|texto_constructor|tamanho_constructor|posicao_constructor|numero_constructor|estado_constructor|objeto_constructor|objeto_imported|som_constructor|cenario_constructor|evento_constructor|desafio_constructor|transicao_constructor
 
-eventos       : "#Eventos:" evento+
-evento        : "Evento" ID "(" numero? ")" ":" ("se"|"Se") precondicoes "," ("Então"|"então") poscondicoes "." -> evento_simples
-              | "Evento" ID "(""-"")" ":" poscondicoes "." -> evento_ligado
+python_call              : python_local|python_function
+python_local             : "Python.Local." ID
+python_function          : "Python.Function." FUNC
 
-precondicoes  : precondicao                             -> precondicoes_simples
-              | precondicoes "e" precondicoes           -> precondicoes_e
-              | precondicoes "ou" precondicoes          -> precondicoes_ou
-              | "não" precondicoes                      -> precondicoes_nao
-              | "(" precondicoes ")"                    -> precondicoes_grupo
+lista_texto              : lista_texto_arg|lista_texto_constructor|lista_texto_python_call
+lista_texto_arg          : ID
+lista_texto_python_call  : python_call
+lista_texto_constructor  : "[" texto ("," texto)* "]"
+ 
+texto                    : texto_arg|texto_constructor|texto_python_call
+texto_arg                : ID
+texto_python_call        : python_call
+texto_constructor        : TEXTO
+     
+tamanho                  : tamanho_arg|tamanho_constructor|tamanho_python_call
+tamanho_arg              : ID
+tamanho_python_call      : python_call
+tamanho_constructor      : "[" numero "," numero "]"
+     
+posicao                  : posicao_arg|posicao_constructor|posicao_python_call
+posicao_arg              : ID
+posicao_python_call      : python_call
+posicao_constructor      : "(" numero "," numero ")"
+     
+numero                   : numero_arg|numero_constructor|numero_python_call
+numero_arg               : ID
+numero_python_call       : python_call
+numero_constructor       : NUM
+     
+estados                  : "[" estado ("," estado)* "]"
+                         | "[" "]"
+estado                   : estado_arg|estado_constructor_id|estado_python_call
+estado_arg               : ID
+estado_id                : ID
+estado_python_call       : python_call
+estado_constructor       : estado_estatico|estado_dinamico
+estado_constructor_id    : estado_estatico_id|estado_dinamico_id
+estado_estatico          : "Estado.Estático" "(" param_imagem ("," param_posicao)? ("," param_tamanho)? ")"
+estado_dinamico          : "Estado.Dinâmico" "(" param_imagens "," param_repeticoes "," param_time_sprite ("," param_posicao)? ("," param_tamanho)? ")"
+estado_estatico_id       : "Estado.Estático." ID "(" param_imagem ("," param_posicao)? ("," param_tamanho)? ")"
+estado_dinamico_id       : "Estado.Dinâmico." ID "(" param_imagens "," param_repeticoes "," param_time_sprite ("," param_posicao)? ("," param_tamanho)? ")"
+ 
+sons                     : "[" som ("," som)* "]"
+                         | "[" "]"
+som                      : som_arg|som_constructor_id|som_python_call
+som_arg                  : ID
+som_id                   : ID
+som_python_call          : python_call
+som_constructor          : "Som" "(" param_fonte ")"
+som_constructor_id       : "Som." ID "(" param_fonte ")"
+ 
+objetos                  : "[" objeto ("," objeto)* "]"
+objeto                   : objeto_imported_id|objeto_arg|objeto_constructor_id|objeto_python_call
+objeto_arg               : ID
+objeto_id                : ID
+objeto_python_call       : python_call
+objeto_imported          : "Objeto." ID ("(" (param_posicao|param_tamanho|(param_posicao "," param_tamanho)) ")")?
+objeto_constructor       : "Objeto" "(" (param_estado_inicial ",")? param_estados ("," param_posicao)? ("," param_tamanho)? ("," param_sons)? ")"
+objeto_imported_id       : "Objeto." ID "." ID ("(" (param_posicao|param_tamanho|(param_posicao "," param_tamanho)) ")")?
+objeto_constructor_id    : "Objeto." ID "(" (param_estado_inicial ",")? param_estados ("," param_posicao)? ("," param_tamanho)? ("," param_sons)? ")"
 
-precondicao   : "clique" ID                                     -> clique
-              | "clique não" ID                                 -> clique_nao
-              | ID "está" ID                                    -> esta_estado
-              | "clique" ID "depois de" ID "ter acontecido"     -> clique_depois
-              | ID "está em uso"                                -> uso
 
-poscondicoes  : poscondicao ("e" poscondicao)*
-poscondicao   : ID "muda para" ID                                                                   -> muda_estado
-              | ID "vai para o inventário"                                                          -> vai_inv
-              | "fim de jogo"                                                                       -> fim_de_jogo
-              | "mostra mensagem" text "em" posicao                                                -> mensagem   
-              | ID "muda tamanho para" tamanho                                                      -> muda_tamanho
-              | ID "muda posição para" posicao                                                      -> muda_posicao
-              | "muda para cena" ID                                                                 -> muda_cena
-              | ID "é removid" ("o"|"a")                                                            -> remove
-              | "toca" ID                                                                           -> toca_som
-              | "começa desafio" ID                                                                 -> comeca_desafio 
+cenarios                 : "[" cenario ("," cenario)* "]"
+                         | "[" "]"
+cenario                  : cenario_arg|cenario_constructor_id|cenario_python_call
+cenario_arg              : ID
+cenario_id               : ID
+cenario_python_call      : python_call
+cenario_constructor      : "Cenário" "(" param_estado_inicial "," param_estados "," param_objetos ("," param_sons)? ")"
+cenario_constructor_id   : "Cenário." ID "(" param_estado_inicial "," param_estados "," param_objetos ("," param_sons)? ")"
 
-posicao       : posicao_value
-              | ARG          -> posicao_arg
-posicao_value : "(" par ")"
 
-tamanho       : tamanho_value
-              | ARG          -> tamanho_arg
-tamanho_value : "[" par "]"
+transicoes               : "[" transicao ("," transicao)* "]"
+                         | "[" "]"
+transicao                : transicao_arg|transicao_constructor_id|transicao_python_call
+transicao_arg            : ID
+transicao_id             : ID
+transicao_python_call    : python_call
+transicao_constructor    : "Transição" "(" param_fundo "," param_musica "," param_historia "," (param_prox_cena|param_prox_trans)")"
+transicao_constructor_id : "Transição." ID "(" param_fundo "," param_musica "," param_historia "," (param_prox_cena|param_prox_trans)")"
 
-par           : numero "," numero
 
-text          : TEXTO
-              | ARG -> text_arg
-              | "pfunc_" FUNC    -> text_pfunc
+desafio                  : desafio_arg|desafio_constructor_id|desafio_python_call
+desafio_arg              : ID
+desafio_python_call      : python_call
+desafio_constructor      : desafio_pergunta|desafio_arrasta|desafio_escolha_multipla|desafio_conexao|desafio_sequencia|desafio_puzzle|desafio_slidepuzzle|desafio_socket
+desafio_pergunta         : "Desafio.Pergunta"         "(" param_pergunta "," param_resposta       "," param_sucesso   "," param_falha                   ")"
+desafio_arrasta          : "Desafio.Arrasta"          "(" param_objeto   "," param_objeto_gatilho "," param_sucesso    "," param_falha                  ")"
+desafio_escolha_multipla : "Desafio.Escolha_Múltipla" "(" param_pergunta "," param_escolhas       "," param_resposta "," param_sucesso "," param_falha  ")"
+desafio_conexao          : "Desafio.Conexão"          "(" param_pergunta "," param_lista1         "," param_lista2   "," param_sucesso "," param_falha  ")"
+desafio_sequencia        : "Desafio.Sequência"        "(" param_pergunta "," param_sequencia      "," param_sucesso   "," param_falha                   ")"
+desafio_puzzle           : "Desafio.Puzzle"           "(" param_imagem   "," param_sucesso                                                              ")"
+desafio_slidepuzzle      : "Desafio.SlidePuzzle"      "(" param_imagem   "," param_sucesso                                                              ")"
+desafio_socket           : "Desafio.Socket"           "(" param_host     "," param_port      "," param_mensagem  "," param_sucesso "," param_falha ")"
+desafio_constructor_id      : desafio_pergunta_id|desafio_arrasta_id|desafio_escolha_multipla_id|desafio_conexao_id|desafio_sequencia_id|desafio_puzzle_id|desafio_slidepuzzle_id|desafio_socket_id
+desafio_pergunta_id         : "Desafio.Pergunta."         ID "(" param_pergunta "," param_resposta       "," param_sucesso   "," param_falha                   ")"
+desafio_arrasta_id          : "Desafio.Arrasta."          ID "(" param_objeto   "," param_objeto_gatilho "," param_sucesso    "," param_falha                  ")"
+desafio_escolha_multipla_id : "Desafio.Escolha_Múltipla." ID "(" param_pergunta "," param_escolhas       "," param_resposta "," param_sucesso "," param_falha  ")"
+desafio_conexao_id          : "Desafio.Conexão."          ID "(" param_pergunta "," param_lista1         "," param_lista2   "," param_sucesso "," param_falha  ")"
+desafio_sequencia_id        : "Desafio.Sequência."        ID "(" param_pergunta "," param_sequencia      "," param_sucesso   "," param_falha                   ")"
+desafio_puzzle_id           : "Desafio.Puzzle."           ID "(" param_imagem   "," param_sucesso                                                              ")"
+desafio_slidepuzzle_id      : "Desafio.SlidePuzzle."      ID "(" param_imagem   "," param_sucesso                                                              ")"
+desafio_socket_id           : "Desafio.Socket."           ID "(" param_host     "," param_port           "," param_mensagem  "," param_sucesso "," param_falha ")"
 
-text_list       : text_list_value
-                | ARG -> text_list_arg
-text_list_value : "[" text ("," text)* "]"
 
-numero        : NUM
-              | ARG -> num_arg
 
-color         : "(" numero "," numero "," numero ")"
 
-value         : TEXTO                            -> value_text
-              | posicao_value                    -> value_posicao
-              | tamanho_value                    -> value_tamanho
-              | NUM                              -> value_num
-              | "pglobal_" ID                    -> value_pglobal
-              | "plocal_" ID                     -> value_plocal
-              | "pfunc_" FUNC                    -> value_pfunc
-              | text_list_value                  -> value_text_list
+eventos                  : "[" evento ("," evento)* "]"
+                         | "[" "]"
+evento                   : evento_arg|evento_constructor_id|evento_python_call
+evento_arg               : ID
+evento_id                : ID
+evento_python_call       : python_call
+evento_constructor       : "Evento"     "(" (param_se ",")? param_entao ("," param_repeticoes)? ")"
+evento_constructor_id    : "Evento." ID "(" (param_se ",")? param_entao ("," param_repeticoes)? ")"
 
-python_block  : PYTHON_CODE -> python_block
+param_cenarios           : "cenários"          "=" cenarios
+param_entao              : "então"             "=" poscondicoes
+param_estado_inicial     : "estado_inicial"    "=" estado_id
+param_estados            : "estados"           "=" estados
+param_escolhas           : "escolhas"          "=" lista_texto
+param_eventos            : "eventos"           "=" eventos
+param_falha              : "falha"             "=" evento_id
+param_fonte              : "fonte"             "=" texto
+param_fundo              : "fundo"             "=" estado
+param_historia           : "história"          "=" texto
+param_host               : "host"              "=" texto
+param_imagem             : "imagem"            "=" texto
+param_imagens            : "imagens"           "=" lista_texto
+param_lista1             : "lista1"            "=" lista_texto
+param_lista2             : "lista2"            "=" lista_texto
+param_mensagem           : "mensagem"          "=" texto
+param_musica             : "música"            "=" som
+param_objeto             : "objeto_id"         "=" objeto_id
+param_objeto_gatilho     : "objeto_gatilho"    "=" objeto_id
+param_objetos            : "objetos"           "=" objetos
+param_pergunta           : "pergunta"          "=" texto
+param_port               : "port"              "=" numero
+param_posicao            : "posição"           "=" posicao
+param_prox_cena          : "próxima_cenário"   "=" cenario_id
+param_prox_trans         : "próxima_transição" "=" transicao_id
+param_se                 : "se"                "=" precondicoes
+param_sequencia          : "sequência"         "=" lista_texto
+param_sons               : "sons"              "=" sons
+param_sucesso            : "sucesso"           "=" evento_id
+param_repeticoes         : "repetições"        "=" numero
+param_resposta           : "resposta"          "=" texto
+param_tamanho            : "tamanho"           "=" tamanho
+param_time_sprite        : "time_sprite"       "=" numero
+param_titulo             : "título"            "=" texto
+param_transicoes         : "transições"        "=" transicoes
+
+precondicoes             : precondicao|preconds_e|preconds_ou|preconds_nao|preconds_grupo
+preconds_e               : precondicoes "e" precondicoes 
+preconds_ou              : precondicoes "ou" precondicoes
+preconds_nao             : "não" precondicoes            
+preconds_grupo           : "(" precondicoes ")"          
+
+precondicao                   : precond_clique_obj | precond_clique_nao_obj | precond_obj_esta_est | precond_ev_ja_aconteceu | precond_obj_uso | precond_depois_tempo
+precond_clique_obj            : "clique" objeto_id                                
+precond_clique_nao_obj        : "clique não" objeto_id                           
+precond_obj_esta_est          : objeto_id "está" estado_id                               
+precond_ev_ja_aconteceu       : evento_id "já aconteceu"
+precond_obj_uso               : objeto_id "está em uso"           
+precond_depois_tempo          : "já passaram" numero "segundos"                
+
+poscondicoes                  : poscondicao ("e" poscondicao)*
+poscondicao                   : poscond_obj_muda_est|poscond_obj_vai_inv|poscond_fim_de_jogo|poscond_mostra_msg|poscond_obj_muda_tam|poscond_obj_muda_pos|poscond_muda_cena|poscond_remove_obj|poscond_toca_som|poscond_comeca_des|poscond_trans
+poscond_obj_muda_est          : objeto_id "muda para" estado_id                  
+poscond_obj_vai_inv           : objeto_id "vai para o inventário"         
+poscond_fim_de_jogo           : "fim de jogo"                      
+poscond_mostra_msg            : "mostra mensagem" texto "em" posicao
+poscond_obj_muda_tam          : objeto_id "muda tamanho para" tamanho     
+poscond_obj_muda_pos          : objeto_id "muda posição para" posicao     
+poscond_muda_cena             : "muda para cenário" cenario_id                
+poscond_remove_obj            : objeto_id "é removid" ("o"|"a")           
+poscond_toca_som              : "toca" som_id "d"("o"|"a") ID                        
+poscond_comeca_des            : "começa desafio" desafio_arg                
+poscond_trans                 : "transição" transicao_id
+
+python_block : "Python" "=" PYTHON_CODE
+
 
 INICIAL : /inicial/
 REVERSE : /\.reverse\(\)/
 
-ID            : /[\w\-_]+/
+ID            : /[a-z][\w\-_]*/
+VAR           : /\.[a-z][\w\-_]*/
 ARGN          : /\$\d+/
-ARG           : /\$[a-zA-Z]\w+/
-PYTHON_CODE   : /bp\{(.|\n)+\}ep/
+PYTHON_CODE   : /(.|\n)+/
 FUNC          : /\w+\((?:[^()]*|\([^()]*\))*\)/
 COMMENT: /#[^\n]*/
 

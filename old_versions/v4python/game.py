@@ -6,7 +6,7 @@ from model.load import load
 from model.utils import WIDTH, HEIGHT, BLACK, WHITE, GREEN, debug, BalloonMessage
 from model.inventory import Inventory
 from model.poscondition import EventPosCondition, EventPosConditionsType, EventPosConditionDesactiveItem, EventPosConditionActiveItem
-from model.precondition import EventPreConditionClickItem, EventPreConditionActiveWhenItemInUse, EventPreConditionActiveWhenItemNotInUse
+from model.precondition import EventPreConditionClickedItem, EventPreConditionItemIsInUse, EventPreConditionItemNotInUse
 from model.precondition_tree import PreConditionTree, PreConditionOperatorAnd, PreConditionVar
 from model.escape_room import EscapeRoom
 import argparse
@@ -51,8 +51,8 @@ def do_poscondition(poscondition : EventPosCondition,room : EscapeRoom, inventor
         del room.objects[object_id]
         slot = inventory.find_empty_slot()
         inventory.update_add.append((object,slot))
-        desativar = PreConditionTree(PreConditionOperatorAnd(PreConditionVar(EventPreConditionClickItem(object_id)),PreConditionVar(EventPreConditionActiveWhenItemInUse(object_id))))
-        ativar = PreConditionTree(PreConditionOperatorAnd(PreConditionVar(EventPreConditionClickItem(object_id)),PreConditionVar(EventPreConditionActiveWhenItemNotInUse(object_id))))
+        desativar = PreConditionTree(PreConditionOperatorAnd(PreConditionVar(EventPreConditionClickedItem(object_id)),PreConditionVar(EventPreConditionItemIsInUse(object_id))))
+        ativar = PreConditionTree(PreConditionOperatorAnd(PreConditionVar(EventPreConditionClickedItem(object_id)),PreConditionVar(EventPreConditionItemNotInUse(object_id))))
         room.add_event_buffer("desativar_"+object_id,desativar,[EventPosConditionDesactiveItem(object_id)],True,False)
         room.add_event_buffer("ativar"+object_id,ativar,[EventPosConditionActiveItem(object_id)],True,False)
         debug("EVENT_PUT_IN_INVENTORY: Colocando item "+object_id+" no slot "+str(slot)+" do inventário.")
@@ -91,9 +91,9 @@ def do_poscondition(poscondition : EventPosCondition,room : EscapeRoom, inventor
         room.objects[object_id].change_position(pos)
         debug("EVENT_CHANGE_POSITION: Mudando "+object_id +" para a posição ("+str(pos.x)+","+str(pos.y)+").")
     elif type == EventPosConditionsType.CHANGE_SCENE:
-        scene_id = poscondition.scene_id
-        room.er_state.current_scene_buffer = scene_id
-        debug("EVENT_CHANGE_SCENE: Mudando para cena "+scene_id+".")
+        scenario_id = poscondition.scenario_id
+        room.er_state.current_scenario_buffer = scenario_id
+        debug("EVENT_CHANGE_SCENE: Mudando para cena "+scenario_id+".")
 
 def play_game(room, inventory):
 
@@ -127,9 +127,9 @@ def play_game(room, inventory):
         room.update_events()
         room.update_states()
         inventory.update_items()
-        if room.er_state.current_scene_buffer != None: 
-            room.change_current_scene(room.er_state.current_scene_buffer)
-            room.er_state.current_scene_buffer = None
+        if room.er_state.current_scenario_buffer != None: 
+            room.change_current_scenario(room.er_state.current_scenario_buffer)
+            room.er_state.current_scenario_buffer = None
 
         #Desenhar a room
         room.draw(screen)

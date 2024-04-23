@@ -4,10 +4,10 @@ from model.state import State
 
 """CLASSE DE UM OBJETO"""
 class Object:
-    def __init__(self, id : str, scene_id : str, position : Position, size : Size):
+    def __init__(self, id : str, scenario_id : str, position : Position, size : Size):
         self.id = id
         self.current_state = None
-        self.reference = scene_id
+        self.reference = scenario_id
         self.position = position
         self.size = size
         self.states = {}

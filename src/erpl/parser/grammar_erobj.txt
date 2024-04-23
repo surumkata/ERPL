@@ -1,0 +1,25 @@
+start : estados sons? estado_inicial? posicao? tamanho?
+
+estados : "Estados:" estado+
+estado  : "- Estado animado" ID ":" imagens repiticoes timesprite -> estado_animado
+        | "- Estado" ID ":" imagem                                -> estado_simples
+
+sons    : "Sons:" som+
+som     : "- Som" ID ":" fonte
+
+imagens : "- Imagens:" "[" TEXTO ("," TEXTO)* "]"
+imagem  : "- Imagem:" TEXTO
+repiticoes: "- Repitições:" NUM
+timesprite: "- Time-Sprite:" NUM
+
+fonte: "- Fonte:" TEXTO
+
+estado_inicial: "Estado inicial:" ID
+posicao: "Posição:" "(" NUM "," NUM ")"
+tamanho: "Tamanho:" "[" NUM "," NUM "]"
+
+ID            : /[\w\-_]+/
+%import common.ESCAPED_STRING   -> TEXTO
+%import common.SIGNED_NUMBER    -> NUM
+%import common.WS
+%ignore WS

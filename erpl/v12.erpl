@@ -27,6 +27,9 @@ puzzle = glob.glob(f"{current_folder}/../assets/images/puzzle/*.png")
 add_text_to_image(dotpng("nota"),dotpng("nota_nova"),"932",(255,255,255),dotttf("arial"))
 }ep
 
+importa Objeto.porta
+importa Objeto.cofre
+
 $room = pfunc_dotpng("room")
 $tamanho = plocal_tamanho
 $posicao = plocal_posicao
@@ -38,18 +41,9 @@ $lista2 = plocal_puzzle
 Sala sala [1300,700] {
     contém Cena cena {
         tem Estado inicial background $room
-        contém Objeto porta (600,342) $tamanho {
-            tem Estado inicial fechada pfunc_dotpng("door")
-            tem Estado animado(3,1) aberta $lista
-        }
-        contém Objeto porta2 (0,342) $tamanho {
-            tem Estado inicial fechada pfunc_dotpng("door/door0")
-            tem Estado animado(3,1) aberta $lista
-        }
-        contém Objeto cofre $posicao [172,$num] {
-            tem Estado inicial fechado pfunc_dotpng("cofre")
-            tem Estado aberto pfunc_dotpng("open_cofre")
-        }
+        contém Objeto.porta porta (600,342) $tamanho
+        contém Objeto.porta porta2 (0,342) $tamanho
+        contém Objeto.cofre cofre $posicao [172,$num]
         contém Objeto chave (1020,520) [50,25] {
             tem Estado normal pfunc_dotpng("key")
             tem Estado ativa pfunc_dotpng("active_key")
@@ -100,6 +94,9 @@ puzzle pfunc_dotpng("puzzle"), se completar faz abrir_cofre.
 
 Desafio slidepuzzle:
 slidepuzzle pfunc_dotpng("puzzle"), se completar faz abrir_cofre.
+
+Desafio socket:
+socket "127.0.0.1" 65433 "à escuta...", se acertar faz abrir_cofre e se errar faz mostrar_erro.
 
 #Eventos:
 

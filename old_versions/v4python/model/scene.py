@@ -1,7 +1,7 @@
 from model.state import State
 
 """CLASSE DE CENA"""
-class Scene:
+class Scenario:
     def __init__(self, id : str):
         self.id = id
         self.current_state = None

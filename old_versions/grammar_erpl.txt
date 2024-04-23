@@ -1,0 +1,125 @@
+start         : python_block? imps? atrbs? sala transicoes? sons? desafios? eventos?
+
+imps          : import+
+import        : "importa Objeto." ID -> obj_import
+
+
+atrbs         : atrb+
+atrb          : ARG "=" value
+
+sala          : "Sala" ID tamanho "{" cenas "}"
+cenas         : ("contém" cena)+
+cena          : "Cena" ID "{" estobjs "}"
+estobjs       : (("tem" estado)|("contém" objeto))+
+objeto        : "Objeto" ID posicao? tamanho? "{" estados "}"
+              | "Objeto." ID ID posicao? tamanho? -> obj_imported
+
+estados       : ("tem" estado)+
+estado        : "Estado" INICIAL? ID text posicao? tamanho?
+              | "Estado" INICIAL? "animado" "(" numero "," numero ")" ID text_list posicao? tamanho?  -> estado_animado_lista
+
+sons          : "#Sons:" som+
+som           : "Som" ID ":" text
+
+transicoes    : "#Transições:" transicao+
+transicao     : "Transição" ID ":" tfundo tmusica? ttexto? (tproxcena|tproxtrans)
+tfundo        : "- fundo:" text
+tmusica       : "- musica:" text
+ttexto        : "- história:" text
+tproxcena     : "- próxima cena:" ID 
+tproxtrans    : "- próxima transição:" ID
+
+desafios      : "#Desafios:" desafio+
+desafio       : "Desafio" ID ":" des "."
+des           : "pede código" text "com mensagem" text "em" posicao ", se acertar faz" ID "e se errar faz" ID  -> pede_codigo
+              | "arrasta" ID ", se deixar em cima de" ID "faz" ID "e se não faz" ID                            -> arrasta_objeto
+              | "pergunta" text "com as escolhas múltiplas" "[" text "," text "," text "," text "]" "em que a respota é" text ", se acertar faz" ID "e se errar faz" ID  -> escolha_multipla
+              | "conecta" "[" text ":" text "," text ":" text "," text ":" text "," text ":" text "]" "com mensagem" text ", se acertar faz" ID "e se errar faz" ID -> ligacoes
+              | "escolhe em ordem" "[" text "," text "," text ","  text "]" "com mensagem" text ", se acertar faz" ID "e se errar faz" ID -> ordem
+              | "puzzle" text ", se completar faz" ID -> puzzle
+              | "slidepuzzle" text ", se completar faz" ID -> slide_puzzle
+              | "socket" text numero text ", se acertar faz" ID "e se errar faz" ID -> socket
+
+eventos       : "#Eventos:" evento+
+evento        : "Evento" ID "(" numero? ")" ":" ("se"|"Se") precondicoes "," ("Então"|"então") poscondicoes "." -> evento_simples
+              | "Evento" ID "(""-"")" ":" poscondicoes "." -> evento_ligado
+
+precondicoes  : precondicao                             -> precondicoes_simples
+              | precondicoes "e" precondicoes           -> precondicoes_e
+              | precondicoes "ou" precondicoes          -> precondicoes_ou
+              | "não" precondicoes                      -> precondicoes_nao
+              | "(" precondicoes ")"                    -> precondicoes_grupo
+
+precondicao   : "clique" ID                                     -> clique
+              | "clique não" ID                                 -> clique_nao
+              | ID "está" ID                                    -> esta_estado
+              | "clique" ID "depois de" ID "ter acontecido"     -> clique_depois
+              | ID "está em uso"                                -> uso
+
+poscondicoes  : poscondicao ("e" poscondicao)*
+poscondicao   : ID "muda para" ID                                                                   -> muda_estado
+              | ID "vai para o inventário"                                                          -> vai_inv
+              | "fim de jogo"                                                                       -> fim_de_jogo
+              | "mostra mensagem" text "em" posicao                                                -> mensagem   
+              | ID "muda tamanho para" tamanho                                                      -> muda_tamanho
+              | ID "muda posição para" posicao                                                      -> muda_posicao
+              | "muda para cena" ID                                                                 -> muda_cena
+              | ID "é removid" ("o"|"a")                                                            -> remove
+              | "toca" ID                                                                           -> toca_som
+              | "começa desafio" ID                                                                 -> comeca_desafio 
+              | "transição" ID                                                                      -> transiciona
+
+posicao       : posicao_value
+              | ARG          -> posicao_arg
+posicao_value : "(" par ")"
+
+tamanho       : tamanho_value
+              | ARG          -> tamanho_arg
+tamanho_value : "[" par "]"
+
+par           : numero "," numero
+
+text          : TEXTO
+              | ARG -> text_arg
+              | "pfunc_" FUNC    -> text_pfunc
+
+text_list       : text_list_value
+                | ARG -> text_list_arg
+text_list_value : "[" text ("," text)* "]"
+
+numero        : NUM
+              | ARG -> num_arg
+
+color         : "(" numero "," numero "," numero ")"
+
+value         : TEXTO                            -> value_text
+              | posicao_value                    -> value_posicao
+              | tamanho_value                    -> value_tamanho
+              | NUM                              -> value_num
+              | "pglobal_" ID                    -> value_pglobal
+              | "plocal_" ID                     -> value_plocal
+              | "pfunc_" FUNC                    -> value_pfunc
+              | text_list_value                  -> value_text_list
+
+python_block  : PYTHON_CODE -> python_block
+
+INICIAL : /inicial/
+REVERSE : /\.reverse\(\)/
+
+ID            : /[\w\-_]+/
+ARGN          : /\$\d+/
+ARG           : /\$[a-zA-Z]\w+/
+PYTHON_CODE   : /bp\{(.|\n)+\}ep/
+FUNC          : /\w+\((?:[^()]*|\([^()]*\))*\)/
+COMMENT: /#[^\n]*/
+
+%import common.ESCAPED_STRING   -> TEXTO
+%import common.SIGNED_NUMBER    -> NUM
+
+%import common.C_COMMENT
+%import common.WS
+
+%ignore C_COMMENT
+%ignore WS
+
+

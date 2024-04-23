@@ -1,461 +1,488 @@
 {
-   "map": {
-      "sala": {
-         "size": [
-            1300,
-            700
-         ],
-         "scenes": {
-            "cena": {
-               "states": {
-                  "background": {
-                     "initial": true,
-                     "filenames": [
-                        "/mnt/c/Users/35191/Desktop/MyEscapeRoom/erpl/../assets/images/room.png"
-                     ]
-                  }
-               },
-               "objects": {
-                  "porta": {
-                     "position": [
-                        600,
-                        342
-                     ],
-                     "size": [
-                        225,
-                        300
-                     ],
-                     "states": {
-                        "fechada": {
-                           "initial": true,
-                           "filenames": [
-                              "/mnt/c/Users/35191/Desktop/MyEscapeRoom/erpl/../assets/images/door.png"
-                           ]
-                        },
-                        "aberta": {
-                           "initial": false,
-                           "time_sprite": 3,
-                           "repeate": 1,
-                           "filenames": [
-                              "/mnt/c/Users/35191/Desktop/MyEscapeRoom/erpl/../assets/images/door/door0.png",
-                              "/mnt/c/Users/35191/Desktop/MyEscapeRoom/erpl/../assets/images/door/door1.png",
-                              "/mnt/c/Users/35191/Desktop/MyEscapeRoom/erpl/../assets/images/door/door2.png",
-                              "/mnt/c/Users/35191/Desktop/MyEscapeRoom/erpl/../assets/images/door/door3.png",
-                              "/mnt/c/Users/35191/Desktop/MyEscapeRoom/erpl/../assets/images/door/door4.png",
-                              "/mnt/c/Users/35191/Desktop/MyEscapeRoom/erpl/../assets/images/door/door5.png"
-                           ]
-                        }
-                     }
-                  },
-                  "porta2": {
-                     "position": [
-                        0,
-                        342
-                     ],
-                     "size": [
-                        225,
-                        300
-                     ],
-                     "states": {
-                        "fechada": {
-                           "initial": true,
-                           "filenames": [
-                              "/mnt/c/Users/35191/Desktop/MyEscapeRoom/erpl/../assets/images/door/door0.png"
-                           ]
-                        },
-                        "aberta": {
-                           "initial": false,
-                           "time_sprite": 3,
-                           "repeate": 1,
-                           "filenames": [
-                              "/mnt/c/Users/35191/Desktop/MyEscapeRoom/erpl/../assets/images/door/door0.png",
-                              "/mnt/c/Users/35191/Desktop/MyEscapeRoom/erpl/../assets/images/door/door1.png",
-                              "/mnt/c/Users/35191/Desktop/MyEscapeRoom/erpl/../assets/images/door/door2.png",
-                              "/mnt/c/Users/35191/Desktop/MyEscapeRoom/erpl/../assets/images/door/door3.png",
-                              "/mnt/c/Users/35191/Desktop/MyEscapeRoom/erpl/../assets/images/door/door4.png",
-                              "/mnt/c/Users/35191/Desktop/MyEscapeRoom/erpl/../assets/images/door/door5.png"
-                           ]
-                        }
-                     }
-                  },
-                  "cofre": {
-                     "position": [
-                        1000,
-                        485
-                     ],
-                     "size": [
-                        172,
-                        100
-                     ],
-                     "states": {
-                        "fechado": {
-                           "initial": true,
-                           "filenames": [
-                              "/mnt/c/Users/35191/Desktop/MyEscapeRoom/erpl/../assets/images/cofre.png"
-                           ]
-                        },
-                        "aberto": {
-                           "initial": false,
-                           "filenames": [
-                              "/mnt/c/Users/35191/Desktop/MyEscapeRoom/erpl/../assets/images/open_cofre.png"
-                           ]
-                        }
-                     }
-                  },
-                  "chave": {
-                     "position": [
-                        1020,
-                        520
-                     ],
-                     "size": [
-                        50,
-                        25
-                     ],
-                     "states": {
-                        "normal": {
-                           "initial": false,
-                           "filenames": [
-                              "/mnt/c/Users/35191/Desktop/MyEscapeRoom/erpl/../assets/images/key.png"
-                           ]
-                        },
-                        "ativa": {
-                           "initial": false,
-                           "filenames": [
-                              "/mnt/c/Users/35191/Desktop/MyEscapeRoom/erpl/../assets/images/active_key.png"
-                           ]
-                        }
-                     }
-                  },
-                  "nota": {
-                     "states": {
-                        "normal": {
-                           "initial": true,
-                           "filenames": [
-                              "/mnt/c/Users/35191/Desktop/MyEscapeRoom/erpl/../assets/images/nota.png"
-                           ],
-                           "position": [
-                              400,
-                              600
-                           ],
-                           "size": [
-                              30,
-                              30
-                           ]
-                        }
-                     }
-                  },
-                  "nota_lupa": {
-                     "position": [
-                        300,
-                        500
-                     ],
-                     "size": [
-                        200,
-                        200
-                     ],
-                     "states": {
-                        "visivel": {
-                           "initial": false,
-                           "filenames": [
-                              "/mnt/c/Users/35191/Desktop/MyEscapeRoom/erpl/../assets/images/nota_nova.png"
-                           ]
-                        }
-                     }
-                  },
-                  "lupa": {
-                     "position": [
-                        200,
-                        500
-                     ],
-                     "size": [
-                        40,
-                        40
-                     ],
-                     "states": {
-                        "normal": {
-                           "initial": true,
-                           "filenames": [
-                              "/mnt/c/Users/35191/Desktop/MyEscapeRoom/erpl/../assets/images/lupa.png"
-                           ]
-                        },
-                        "ativa": {
-                           "initial": false,
-                           "filenames": [
-                              "/mnt/c/Users/35191/Desktop/MyEscapeRoom/erpl/../assets/images/active_lupa.png"
-                           ]
-                        }
-                     }
-                  }
-               }
-            },
-            "cena2": {
-               "states": {
-                  "background": {
-                     "initial": true,
-                     "filenames": [
-                        "/mnt/c/Users/35191/Desktop/MyEscapeRoom/erpl/../assets/images/room.png"
-                     ]
-                  }
-               },
-               "objects": {
-                  "porta3": {
-                     "position": [
-                        600,
-                        342
-                     ],
-                     "size": [
-                        225,
-                        300
-                     ],
-                     "states": {
-                        "aberta": {
-                           "initial": true,
-                           "filenames": [
-                              "/mnt/c/Users/35191/Desktop/MyEscapeRoom/erpl/../assets/images/open_door.png"
-                           ]
-                        }
-                     }
-                  }
-               }
+   "title": "Sala bu\u00e9de fixe",
+   "size": [
+      1300,
+      700
+   ],
+   "scenarios": [
+      {
+         "initial_state": "background",
+         "states": [
+            {
+               "image": "/mnt/c/Users/35191/Desktop/MyEscapeRoom/assets/images/room.png",
+               "id": "background"
             }
-         }
+         ],
+         "objects": [
+            {
+               "states": [
+                  {
+                     "id": "porta_aberta",
+                     "images": [
+                        "/mnt/c/Users/35191/Desktop/MyEscapeRoom/src/erpl/assets/objects/porta/door0.png",
+                        "/mnt/c/Users/35191/Desktop/MyEscapeRoom/src/erpl/assets/objects/porta/door1.png",
+                        "/mnt/c/Users/35191/Desktop/MyEscapeRoom/src/erpl/assets/objects/porta/door2.png",
+                        "/mnt/c/Users/35191/Desktop/MyEscapeRoom/src/erpl/assets/objects/porta/door3.png",
+                        "/mnt/c/Users/35191/Desktop/MyEscapeRoom/src/erpl/assets/objects/porta/door4.png",
+                        "/mnt/c/Users/35191/Desktop/MyEscapeRoom/src/erpl/assets/objects/porta/door5.png"
+                     ],
+                     "repetitions": 1,
+                     "time_sprite": 3
+                  },
+                  {
+                     "id": "porta_fechada",
+                     "image": "/mnt/c/Users/35191/Desktop/MyEscapeRoom/src/erpl/assets/objects/porta/door0.png"
+                  }
+               ],
+               "sounds": [
+                  {
+                     "id": "porta_abrir",
+                     "source": "/mnt/c/Users/35191/Desktop/MyEscapeRoom/src/erpl/assets/objects/porta/door-1-open.mp3"
+                  },
+                  {
+                     "id": "porta_locked",
+                     "source": "/mnt/c/Users/35191/Desktop/MyEscapeRoom/src/erpl/assets/objects/porta/door-locked.mp3"
+                  },
+                  {
+                     "source": "/mnt/c/Users/35191/Desktop/MyEscapeRoom/assets/sounds/door-1-open.mp3",
+                     "id": "abrir_porta_som"
+                  },
+                  {
+                     "source": "/mnt/c/Users/35191/Desktop/MyEscapeRoom/assets/sounds/door-1-open.mp3",
+                     "id": "abrir_porta_som"
+                  }
+               ],
+               "initial_state": "porta_fechada",
+               "position": [
+                  600,
+                  342
+               ],
+               "size": [
+                  225,
+                  300
+               ],
+               "id": "porta"
+            },
+            {
+               "states": [
+                  {
+                     "id": "porta_aberta",
+                     "images": [
+                        "/mnt/c/Users/35191/Desktop/MyEscapeRoom/src/erpl/assets/objects/porta/door0.png",
+                        "/mnt/c/Users/35191/Desktop/MyEscapeRoom/src/erpl/assets/objects/porta/door1.png",
+                        "/mnt/c/Users/35191/Desktop/MyEscapeRoom/src/erpl/assets/objects/porta/door2.png",
+                        "/mnt/c/Users/35191/Desktop/MyEscapeRoom/src/erpl/assets/objects/porta/door3.png",
+                        "/mnt/c/Users/35191/Desktop/MyEscapeRoom/src/erpl/assets/objects/porta/door4.png",
+                        "/mnt/c/Users/35191/Desktop/MyEscapeRoom/src/erpl/assets/objects/porta/door5.png"
+                     ],
+                     "repetitions": 1,
+                     "time_sprite": 3
+                  },
+                  {
+                     "id": "porta_fechada",
+                     "image": "/mnt/c/Users/35191/Desktop/MyEscapeRoom/src/erpl/assets/objects/porta/door0.png"
+                  }
+               ],
+               "sounds": [
+                  {
+                     "id": "porta_abrir",
+                     "source": "/mnt/c/Users/35191/Desktop/MyEscapeRoom/src/erpl/assets/objects/porta/door-1-open.mp3"
+                  },
+                  {
+                     "id": "porta_locked",
+                     "source": "/mnt/c/Users/35191/Desktop/MyEscapeRoom/src/erpl/assets/objects/porta/door-locked.mp3"
+                  },
+                  {
+                     "source": "/mnt/c/Users/35191/Desktop/MyEscapeRoom/assets/sounds/door-1-open.mp3",
+                     "id": "abrir_porta_som"
+                  },
+                  {
+                     "source": "/mnt/c/Users/35191/Desktop/MyEscapeRoom/assets/sounds/door-1-open.mp3",
+                     "id": "abrir_porta_som"
+                  }
+               ],
+               "initial_state": "porta_fechada",
+               "position": [
+                  0,
+                  342
+               ],
+               "size": [
+                  225,
+                  300
+               ],
+               "id": "porta2"
+            },
+            {
+               "states": [
+                  {
+                     "id": "cofre_aberto",
+                     "image": "/mnt/c/Users/35191/Desktop/MyEscapeRoom/src/erpl/assets/objects/cofre/open_cofre.png"
+                  },
+                  {
+                     "id": "cofre_fechado",
+                     "image": "/mnt/c/Users/35191/Desktop/MyEscapeRoom/src/erpl/assets/objects/cofre/cofre.png"
+                  }
+               ],
+               "initial_state": "cofre_fechado",
+               "position": [
+                  1000,
+                  485
+               ],
+               "size": [
+                  172,
+                  100
+               ],
+               "id": "cofre"
+            },
+            {
+               "states": [
+                  {
+                     "image": "/mnt/c/Users/35191/Desktop/MyEscapeRoom/assets/images/key.png",
+                     "id": "normal"
+                  },
+                  {
+                     "image": "/mnt/c/Users/35191/Desktop/MyEscapeRoom/assets/images/active_key.png",
+                     "id": "ativa"
+                  }
+               ],
+               "position": [
+                  1020,
+                  520
+               ],
+               "size": [
+                  50,
+                  25
+               ],
+               "id": "chave"
+            },
+            {
+               "initial_state": "nota_normal",
+               "states": [
+                  {
+                     "image": "/mnt/c/Users/35191/Desktop/MyEscapeRoom/assets/images/nota.png",
+                     "position": [
+                        400,
+                        600
+                     ],
+                     "size": [
+                        30,
+                        30
+                     ],
+                     "id": "nota_normal"
+                  }
+               ],
+               "id": "nota"
+            },
+            {
+               "id": "nota_lupa",
+               "states": [
+                  {
+                     "image": "/mnt/c/Users/35191/Desktop/MyEscapeRoom/assets/images/nota_nova.png",
+                     "id": "visivel"
+                  }
+               ],
+               "position": [
+                  300,
+                  500
+               ],
+               "size": [
+                  200,
+                  200
+               ]
+            },
+            {
+               "initial_state": "lupa_normal",
+               "states": [
+                  {
+                     "image": "/mnt/c/Users/35191/Desktop/MyEscapeRoom/assets/images/lupa.png",
+                     "id": "lupa_normal"
+                  },
+                  {
+                     "image": "/mnt/c/Users/35191/Desktop/MyEscapeRoom/assets/images/active_lupa.png",
+                     "id": "lupa_ativa"
+                  }
+               ],
+               "position": [
+                  200,
+                  500
+               ],
+               "size": [
+                  40,
+                  40
+               ],
+               "id": "lupa"
+            }
+         ],
+         "id": "cena"
+      },
+      {
+         "initial_state": "background",
+         "states": [
+            {
+               "image": "/mnt/c/Users/35191/Desktop/MyEscapeRoom/assets/images/room.png",
+               "id": "background"
+            }
+         ],
+         "objects": [
+            {
+               "initial_state": "aberta",
+               "states": [
+                  {
+                     "image": "/mnt/c/Users/35191/Desktop/MyEscapeRoom/assets/images/open_door.png",
+                     "id": "aberta"
+                  }
+               ],
+               "position": [
+                  600,
+                  342
+               ],
+               "size": [
+                  225,
+                  300
+               ],
+               "id": "porta3"
+            }
+         ],
+         "id": "cena2"
       }
-   },
-   "events": {
-      "abrir_porta": {
-         "repetivel": 1,
-         "precondicoes": {
-            "operator": "e",
+   ],
+   "events": [
+      {
+         "preconditions": {
+            "operator": "AND",
             "left": {
-               "operator": "e",
+               "operator": "AND",
                "left": {
-                  "variavel": {
-                     "type": "Click",
+                  "var": {
+                     "type": "CLICKED_OBJECT",
                      "object": "porta"
                   }
                },
                "right": {
-                  "variavel": {
-                     "type": "WhenStateObject",
+                  "var": {
+                     "type": "WHEN_OBJECT_IS_STATE",
                      "object": "porta",
-                     "state": "fechada"
+                     "state": "porta_fechada"
                   }
                }
             },
             "right": {
-               "variavel": {
-                  "type": "ItemActived",
+               "var": {
+                  "type": "ITEM_IS_IN_USE",
                   "item": "chave"
                }
             }
          },
-         "poscondicoes": [
+         "posconditions": [
             {
-               "type": "ChangeState",
+               "type": "OBJ_CHANGE_STATE",
                "object": "porta",
-               "state": "aberta"
+               "state": "porta_aberta"
             },
             {
-               "type": "DeleteItem",
+               "type": "DELETE_ITEM",
                "item": "chave"
             },
             {
-               "type": "PlaySound",
-               "sound": "porta_a_abrir"
+               "type": "PLAY_SOUND",
+               "sound": "porta_abrir",
+               "source_id": "porta",
+               "source_type": "Object"
             }
          ],
-         "linked": false
+         "repetitions": 1,
+         "id": "abrir_porta"
       },
-      "abrir_porta2": {
-         "repetivel": 1,
-         "precondicoes": {
-            "operator": "e",
+      {
+         "preconditions": {
+            "operator": "AND",
             "left": {
-               "variavel": {
-                  "type": "Click",
+               "var": {
+                  "type": "CLICKED_OBJECT",
                   "object": "porta2"
                }
             },
             "right": {
-               "variavel": {
-                  "type": "WhenStateObject",
-                  "object": "porta2",
-                  "state": "fechada"
+               "operator": "AND",
+               "left": {
+                  "var": {
+                     "type": "WHEN_OBJECT_IS_STATE",
+                     "object": "porta2",
+                     "state": "porta_fechada"
+                  }
+               },
+               "right": {
+                  "var": {
+                     "type": "AFTER_TIME",
+                     "time": 5000
+                  }
                }
             }
          },
-         "poscondicoes": [
+         "posconditions": [
             {
-               "type": "ChangeState",
+               "type": "OBJ_CHANGE_STATE",
                "object": "porta2",
-               "state": "aberta"
+               "state": "porta_aberta"
             },
             {
-               "type": "PlaySound",
-               "sound": "porta_a_abrir"
+               "type": "PLAY_SOUND",
+               "sound": "porta_abrir",
+               "source_id": "porta2",
+               "source_type": "Object"
             }
          ],
-         "linked": false
+         "repetitions": 1,
+         "id": "abrir_porta2"
       },
-      "muda_cena": {
-         "repetivel": 9223372036854775807,
-         "precondicoes": {
-            "operator": "e",
+      {
+         "preconditions": {
+            "operator": "AND",
             "left": {
-               "variavel": {
-                  "type": "Click",
+               "var": {
+                  "type": "CLICKED_OBJECT",
                   "object": "porta2"
                }
             },
             "right": {
-               "variavel": {
-                  "type": "WhenStateObject",
+               "var": {
+                  "type": "WHEN_OBJECT_IS_STATE",
                   "object": "porta2",
-                  "state": "aberta"
+                  "state": "porta_aberta"
                }
             }
          },
-         "poscondicoes": [
+         "posconditions": [
             {
-               "type": "ChangeScene",
-               "scene": "cena2"
+               "type": "CHANGE_SCENARIO",
+               "scenario": "cena2"
             }
          ],
-         "linked": false
+         "id": "muda_cena"
       },
-      "muda_cena2": {
-         "repetivel": 9223372036854775807,
-         "precondicoes": {
-            "operator": "e",
+      {
+         "preconditions": {
+            "operator": "AND",
             "left": {
-               "variavel": {
-                  "type": "Click",
+               "var": {
+                  "type": "CLICKED_OBJECT",
                   "object": "porta3"
                }
             },
             "right": {
-               "variavel": {
-                  "type": "WhenStateObject",
+               "var": {
+                  "type": "WHEN_OBJECT_IS_STATE",
                   "object": "porta3",
                   "state": "aberta"
                }
             }
          },
-         "poscondicoes": [
+         "posconditions": [
             {
-               "type": "ChangeScene",
-               "scene": "cena"
+               "type": "CHANGE_SCENARIO",
+               "scenario": "cena"
             }
          ],
-         "linked": false
+         "id": "muda_cena2"
       },
-      "fim": {
-         "repetivel": 1,
-         "precondicoes": {
-            "operator": "e",
+      {
+         "preconditions": {
+            "operator": "AND",
             "left": {
-               "variavel": {
-                  "type": "Click",
+               "var": {
+                  "type": "CLICKED_OBJECT",
                   "object": "porta"
                }
             },
             "right": {
-               "variavel": {
-                  "type": "WhenStateObject",
+               "var": {
+                  "type": "WHEN_OBJECT_IS_STATE",
                   "object": "porta",
-                  "state": "aberta"
+                  "state": "porta_aberta"
                }
             }
          },
-         "poscondicoes": [
+         "posconditions": [
             {
-               "type": "EndGame"
+               "type": "END_GAME"
             }
          ],
-         "linked": false
+         "repetitions": 1,
+         "id": "fim"
       },
-      "chave_inventario": {
-         "repetivel": 1,
-         "precondicoes": {
-            "operator": "e",
+      {
+         "preconditions": {
+            "operator": "AND",
             "left": {
-               "variavel": {
-                  "type": "Click",
+               "var": {
+                  "type": "CLICKED_OBJECT",
                   "object": "chave"
                }
             },
             "right": {
-               "variavel": {
-                  "type": "WhenStateObject",
+               "var": {
+                  "type": "WHEN_OBJECT_IS_STATE",
                   "object": "cofre",
-                  "state": "aberto"
+                  "state": "cofre_aberto"
                }
             }
          },
-         "poscondicoes": [
+         "posconditions": [
             {
-               "type": "PutInInventory",
+               "type": "OBJ_PUT_INVENTORY",
                "object": "chave"
             }
          ],
-         "linked": false
+         "repetitions": 1,
+         "id": "chave_inventario"
       },
-      "tentar_abrir_cofre": {
-         "repetivel": 9223372036854775807,
-         "precondicoes": {
-            "operator": "e",
+      {
+         "preconditions": {
+            "operator": "AND",
             "left": {
-               "variavel": {
-                  "type": "Click",
+               "var": {
+                  "type": "CLICKED_OBJECT",
                   "object": "cofre"
                }
             },
             "right": {
-               "variavel": {
-                  "type": "WhenStateObject",
+               "var": {
+                  "type": "WHEN_OBJECT_IS_STATE",
                   "object": "cofre",
-                  "state": "fechado"
+                  "state": "cofre_fechado"
                }
             }
          },
-         "poscondicoes": [
+         "posconditions": [
             {
-               "type": "Connections",
-               "connections": {
-                  "1": "1",
-                  "2": "2",
-                  "3": "3",
-                  "4": "4"
-               },
-               "question": "Conecta corretamente",
-               "sucess_event": "abrir_cofre",
-               "fail_event": "mostrar_erro"
+               "image": "/mnt/c/Users/35191/Desktop/MyEscapeRoom/assets/images/puzzle.png",
+               "sucess": "abrir_cofre",
+               "type": "SLIDEPUZZLE",
+               "id": "slidepuzzle"
             }
          ],
-         "linked": false
+         "repetitions": 1,
+         "id": "tentar_abrir_cofre"
       },
-      "abrir_cofre": {
-         "precondicoes": {},
-         "poscondicoes": [
+      {
+         "posconditions": [
             {
-               "type": "ChangeState",
+               "type": "OBJ_CHANGE_STATE",
                "object": "cofre",
-               "state": "aberto"
+               "state": "cofre_aberto"
             },
             {
-               "type": "ChangeState",
+               "type": "OBJ_CHANGE_STATE",
                "object": "chave",
                "state": "normal"
             }
          ],
-         "repetivel": 9223372036854775807,
-         "linked": true
+         "id": "abrir_cofre"
       },
-      "mostrar_erro": {
-         "precondicoes": {},
-         "poscondicoes": [
+      {
+         "posconditions": [
             {
-               "type": "ShowMessage",
+               "type": "SHOW_MESSAGE",
                "message": "C\u00f3digo errado!",
                "position": [
                   1000,
@@ -463,33 +490,31 @@
                ]
             }
          ],
-         "repetivel": 9223372036854775807,
-         "linked": true
+         "id": "mostrar_erro"
       },
-      "mensagem_trancada": {
-         "repetivel": 9223372036854775807,
-         "precondicoes": {
-            "operator": "e",
+      {
+         "preconditions": {
+            "operator": "AND",
             "left": {
-               "variavel": {
-                  "type": "Click",
+               "var": {
+                  "type": "CLICKED_OBJECT",
                   "object": "porta"
                }
             },
             "right": {
-               "operator": "e",
+               "operator": "AND",
                "left": {
-                  "variavel": {
-                     "type": "WhenStateObject",
+                  "var": {
+                     "type": "WHEN_OBJECT_IS_STATE",
                      "object": "porta",
-                     "state": "fechada"
+                     "state": "porta_fechada"
                   }
                },
                "right": {
-                  "operator": "nao",
+                  "operator": "NOT",
                   "left": {
-                     "variavel": {
-                        "type": "ItemActived",
+                     "var": {
+                        "type": "ITEM_IS_IN_USE",
                         "item": "chave"
                      }
                   },
@@ -497,9 +522,9 @@
                }
             }
          },
-         "poscondicoes": [
+         "posconditions": [
             {
-               "type": "ShowMessage",
+               "type": "SHOW_MESSAGE",
                "message": "porta trancada! procura uma chave!",
                "position": [
                   600,
@@ -507,48 +532,47 @@
                ]
             },
             {
-               "type": "PlaySound",
-               "sound": "porta-locked"
+               "type": "PLAY_SOUND",
+               "sound": "porta_locked",
+               "source_id": "porta",
+               "source_type": "Object"
             }
          ],
-         "linked": false
+         "id": "mensagem_trancada"
       },
-      "arrasta_lupa": {
-         "repetivel": 9223372036854775807,
-         "precondicoes": {
-            "variavel": {
-               "type": "Click",
+      {
+         "preconditions": {
+            "var": {
+               "type": "CLICKED_OBJECT",
                "object": "lupa"
             }
          },
-         "poscondicoes": [
+         "posconditions": [
             {
-               "type": "MoveObject",
                "object": "lupa",
                "object_trigger": "nota",
-               "sucess_event": "aumentar_nota",
-               "fail_event": "move_lupa"
+               "sucess": "aumentar_nota",
+               "fail": "move_lupa",
+               "type": "MOVE_OBJECT",
+               "id": "arrasta_lupa_des"
             }
          ],
-         "linked": false
+         "id": "arrasta_lupa"
       },
-      "aumentar_nota": {
-         "precondicoes": {},
-         "poscondicoes": [
+      {
+         "posconditions": [
             {
-               "type": "ChangeState",
+               "type": "OBJ_CHANGE_STATE",
                "object": "nota_lupa",
                "state": "visivel"
             }
          ],
-         "repetivel": 9223372036854775807,
-         "linked": true
+         "id": "aumentar_nota"
       },
-      "move_lupa": {
-         "precondicoes": {},
-         "poscondicoes": [
+      {
+         "posconditions": [
             {
-               "type": "ChangePosition",
+               "type": "OBJ_CHANGE_POSITION",
                "object": "lupa",
                "position": [
                   200,
@@ -556,39 +580,34 @@
                ]
             }
          ],
-         "repetivel": 9223372036854775807,
-         "linked": true
+         "id": "move_lupa"
       },
-      "desaparecer_nota_lupa": {
-         "repetivel": 9223372036854775807,
-         "precondicoes": {
-            "operator": "e",
+      {
+         "preconditions": {
+            "operator": "AND",
             "left": {
-               "variavel": {
-                  "type": "ClickNot",
+               "var": {
+                  "type": "CLICKED_NOT_OBJECT",
                   "object": "nota_lupa"
                }
             },
             "right": {
-               "variavel": {
-                  "type": "WhenStateObject",
+               "var": {
+                  "type": "WHEN_OBJECT_IS_STATE",
                   "object": "nota_lupa",
                   "state": "visivel"
                }
             }
          },
-         "poscondicoes": [
+         "posconditions": [
             {
-               "type": "ChangeState",
+               "type": "OBJ_CHANGE_STATE",
                "object": "nota_lupa",
-               "state": "null"
+               "state": "none"
             }
          ],
-         "linked": false
+         "id": "desaparecer_nota_lupa"
       }
-   },
-   "sounds": {
-      "porta_a_abrir": "/mnt/c/Users/35191/Desktop/MyEscapeRoom/erpl/../assets/sounds/door-1-open.mp3",
-      "porta-locked": "/mnt/c/Users/35191/Desktop/MyEscapeRoom/erpl/../assets/sounds/door-locked.mp3"
-   }
+   ],
+   "transitions": []
 }

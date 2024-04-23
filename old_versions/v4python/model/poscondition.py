@@ -26,21 +26,21 @@ class EventPosConditionEndGame(EventPosCondition):
         #self.message = message
 
 #CHANGE_STATE = 1
-class EventPosConditionChangeState(EventPosCondition):
+class EventPosConditionObjChangeState(EventPosCondition):
     def __init__(self, object_id, state_id):
         super().__init__(EventPosConditionsType.CHANGE_STATE)
         self.object_id = object_id
         self.state_id = state_id
 
 #CHANGE_POSITION = 2
-class EventPosConditionChangePosition(EventPosCondition):
+class EventPosConditionObjChangePosition(EventPosCondition):
     def __init__(self, object_id, position):
         super().__init__(EventPosConditionsType.CHANGE_POSITION)
         self.object_id = object_id
         self.position = position
 
 #CHANGE_SIZE = 3
-class EventPosConditionChangeSize(EventPosCondition):
+class EventPosConditionObjChangeSize(EventPosCondition):
     def __init__(self, object_id, size):
         super().__init__(EventPosConditionsType.CHANGE_SIZE)
         self.object_id = object_id
@@ -54,7 +54,7 @@ class EventPosConditionShowMessage(EventPosCondition):
         self.message = message
 
 #ASK_CODE = 5
-class EventPosConditionAskCode(EventPosCondition):
+class EventPosConditionQuestion(EventPosCondition):
     def __init__(self, code, message, sucess_event, fail_event):
         super().__init__(EventPosConditionsType.ASK_CODE)
         self.code = code
@@ -63,16 +63,16 @@ class EventPosConditionAskCode(EventPosCondition):
         self.fail_event = fail_event
 
 #PUT_INVENTORY = 6
-class EventPosConditionPutInventory(EventPosCondition):
+class EventPosConditionObjPutInventory(EventPosCondition):
     def __init__(self, object_id):
         super().__init__(EventPosConditionsType.PUT_INVENTORY)
         self.object_id = object_id
 
 #CHANGE_SCENE = 7
-class EventPosConditionChangeScene(EventPosCondition):
-    def __init__(self, scene_id):
+class EventPosConditionChangeScenario(EventPosCondition):
+    def __init__(self, scenario_id):
         super().__init__(EventPosConditionsType.CHANGE_SCENE)
-        self.scene_id = scene_id
+        self.scenario_id = scenario_id
 
 #ACTIVE_ITEM = 8
 class EventPosConditionActiveItem(EventPosCondition):

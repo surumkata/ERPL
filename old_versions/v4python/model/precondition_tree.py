@@ -15,7 +15,7 @@ def test_precondition(precondition, room, inventory):
         if not object_id in room.objects:
             return tested
         object = room.objects[object_id]
-        if object.reference == room.er_state.current_scene:
+        if object.reference == room.er_state.current_scenario:
             for (px,py) in room.er_state.click_events:
                 tested = object.have_clicked(px,py)
                 if tested: break
@@ -25,7 +25,7 @@ def test_precondition(precondition, room, inventory):
             return tested
         object = room.objects[object_id]
         tested = True
-        if object.reference == room.er_state.current_scene:
+        if object.reference == room.er_state.current_scenario:
             for (px,py) in room.er_state.click_events:
                 tested = tested and not object.have_clicked(px,py)
     elif type == EventPreConditionsType.CLICK_ITEM:
@@ -55,7 +55,7 @@ def test_precondition(precondition, room, inventory):
         object_id = precondition.object_id
         object = room.objects[object_id]
         clicked = False
-        if object.reference == room.er_state.current_scene:
+        if object.reference == room.er_state.current_scenario:
             for (px,py) in room.er_state.click_events:
                 clicked = object.have_clicked(px,py)
                 if clicked:

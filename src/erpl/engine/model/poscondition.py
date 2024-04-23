@@ -1,22 +1,9 @@
 from abc import ABC, abstractmethod
-from .utils import debug, BalloonMessage
-from .precondition import EventPreConditionClickItem, EventPreConditionActiveWhenItemInUse, EventPreConditionActiveWhenItemNotInUse
+from .utils import debug, BalloonMessage, Position
+from .precondition import EventPreConditionClickedItem, EventPreConditionItemIsInUse, EventPreConditionItemNotInUse
 from .precondition_tree import PreConditionTree, PreConditionOperatorAnd, PreConditionVar
 import sys
-from .challenge import ChallengeSlidePuzzle, ChallengePuzzle, ChallengeOrder, ChallengeConnections, ChallengeStateAskCode, ChallengeMotion, ChallengeMultipleChoice
-
-#"""TIPOS DE then EVENTOS"""
-#    ENDGAME = 0
-#    CHANGE_STATE = 1
-#    CHANGE_POSITION = 2
-#    CHANGE_SIZE = 3
-#    SHOW_MESSAGE = 4
-#    ASK_CODE = 5
-#    PUT_INVENTORY = 6
-#    CHANGE_SCENE = 7
-#    ACTIVE_ITEM = 8
-#    DESACTIVE_ITEM = 9
-#    DELETE_ITEM = 10
+from .challenge import ChallengeSocketConnection, ChallengeSlidePuzzle, ChallengePuzzle, ChallengeSequence, ChallengeConnections, ChallengeStateQuestion, ChallengeMotion, ChallengeMultipleChoice
 
 class EventPosCondition(ABC):
     def __init__(self,type):
@@ -26,7 +13,7 @@ class EventPosCondition(ABC):
     def do(self,room,inventory):
         pass
 
-#ENDGAME = 0
+#END_GAME = 0
 class EventPosConditionEndGame(EventPosCondition):
     def __init__(self, message = ""):
         self.message = message
@@ -35,8 +22,8 @@ class EventPosConditionEndGame(EventPosCondition):
         state.finish_game()
         debug("EVENT_ENDGAME.")
 
-#CHANGE_STATE = 1
-class EventPosConditionChangeState(EventPosCondition):
+#OBJ_CHANGE_STATE = 1
+class EventPosConditionObjChangeState(EventPosCondition):
     def __init__(self, object_id, state_id):
         self.object_id = object_id
         self.state_id = state_id
@@ -45,8 +32,8 @@ class EventPosConditionChangeState(EventPosCondition):
         state.buffer_obj_states[self.object_id] = self.state_id #colocar no buffer o estado do objeto para ser posteriormente alterado
         debug("EVENT_CHANGE_STATE: Mudando o estado do objeto "+self.object_id+" para "+self.state_id+".")
 
-#CHANGE_POSITION = 2
-class EventPosConditionChangePosition(EventPosCondition):
+#OBJ_CHANGE_POSITION = 2
+class EventPosConditionObjChangePosition(EventPosCondition):
     def __init__(self, object_id, position):
         self.object_id = object_id
         self.position = position
@@ -55,8 +42,8 @@ class EventPosConditionChangePosition(EventPosCondition):
         room.objects[self.object_id].change_position(self.position)
         debug("EVENT_CHANGE_POSITION: Mudando "+self.object_id +" para a posição ("+str(self.position.x)+","+str(self.position.y)+").")
 
-#CHANGE_SIZE = 3
-class EventPosConditionChangeSize(EventPosCondition):
+#OBJ_CHANGE_SIZE = 3
+class EventPosConditionObjChangeSize(EventPosCondition):
     def __init__(self, object_id, size):
         self.object_id = object_id
         self.size = size
@@ -69,16 +56,16 @@ class EventPosConditionChangeSize(EventPosCondition):
 
 #SHOW_MESSAGE = 4
 class EventPosConditionShowMessage(EventPosCondition):
-    def __init__(self, position, message):
-        self.position = position
+    def __init__(self, message, position : Position):
         self.message = message
+        self.position = position
 
     def do(self,room,inventory,state):
         state.buffer_messages.append(BalloonMessage(self.message,self.position.x,self.position.y))
-        debug("EVENT_MESSAGE: Mostrando mensagem '"+str(self.message)+"' na posição ("+str(self.position.x)+","+str(self.position.y)+").")
+        debug("EVENT_MESSAGE: Mostrando mensagem '"+str(self.message)+"'.")
 
-#ASK_CODE = 5
-class EventPosConditionAskCode(EventPosCondition):
+#QUESTION = 5
+class EventPosConditionQuestion(EventPosCondition):
     def __init__(self, code, question, sucess_event, fail_event, position):
         self.code = code
         self.question = question
@@ -87,12 +74,12 @@ class EventPosConditionAskCode(EventPosCondition):
         self.position = position
 
     def do(self,room,inventory,state):
-        challenge_ask_code = ChallengeStateAskCode(self.question,self.code, self.sucess_event, self.fail_event)
+        challenge_ask_code = ChallengeStateQuestion(self.question,self.code, self.sucess_event, self.fail_event)
         state.active_challenge_mode(challenge_ask_code)
         debug("EVENT_ASKCODE: Pedindo código "+self.code+".")
 
-#PUT_INVENTORY = 6
-class EventPosConditionPutInventory(EventPosCondition):
+#OBJ_PUT_INVENTORY = 6
+class EventPosConditionObjPutInventory(EventPosCondition):
     def __init__(self, object_id):
         self.object_id = object_id
     
@@ -106,20 +93,20 @@ class EventPosConditionPutInventory(EventPosCondition):
         del room.objects[object_id]
         slot = inventory.find_empty_slot()
         inventory.update_add.append((object,slot))
-        desativar = PreConditionTree(PreConditionOperatorAnd(PreConditionVar(EventPreConditionClickItem(object_id)),PreConditionVar(EventPreConditionActiveWhenItemInUse(object_id))))
-        ativar = PreConditionTree(PreConditionOperatorAnd(PreConditionVar(EventPreConditionClickItem(object_id)),PreConditionVar(EventPreConditionActiveWhenItemNotInUse(object_id))))
-        room.add_event_buffer("desativar_"+object_id,desativar,[EventPosConditionDesactiveItem(object_id)],sys.maxsize,False)
-        room.add_event_buffer("ativar"+object_id,ativar,[EventPosConditionActiveItem(object_id)],sys.maxsize,False)
+        desativar = PreConditionTree(PreConditionOperatorAnd(PreConditionVar(EventPreConditionClickedItem(object_id)),PreConditionVar(EventPreConditionItemIsInUse(object_id))))
+        ativar = PreConditionTree(PreConditionOperatorAnd(PreConditionVar(EventPreConditionClickedItem(object_id)),PreConditionVar(EventPreConditionItemNotInUse(object_id))))
+        room.add_event_buffer("desativar_"+object_id,desativar,[EventPosConditionDesactiveItem(object_id)],sys.maxsize)
+        room.add_event_buffer("ativar"+object_id,ativar,[EventPosConditionActiveItem(object_id)],sys.maxsize)
         debug("EVENT_PUT_IN_INVENTORY: Colocando item "+object_id+" no slot "+str(slot)+" do inventário.")
 
-#CHANGE_SCENE = 7
-class EventPosConditionChangeScene(EventPosCondition):
-    def __init__(self, scene_id):
-        self.scene_id = scene_id
+#CHANGE_SCENARIO = 7
+class EventPosConditionChangeScenario(EventPosCondition):
+    def __init__(self, scenario_id):
+        self.scenario_id = scenario_id
 
     def do(self,room,inventory,state):
-        state.buffer_current_scene = self.scene_id
-        debug("EVENT_CHANGE_SCENE: Mudando para cena "+self.scene_id+".")
+        state.buffer_current_scenario = self.scenario_id
+        debug("EVENT_CHANGE_SCENE: Mudando para cena "+self.scenario_id+".")
 
 #ACTIVE_ITEM = 8
 class EventPosConditionActiveItem(EventPosCondition):
@@ -148,12 +135,19 @@ class EventPosConditionDeleteItem(EventPosCondition):
         inventory.update_remove.append(self.item_id)
         debug("EVENT_DELETE_ITEM: Removendo item "+self.item_id+".")
 
+
+#PLAY_SOUND
 class EventPosConditionPlaySound(EventPosCondition):
-    def __init__(self,sound_id):
+    def __init__(self,sound_id,source_id,source_type):
         self.sound_id = sound_id
+        self.source_id = source_id
+        self.source_type = source_type
     
     def do(self,room,inventory,state):
-        room.sounds[self.sound_id].play()
+        if self.source_type == 'Object':
+            room.objects[self.source_id].sounds[self.sound_id].play()
+        elif self.source_type == 'Scenario':
+            room.scenarios[self.source_id].sounds[self.sound_id].play()
         debug("EVENT_PLAY_SOUND: Tocando som "+self.sound_id+".")
 
 
@@ -198,8 +192,8 @@ class EventPosConditionConnections(EventPosCondition):
         state.active_challenge_mode(challenge_connections)
         debug("EVENT_POSCONDITION_CONNECTIONS")
 
-#CONNECTIONS = 12
-class EventPosConditionOrder(EventPosCondition):
+#SEQUENCE = 12
+class EventPosConditionSequence(EventPosCondition):
     def __init__(self,order,question, sucess_event, fail_event):
         self.question = question
         self.order = order
@@ -207,7 +201,7 @@ class EventPosConditionOrder(EventPosCondition):
         self.fail_event = fail_event
 
     def do(self,room,inventory,state):
-        challenge_order = ChallengeOrder(self.question,self.order,self.sucess_event,self.fail_event)
+        challenge_order = ChallengeSequence(self.question,self.order,self.sucess_event,self.fail_event)
         state.active_challenge_mode(challenge_order)
         debug("EVENT_POSCONDITION_ORDER")
 
@@ -232,3 +226,27 @@ class EventPosConditionSlidePuzzle(EventPosCondition):
         challenge_puzzle = ChallengeSlidePuzzle(self.image,self.sucess_event)
         state.active_challenge_mode(challenge_puzzle)
         debug("EVENT_POSCONDITION_SLIDE_PUZZLE")
+
+#TRANSITION = 15
+class EventPosConditionTransition(EventPosCondition):
+    def __init__(self,transition):
+        self.transition = transition
+    
+    def do(self,room,inventory,state):
+        transition = room.transitions[self.transition]
+        state.active_transition_mode(transition)
+        debug("EVENT_POSCONDITION_TRANSITION")
+
+#SOCKET_CONNECTION = 12
+class EventPosConditionSocketConnection(EventPosCondition):
+    def __init__(self,host,port,text, sucess_event, fail_event):
+        self.host = host
+        self.port = port
+        self.text = text
+        self.sucess_event = sucess_event
+        self.fail_event = fail_event
+
+    def do(self,room,inventory,state):
+        challenge_socket_connection = ChallengeSocketConnection(self.host,self.port,self.text,self.sucess_event,self.fail_event)
+        state.active_listenning_challenge_mode(challenge_socket_connection)
+        debug("EVENT_POSCONDITION_ORDER")

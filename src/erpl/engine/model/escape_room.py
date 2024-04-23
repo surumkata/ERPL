@@ -1,25 +1,25 @@
 from .object import Object
 from .event import Event
 from .utils import Position, Size
-from .scene import Scene
+from .scenario import Scenario
 from .sound import Sound
+from .transition import Transition
 
 """CLASSE DE UMA ESCAPE ROOM"""
 class EscapeRoom:
     #Construtor de escape room
-    def __init__(self, title : str, size : Size):
+    def __init__(self, title : str):
         self.title = title #TITULO
-        self.scenes = {} 
+        self.scenarios = {} 
         self.objects = {}
         self.events = {
         }
         self.events_buffer = {}
-        self.sounds = {}
-        self.size = size
+        self.transitions = {}
 
     #Função que adiciona uma cena
-    def add_scene(self,scene : Scene):
-        self.scenes[scene.id] = scene
+    def add_scenario(self,scenario : Scenario):
+        self.scenarios[scenario.id] = scenario
 
     #Função que adiciona um objeto
     def add_object(self, object : Object):
@@ -28,29 +28,29 @@ class EscapeRoom:
     #Função que adiciona um evento de cena
     def add_event(self, event : Event):
         self.events[event.id] = event
-
-    #Função que adiciona sons
-    def add_sound(self, sound : Sound):
-        self.sounds[sound.id] = sound
+    
+    #Função que adiciona uma transição
+    def add_transition(self, transition : Transition):
+        self.transitions[transition.id] = transition
     
     #Função que adiciona um evento de cena
-    def add_event_buffer(self, id,pre_conditions,pos_conditions,repeatable,linked):
-        self.events_buffer[id] = Event(id,pre_conditions,pos_conditions,repeatable,linked)
+    def add_event_buffer(self, id,pre_conditions,pos_conditions,repetitions):
+        self.events_buffer[id] = Event(id,pre_conditions,pos_conditions,repetitions)
     
     #Função que desenha a cena atual
-    def draw(self, screen, current_scene):
+    def draw(self, screen, current_scenario):
         #Desenhar a cena
-        self.scenes[current_scene].draw(screen)
+        self.scenarios[current_scenario].draw(screen)
 
         #Desenhar objetos na cena
         for object in self.objects.values():
             #Se o objeto pertence à cena atual
-            if current_scene == object.reference:
+            if current_scenario == object.reference:
                 object.draw(screen)
 
     ##Função que muda o state atual de um object
-    #def change_object_state(self, scene_id : str, object_id : str ,state_id : str):
-    #    self.scenes[scene_id].change_object_state(object_id,state_id)
+    #def change_object_state(self, scenario_id : str, object_id : str ,state_id : str):
+    #    self.scenarios[scenario_id].change_object_state(object_id,state_id)
 
     def change_object_current_state(self, object_id : str, state_id):
         if object_id in self.objects:
@@ -67,7 +67,8 @@ class EscapeRoom:
     def update_event(self,event):
         if event in self.events:
             self.events[event].happen = True
-            self.events[event].repeatable -= 1
+            if not self.events[event].inifity_repetitions:
+                self.events[event].repetitions -= 1
 
     def update_events_buffer(self):
         for event in self.events_buffer.values():

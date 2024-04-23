@@ -20,13 +20,13 @@ class EventPreCondition:
         self.type = type
 
 #CLICK = 0
-class EventPreConditionClick(EventPreCondition):
+class EventPreConditionClickedObject(EventPreCondition):
     def __init__(self, object_id):
         super().__init__(EventPreConditionsType.CLICK)
         self.object_id = object_id
 
 #CLICK_AFTER_EVENT = 1
-class EventPreConditionClickAfterEvent(EventPreCondition):
+class EventPreConditionAfterEvent(EventPreCondition):
     def __init__(self, object_id, event_id):
         super().__init__(EventPreConditionsType.CLICK_AFTER_EVENT)
         self.object_id = object_id
@@ -51,7 +51,7 @@ class EventPreConditionActiveAfterTime(EventPreCondition):
         self.time = time
 
 #ACTIVE_WHEN_STATE = 5
-class EventPreConditionActiveWhenState(EventPreCondition):
+class EventPreConditionWhenObjectIsState(EventPreCondition):
     def __init__(self, object_id, state_id):
         super().__init__(EventPreConditionsType.ACTIVE_WHEN_STATE)
         self.object_id = object_id
@@ -65,25 +65,25 @@ class EventPreConditionActiveWhenNotState(EventPreCondition):
         self.state_id = state_id
 
 #ACTIVE_WHEN_ITEM_IN_USE = 7  
-class EventPreConditionActiveWhenItemInUse(EventPreCondition):
+class EventPreConditionItemIsInUse(EventPreCondition):
     def __init__(self, item_id):
         super().__init__(EventPreConditionsType.ACTIVE_WHEN_ITEM_IN_USE)
         self.item_id = item_id
 
 #ACTIVE_WHEN_ITEM_NOT_IN_USE = 8
-class EventPreConditionActiveWhenItemNotInUse(EventPreCondition):
+class EventPreConditionItemNotInUse(EventPreCondition):
     def __init__(self, item_id):
         super().__init__(EventPreConditionsType.ACTIVE_WHEN_ITEM_NOT_IN_USE)
         self.item_id = item_id
 
 #CLICK_ITEM = 9
-class EventPreConditionClickItem(EventPreCondition):
+class EventPreConditionClickedItem(EventPreCondition):
    def __init__(self, item_id):
         super().__init__(EventPreConditionsType.CLICK_ITEM)
         self.item_id = item_id 
 
 #CLICKNOT = 10
-class EventPreConditionClickNot(EventPreCondition):
+class EventPreConditionClickedNotObject(EventPreCondition):
     def __init__(self, object_id):
         super().__init__(EventPreConditionsType.CLICK_NOT)
         self.object_id = object_id

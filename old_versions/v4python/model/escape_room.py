@@ -2,14 +2,14 @@ from model.er_state import EscapeRoomState
 from model.object import Object
 from model.event import Event
 from model.utils import Position, Size
-from model.scene import Scene
+from model.scenario import Scenario
 
 """CLASSE DE UMA ESCAPE ROOM"""
 class EscapeRoom:
     #Construtor de escape room
     def __init__(self, title : str):
         self.title = title #TITULO
-        self.scenes = {} 
+        self.scenarios = {} 
         self.objects = {}
         self.events = {
         }
@@ -17,9 +17,9 @@ class EscapeRoom:
         self.er_state = EscapeRoomState() #ID DA CENA ATUAL
 
     #Função que adiciona uma cena
-    def add_scene(self,scene : Scene):
-        self.scenes[scene.id] = scene
-        self.er_state.first_scene(scene.id)
+    def add_scenario(self,scenario : Scenario):
+        self.scenarios[scenario.id] = scenario
+        self.er_state.first_scenario(scenario.id)
 
     #Função que adiciona um objeto
     def add_object(self, object : Object):
@@ -34,25 +34,25 @@ class EscapeRoom:
         self.events_buffer[id] = Event(id,pre_conditions,pos_conditions,repeatable,linked)
 
     #Função que muda a cena atual
-    def change_current_scene(self,scene_id : str):
-        if scene_id in self.scenes:
-            self.er_state.update_current_scene(scene_id)
+    def change_current_scenario(self,scenario_id : str):
+        if scenario_id in self.scenarios:
+            self.er_state.update_current_scenario(scenario_id)
     
     #Função que desenha a cena atual
     def draw(self, screen):
         #Desenhar a cena
-        current_scene = self.er_state.current_scene
-        self.scenes[current_scene].draw(screen)
+        current_scenario = self.er_state.current_scenario
+        self.scenarios[current_scenario].draw(screen)
 
         #Desenhar objetos na cena
         for object in self.objects.values():
             #Se o objeto pertence à cena atual
-            if current_scene == object.reference:
+            if current_scenario == object.reference:
                 object.draw(screen)
 
     ##Função que muda o state atual de um object
-    #def change_object_state(self, scene_id : str, object_id : str ,state_id : str):
-    #    self.scenes[scene_id].change_object_state(object_id,state_id)
+    #def change_object_state(self, scenario_id : str, object_id : str ,state_id : str):
+    #    self.scenarios[scenario_id].change_object_state(object_id,state_id)
 
     def change_object_current_state(self, object_id : str, state_id):
         if object_id in self.objects:

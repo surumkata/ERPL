@@ -6,6 +6,8 @@ import numpy as np
 from PIL import Image
 import io
 import os
+import socket
+import time
 
 current_folder = os.path.dirname(__file__)
 
@@ -22,7 +24,7 @@ class ChallengeState():
         pass
 
 
-class ChallengeStateAskCode(ChallengeState):
+class ChallengeStateQuestion(ChallengeState):
     def __init__(self, question, code, sucess_challenge, fail_challenge):
         super().__init__(sucess_challenge,fail_challenge)
         self.question = question
@@ -77,16 +79,23 @@ class ChallengeMotion(ChallengeState):
         pass
 
     def update_pygame_event(self,pygame_event, room):
-        if pygame_event.type == pygame.MOUSEMOTION:
+        if pygame_event.type == pygame.MOUSEBUTTONDOWN:
+            print("sss")
+            self.last_motion = Position(pygame_event.pos[0],pygame_event.pos[1])
+        elif pygame_event.type == pygame.MOUSEMOTION:
             self.last_motion = Position(pygame_event.pos[0],pygame_event.pos[1])
             object = room.objects[self.object_motion]
             object.change_position(self.last_motion)
         elif pygame_event.type == pygame.MOUSEBUTTONUP:
-            trigger_object = room.objects[self.trigger_motion]
-            if(trigger_object.have_clicked(self.last_motion.x,self.last_motion.y)):
-                return self.sucess_challenge
+            if self.last_motion != None:
+                trigger_object = room.objects[self.trigger_motion]
+                if(trigger_object.have_clicked(self.last_motion.x,self.last_motion.y)):
+                    return self.sucess_challenge
+                else:
+                    return self.fail_challenge
             else:
                 return self.fail_challenge
+
         return None
     
 class ChallengeMultipleChoice(ChallengeState):
@@ -247,7 +256,7 @@ class ChallengeConnections(ChallengeState):
                 return 0
         return None
 
-class ChallengeOrder(ChallengeState):
+class ChallengeSequence(ChallengeState):
     def __init__(self, question, order, sucess_challenge, fail_challenge):
         super().__init__(sucess_challenge,fail_challenge)
         self.question = question
@@ -377,6 +386,8 @@ class ChallengeSlidePuzzle(ChallengeState):
                 if id < last:
                     return False
                 last = id
+            elif last < self.grid_size[0] * self.grid_size[1] - 2:
+                return False
         return True
 
     def recort_image(self, image_path):
@@ -423,22 +434,24 @@ class ChallengeSlidePuzzle(ChallengeState):
         while not self.is_solvable(peaces):
             random.shuffle(peaces)
 
+        for peace in peaces:
+            print(peace[0])
+
         return peaces
 
-    def is_solvable(self,peaces):
+    def is_solvable(self, peaces):
         inversions = 0
-        blank_row = 0
-    
         for i in range(len(peaces)):
-            if peaces[i][0] == 0:
-                blank_row = i // self.grid_size[0] + 1
-                continue
             for j in range(i + 1, len(peaces)):
                 if peaces[i][0] > peaces[j][0]:
                     inversions += 1
-
-        # Se o número total de inversões mais a linha do espaço em branco for par, é solucionável
-        return (inversions + blank_row) % 2 == 0
+        board_size = self.grid_size[0] * self.grid_size[1]
+        if board_size % 2 != 0 : #Se o boardsize é impar
+            # entao é solucionável se o número total de inversões for par
+            return inversions % 2 == 0
+        else: #se for par
+            #entao é solucionavel se o numero total de inversoes mais a linha em que se encontra o espaço vazio (que neste caso é sempre a ultima) for impar
+            return (inversions + self.grid_size[1]-1) % 2 != 0
         
     def draw(self, screen):
         pygame.draw.rect(screen, Color.GREEN, self.background)  # Fundo colorido
@@ -557,7 +570,7 @@ class ChallengePuzzle(ChallengeState):
         image = Image.open(image)
         self.peaces = []
         for i in range(0, 12):
-            mask = Image.open(f'{current_folder}/../assets/images/moldes/molde{i}.jpg').convert('L')
+            mask = Image.open(f'{current_folder}/../../assets/images/moldes/molde{i}.jpg').convert('L')
     	
             # Redimensione a imagem para as dimensões do molde
             image_resized = image.resize(mask.size)
@@ -578,7 +591,7 @@ class ChallengePuzzle(ChallengeState):
             image_cropped.save(buffer, format='PNG')
             buffer.seek(0)
 
-            imagem_pygame = StatePeace(buffer,self.sizes[i],self.random_positions[i])
+            imagem_pygame = StatePeace(i,buffer,self.sizes[i],self.random_positions[i])
 
             self.peaces.append(imagem_pygame)
             
@@ -638,3 +651,86 @@ class ChallengePuzzle(ChallengeState):
                     return 0
 
         return None
+    
+class ChallengeSocketConnection(ChallengeState):
+    def __init__(self, host, port, text,sucess_challenge, fail_challenge):
+        super().__init__(sucess_challenge,fail_challenge)
+        self.host = host
+        self.port = port
+        self.text = text
+
+        socket_created = False
+
+        while not socket_created:
+            try:
+                self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                self.socket.bind((self.host, self.port))
+                socket_created = True
+            except OSError as e:
+                if e.errno == 98:  # Address already in use
+                    print("Porta já em uso. Tentando novamente em alguns segundos...")
+                    time.sleep(5)  # Espera 5 segundos antes de tentar novamente
+                    continue
+                else:
+                    raise
+
+        
+        # Define um tempo limite de 5 segundos para s.accept()
+        self.socket.settimeout(1)
+    
+        # Começa a escutar conexões
+        self.socket.listen()
+
+        self.listening = True
+
+
+        self.background = pygame.Rect(WIDTH/4, HEIGHT/4, WIDTH/2, HEIGHT/2)
+    
+    #Função que verifica se foi clicado na área do objeto
+    def have_clicked(self, x : int, y : int, rect):
+        return rect.x <= x <= rect.x + rect.w and rect.y <= y <= rect.y  + rect.h
+
+    
+    def draw(self,screen):
+        pygame.draw.rect(screen, Color.GREEN, self.background)  # Fundo colorido
+        pygame.draw.rect(screen, Color.BLACK, self.background, 2) #borda preta do input
+
+        font = pygame.font.Font(None, 32) #font
+        text_surface = font.render(self.text, True, Color.BLACK)
+        screen.blit(text_surface, (self.background.x+10, self.background.y+10)) #print question
+
+    def update_pygame_event(self,pygame_event, room):
+        if pygame_event.type == pygame.MOUSEBUTTONDOWN:
+            if not self.have_clicked(pygame_event.pos[0],pygame_event.pos[1],self.background):
+                self.listening = False
+                self.socket.close()
+                debug("Socket closed!")
+                return 0
+        return None
+                
+    def listen(self):
+        while self.listening:
+            try:
+                #print("Tentanto conexao...")
+                conn, addr = self.socket.accept()
+                with conn:
+                    #print('Conectado por', addr)
+                    data = conn.recv(1024)
+                    decoded_data = data.decode()
+                    debug(f'Mensagem recebida: {decoded_data}')
+                    if decoded_data == "-1":
+                        return self.fail_challenge
+                    elif decoded_data == "0":
+                        return 0
+                    elif decoded_data == "1":
+                        return self.sucess_challenge
+                    else:
+                        return None
+            except socket.timeout:
+                # Continue aguardando conexões
+                pass
+            except OSError as e:
+                if e.errno == 9:
+                    pass
+                else:
+                    raise

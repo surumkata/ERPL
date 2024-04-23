@@ -5,13 +5,12 @@ Este módulo contém a lógica principal da aplicação erpl.
 
 
 import os
-import argparse
 from .parser.parser import parse, parser_parse_arguments
 from .engine.game import init_game, game_parse_arguments, play_game
 from .engine.pe import init_pe, play_editor
-import re
 
-__version__ = "0.1.1"
+
+__version__ = "0.1.2"
 
 def erpl():
     args = parser_parse_arguments()

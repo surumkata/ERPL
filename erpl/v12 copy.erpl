@@ -10,8 +10,9 @@ $lista2 = plocal_puzzle
 
 __Sala__
 
-+ Cena cena
-    - Estado (inicial) background:
++ Cena cena=
+    - Estado background:
+        - Inicial
         - Fonte: $room
     + Objeto porta:
         - Estado fechada:

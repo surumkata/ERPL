@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 
 import os
+import threading
 
 # Configuração para ocultar a mensagem de boas-vindas do Pygame
 os.environ["PYGAME_HIDE_SUPPORT_PROMPT"] = "1"
@@ -30,17 +31,26 @@ def do_event(event,room : EscapeRoom, inventory : Inventory,state : GameState):
 
 def try_do_events(room : EscapeRoom, inventory : Inventory,state : GameState):
     for event in room.events.values():
-        if event.linked:
+        if event.pre_conditions.root == None: #nao tem preconditions
             continue
-        if not event.repeatable > 0 and event.happen:
+        if not event.inifity_repetitions and not event.repetitions > 0: #nao tem mais repetiçoes
             continue
         if event.pre_conditions.test_tree(room, inventory,state):
             do_event(event=event, room=room, inventory=inventory, state=state)
+
+def listening_challenge(room : EscapeRoom, inventory : Inventory,state : GameState):
+    event = state.challenge.listen()
+    if event != None and event != 0:
+        do_event(room.events[event],room,inventory,state)
+        state.desactive_challenge_mode()
+    if event == 0:
+        state.desactive_challenge_mode()
 
 
 def play_game(screen,room, inventory, state):
     running = True
     settings = Settings()
+    created_thread = False
     # Loop principal do jogo
     while running:
         for pygame_event in pygame.event.get():
@@ -66,6 +76,30 @@ def play_game(screen,room, inventory, state):
                     state.desactive_challenge_mode()
                 if event == 0:
                     state.desactive_challenge_mode()
+            elif state.is_transition():
+                #se clicar no rato acaba a transiçao
+                if pygame_event.type == pygame.MOUSEBUTTONDOWN:
+                    state.transition.stop_music()
+                    if state.transition.next_scenario != None:
+                        state.desactive_transition_mode()
+                    else:
+                        state.active_transition_mode(room.transitions[state.transition.next_transition])
+            elif state.is_challenge_listenning():
+                if state.challenge.update_pygame_event(pygame_event,room) == 0:
+                    state.desactive_challenge_mode()
+
+        if state.is_challenge_listenning():
+            room.draw(screen,state.current_scenario)
+            inventory.draw(screen)
+            state.challenge.draw(screen)
+
+            if not created_thread:
+                # Inicia a thread para escutar mensagens
+                message_listener = threading.Thread(target=listening_challenge, args=(room,inventory,state))
+                message_listener.start()
+                created_thread = True
+        else:
+            created_thread = False
 
         #Tenta fazer eventos
         try_do_events(room,inventory,state)
@@ -75,19 +109,22 @@ def play_game(screen,room, inventory, state):
         
         #Atualiza os eventos do inventário
         inventory.update_items()
- 
 
-        room.draw(screen,state.current_scene)
-        inventory.draw(screen)
+        if state.is_running():
+            room.draw(screen,state.current_scenario)
+            inventory.draw(screen)
+            state.draw_messages(screen)
 
-        if state.is_challenge_mode():
-            state.challenge.draw(screen) 
+        elif state.is_transition():
+            state.transition.draw(screen)
 
-        state.draw_messages(screen)
-
-
+        elif state.is_challenge_mode():
+            room.draw(screen,state.current_scenario)
+            inventory.draw(screen)
+            state.challenge.draw(screen)
+        
         #Tela de fim de jogo
-        if state.is_finished():
+        elif state.is_finished():
             state.draw_finish_screen(screen)
              
 

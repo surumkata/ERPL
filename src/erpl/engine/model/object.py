@@ -1,16 +1,18 @@
 
 from .utils import Position, Size
 from .state import State
+from .sound import Sound
 
 """CLASSE DE UM OBJETO"""
 class Object:
-    def __init__(self, id : str, scene_id : str, position : Position, size : Size):
+    def __init__(self, id : str, scenario_id : str, position : Position, size : Size):
         self.id = id
         self.current_state = None
-        self.reference = scene_id
+        self.reference = scenario_id
         self.position = position
         self.size = size
         self.states = {}
+        self.sounds = {}
 
     def change_current_state(self, state_id : str):
         if (state_id in self.states):
@@ -53,6 +55,9 @@ class Object:
             self.size = Size(state.size.x,state.size.y)
         if initial:
             self.change_current_state(state.id)
+
+    def add_sound(self, sound : Sound):
+        self.sounds[sound.id] = sound
 
     def draw(self, screen):
         if self.current_state != None:
