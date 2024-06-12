@@ -10,7 +10,7 @@ from .engine.game import init_game, game_parse_arguments, play_game
 from .engine.pe import init_pe, play_editor
 
 
-__version__ = "0.1.2"
+__version__ = "0.1.4"
 
 def erpl():
     args = parser_parse_arguments()

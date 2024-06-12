@@ -18,11 +18,11 @@ class Settings():
         # Calcule os FPS
         font = pygame.font.Font(None, 36)
         fps = int(self.clock.get_fps())
-        # Renderize o texto do FPS na tela
+        # Renderize o text do FPS na tela
         fps_text = font.render(f"FPS: {fps}", True, Color.RED)
-        # Desenhe o texto do FPS na tela
+        # Desenhe o text do FPS na tela
         screen.blit(fps_text, (10, 670))
-        # Renderize o texto na tela
+        # Renderize o text na tela
         volume_text = font.render(f"Volume: {int(self.volume * 100)}%", True, Color.BLUE)
-        # Desenhe o texto na tela
+        # Desenhe o text na tela
         screen.blit(volume_text, (120, 670))

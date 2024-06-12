@@ -1,22 +1,22 @@
-start : estados sons? estado_inicial? posicao? tamanho?
+start : views sounds? view_inicial? position? size?
 
-estados : "Estados:" estado+
-estado  : "- Estado animado" ID ":" imagens repiticoes timesprite -> estado_animado
-        | "- Estado" ID ":" imagem                                -> estado_simples
+views : "Views:" view+
+view  : "- View animado" ID ":" images repiticoes timesprite -> view_animado
+        | "- View" ID ":" image                                -> view_simples
 
-sons    : "Sons:" som+
-som     : "- Som" ID ":" fonte
+sounds    : "Sons:" sound+
+sound     : "- Sound" ID ":" source
 
-imagens : "- Imagens:" "[" TEXTO ("," TEXTO)* "]"
-imagem  : "- Imagem:" TEXTO
+images : "- Imagens:" "[" TEXTO ("," TEXTO)* "]"
+image  : "- Imagem:" TEXTO
 repiticoes: "- Repitições:" NUM
 timesprite: "- Time-Sprite:" NUM
 
-fonte: "- Fonte:" TEXTO
+source: "- Fonte:" TEXTO
 
-estado_inicial: "Estado inicial:" ID
-posicao: "Posição:" "(" NUM "," NUM ")"
-tamanho: "Tamanho:" "[" NUM "," NUM "]"
+view_inicial: "View inicial:" ID
+position: "Posição:" "(" NUM "," NUM ")"
+size: "Tamanho:" "[" NUM "," NUM "]"
 
 ID            : /[\w\-_]+/
 %import common.ESCAPED_STRING   -> TEXTO

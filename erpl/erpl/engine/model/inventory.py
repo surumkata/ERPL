@@ -24,7 +24,7 @@ class Item:
 
         self.in_use = False
     
-    #Função que verifica se foi clicado na área do objeto
+    #Função que verifica se foi clicado na área do object
     def have_clicked(self, x : int, y : int):
         return self.position.x <= x <= self.position.x + self.size.x and self.position.y <= y <= self.position.y + self.size.y
     
@@ -107,12 +107,12 @@ class Inventory:
         return False
 
     def draw(self, screen):
-        pygame.draw.rect(screen, Color.RED, (0, 0, 1300, 100))
+        pygame.draw.rect(screen, Color.GRAY, (0, 0, 1280, 100))
         i = 1
         while True:
             x = 10+((i-1)*90)
-            if x < 1300 - 80:
-                pygame.draw.rect(screen, Color.GREEN, (x, 10, 80, 80))
+            if x < 1280 - 80:
+                pygame.draw.rect(screen, Color.WHITE, (x, 10, 80, 80))
                 i+=1
             else:
                 break

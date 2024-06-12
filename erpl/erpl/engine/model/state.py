@@ -8,11 +8,11 @@ class State:
         self.position = position
         self.size = size
         self.src_images = src_images
-        # Carregando a imagem da porta
+        # Carregando a image da porta
         self.images = []
         for src_image in self.src_images:
             image = pygame.image.load(src_image).convert_alpha()
-            image = pygame.transform.scale(image, (self.size.x,self.size.y))  # Ajuste o tamanho conforme necessário
+            image = pygame.transform.scale(image, (self.size.x,self.size.y))  # Ajuste o size conforme necessário
             self.images.append(image)
         
         self.time_sprite = time_sprite
@@ -52,7 +52,7 @@ class StatePeace(State):
         self.position = position
         self.size = size
         image = pygame.image.load_extended(buffer).convert_alpha()
-        image = pygame.transform.scale(image, (self.size.x,self.size.y))  # Ajuste o tamanho conforme necessário
+        image = pygame.transform.scale(image, (self.size.x,self.size.y))  # Ajuste o size conforme necessário
         self.images = [image]
 
         self.time_sprite = 0

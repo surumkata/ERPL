@@ -12,16 +12,16 @@ class ObjInterpreter(Interpreter):
         self.current_folder = current_folder
 
     def start(self,start):
-        '''start : estados sons? estado_inicial? posicao? tamanho?'''
+        '''start : views sounds? view_inicial? position? size?'''
         elems = start.children
-        #visitar estados
+        #visitar views
         self.visit(elems[0])
         i = 1
-        if len(elems) > i and elems[i].data == 'sons':
+        if len(elems) > i and elems[i].data == 'sounds':
             self.visit(elems[i])
             i+=1
 
-        if len(elems) > i and elems[i].data == 'estado_inicial':
+        if len(elems) > i and elems[i].data == 'view_inicial':
             id = self.visit(elems[i])
             for state in self.object['states']:
                 if state['id'] == id:
@@ -30,23 +30,23 @@ class ObjInterpreter(Interpreter):
                 pass
                 #TODO:print error
             i+=1
-        if len(elems) > i and elems[i].data == "posicao":
+        if len(elems) > i and elems[i].data == "position":
             self.object['position'] = self.visit(elems[i])
             i+=1
-        if len(elems) > i and elems[i].data == "tamanho":
+        if len(elems) > i and elems[i].data == "size":
             self.object['size'] = self.visit(elems[i])
         return self.object
 
-    def estados(self,estados):
-        '''estados : "Estados:" estado+'''
-        elems = estados.children
+    def views(self,views):
+        '''views : "Views:" view+'''
+        elems = views.children
         for elem in elems:
             result = self.visit(elem)
             self.object['states'].append(result)
 
-    def sons(self,sons):
-        '''sons : "Sons:" som+'''
-        elems = sons.children
+    def sounds(self,sounds):
+        '''sounds : "Sons:" sound+'''
+        elems = sounds.children
         for elem in elems:
             result = self.visit(elem)
             if 'sounds' in self.object:
@@ -55,9 +55,9 @@ class ObjInterpreter(Interpreter):
                 self.object['sounds'] = [result]
 
     
-    def estado_animado(self,estado_animado):
-        '''estado  : "- Estado animado" ID ":" imagens repiticoes timesprite'''
-        elems = estado_animado.children
+    def view_animado(self,view_animado):
+        '''view  : "- View animado" ID ":" images repiticoes timesprite'''
+        elems = view_animado.children
         id = elems[0].value
         srcs = self.visit(elems[1])
         rs = self.visit(elems[2])
@@ -69,9 +69,9 @@ class ObjInterpreter(Interpreter):
             'time_sprite' : ts
         }
 
-    def estado_simples(self,estado_simples):
-        '''estado : "- Estado" ID ":" imagem'''
-        elems = estado_simples.children
+    def view_simples(self,view_simples):
+        '''view : "- View" ID ":" image'''
+        elems = view_simples.children
         id = elems[0].value
         src = self.visit(elems[1])
         return {
@@ -79,9 +79,9 @@ class ObjInterpreter(Interpreter):
             'image' : src
         }
 
-    def som(self, som):
-        '''som : "Som" ID ":" fonte'''
-        elems = som.children
+    def sound(self, sound):
+        '''sound : "Sound" ID ":" source'''
+        elems = sound.children
         id = elems[0].value
         src = self.visit(elems[1])
         return {
@@ -89,9 +89,9 @@ class ObjInterpreter(Interpreter):
             'source' : src
         }
 
-    def imagens(self,imagens):
-        '''imagens : "- Imagens:" "[" TEXTO ("," TEXTO)* "]"'''
-        elems = imagens.children
+    def images(self,images):
+        '''images : "- Imagens:" "[" TEXTO ("," TEXTO)* "]"'''
+        elems = images.children
         srcs = []
         for elem in elems:
             src = f"{self.current_folder}/../assets/objects/{self.id}/{elem.value[1:-1]}"
@@ -101,18 +101,18 @@ class ObjInterpreter(Interpreter):
             srcs.append(src)
         return srcs
 
-    def imagem(self,imagem):
-        '''imagem  : "- Imagem:" TEXTO'''
-        elems = imagem.children
+    def image(self,image):
+        '''image  : "- Imagem:" TEXTO'''
+        elems = image.children
         src = f"{cf}/../assets/objects/"+self.id+"/"+elems[0].value[1:-1]
         file = open(src)
         src = os.path.realpath(file.name)
         file.close()
         return src
     
-    def fonte(self,fonte):
-        '''fonte  : "- Fonte:" TEXTO'''
-        elems = fonte.children
+    def source(self,source):
+        '''source  : "- Fonte:" TEXTO'''
+        elems = source.children
         src = f"{cf}/../assets/objects/"+self.id+"/"+elems[0].value[1:-1]
         file = open(src)
         src = os.path.realpath(file.name)
@@ -131,22 +131,22 @@ class ObjInterpreter(Interpreter):
         ts = int(elems[0].value)
         return ts
 
-    def estado_inicial(self,estado_inicial):
-        '''estado_inicial: "- Estado inicial:" ID'''
-        elems = estado_inicial.children
+    def view_inicial(self,view_inicial):
+        '''view_inicial: "- View inicial:" ID'''
+        elems = view_inicial.children
         id = self.id + '_' + elems[0].value
         return id
 
-    def posicao(self,posicao):
-        '''posicao: "- Posição:" "(" NUM "," NUM ")"'''
-        elems = posicao.children
+    def position(self,position):
+        '''position: "- Posição:" "(" NUM "," NUM ")"'''
+        elems = position.children
         x = int(elems[0].value)
         y = int(elems[0].value)
         return (x,y)
 
-    def tamanho(self,tamanho):
-        '''tamanho: "- Tamanho:" "[" NUM "," NUM "]"'''
-        elems = tamanho.children
+    def size(self,size):
+        '''size: "- Tamanho:" "[" NUM "," NUM "]"'''
+        elems = size.children
         w = int(elems[0].value)
         h = int(elems[0].value)
         return (w,h)

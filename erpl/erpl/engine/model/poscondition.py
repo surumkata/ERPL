@@ -29,8 +29,8 @@ class EventPosConditionObjChangeState(EventPosCondition):
         self.state_id = state_id
 
     def do(self,room,inventory,state):
-        state.buffer_obj_states[self.object_id] = self.state_id #colocar no buffer o estado do objeto para ser posteriormente alterado
-        debug("EVENT_CHANGE_STATE: Mudando o estado do objeto "+self.object_id+" para "+self.state_id+".")
+        state.buffer_obj_states[self.object_id] = self.state_id #colocar no buffer o view do object para ser posteriormente alterado
+        debug("EVENT_CHANGE_STATE: Mudando o view do object "+self.object_id+" para "+self.state_id+".")
 
 #OBJ_CHANGE_POSITION = 2
 class EventPosConditionObjChangePosition(EventPosCondition):
@@ -40,7 +40,7 @@ class EventPosConditionObjChangePosition(EventPosCondition):
 
     def do(self,room,inventory,state):
         room.objects[self.object_id].change_position(self.position)
-        debug("EVENT_CHANGE_POSITION: Mudando "+self.object_id +" para a posição ("+str(self.position.x)+","+str(self.position.y)+").")
+        debug("EVENT_CHANGE_POSITION: Mudando "+self.object_id +" para a position ("+str(self.position.x)+","+str(self.position.y)+").")
 
 #OBJ_CHANGE_SIZE = 3
 class EventPosConditionObjChangeSize(EventPosCondition):
@@ -52,7 +52,7 @@ class EventPosConditionObjChangeSize(EventPosCondition):
         object_id = self.object_id
         size = self.size
         room.objects[object_id].change_size(size)
-        debug("EVENT_CHANGE_SIZE: Mudando "+object_id +" para o tamanho ("+str(size.x)+","+str(size.y)+").")
+        debug("EVENT_CHANGE_SIZE: Mudando "+object_id +" para o size ("+str(size.x)+","+str(size.y)+").")
 
 #SHOW_MESSAGE = 4
 class EventPosConditionShowMessage(EventPosCondition):
@@ -62,7 +62,7 @@ class EventPosConditionShowMessage(EventPosCondition):
 
     def do(self,room,inventory,state):
         state.buffer_messages.append(BalloonMessage(self.message,self.position.x,self.position.y))
-        debug("EVENT_MESSAGE: Mostrando mensagem '"+str(self.message)+"'.")
+        debug("EVENT_MESSAGE: Mostrando message '"+str(self.message)+"'.")
 
 #QUESTION = 5
 class EventPosConditionQuestion(EventPosCondition):
@@ -84,10 +84,10 @@ class EventPosConditionObjPutInventory(EventPosCondition):
         self.object_id = object_id
     
     def do(self,room,inventory,state):
-        #Transformar Objeto em Item
-        #Remover dos objetos da sala
+        #Transformar Object em Item
+        #Remover dos objects da sala
         #Colocar no inventário
-        #Criar eventos de ativo e desativo
+        #Criar events de ativo e desativo
         object_id = self.object_id
         object = room.objects[object_id]
         del room.objects[object_id]
@@ -148,21 +148,21 @@ class EventPosConditionPlaySound(EventPosCondition):
             room.objects[self.source_id].sounds[self.sound_id].play()
         elif self.source_type == 'Scenario':
             room.scenarios[self.source_id].sounds[self.sound_id].play()
-        debug("EVENT_PLAY_SOUND: Tocando som "+self.sound_id+".")
+        debug("EVENT_PLAY_SOUND: Tocando sound "+self.sound_id+".")
 
 
-#MOVE_OBJECT = 9
+#MOTION_OBJECT = 9
 class EventPosConditionMoveObject(EventPosCondition):
-    def __init__(self,object_id, object_trigger, sucess_event, fail_event):
+    def __init__(self,object_id, trigger_object, sucess_event, fail_event):
         self.object_id = object_id
-        self.object_trigger = object_trigger
+        self.trigger_object = trigger_object
         self.sucess_event = sucess_event
         self.fail_event = fail_event
 
     def do(self,room,inventory,state):
-        challenge_motion = ChallengeMotion(self.sucess_event,self.fail_event, self.object_id, self.object_trigger)
+        challenge_motion = ChallengeMotion(self.sucess_event,self.fail_event, self.object_id, self.trigger_object)
         state.active_challenge_mode(challenge_motion)
-        debug("EVENT_POSCONDITION_MOVE_OBJECT: Arrasta objeto "+self.object_id+".")
+        debug("EVENT_POSCONDITION_MOTION_OBJECT: Motion object "+self.object_id+".")
 
 #MULTIPLE_CHOICE = 10
 class EventPosConditionMultipleChoice(EventPosCondition):
@@ -194,15 +194,15 @@ class EventPosConditionConnections(EventPosCondition):
 
 #SEQUENCE = 12
 class EventPosConditionSequence(EventPosCondition):
-    def __init__(self,order,question, sucess_event, fail_event):
+    def __init__(self,sequence,question, sucess_event, fail_event):
         self.question = question
-        self.order = order
+        self.sequence = sequence
         self.sucess_event = sucess_event
         self.fail_event = fail_event
 
     def do(self,room,inventory,state):
-        challenge_order = ChallengeSequence(self.question,self.order,self.sucess_event,self.fail_event)
-        state.active_challenge_mode(challenge_order)
+        challenge_sequence = ChallengeSequence(self.question,self.sequence,self.sucess_event,self.fail_event)
+        state.active_challenge_mode(challenge_sequence)
         debug("EVENT_POSCONDITION_ORDER")
 
 #PUZZLE = 13

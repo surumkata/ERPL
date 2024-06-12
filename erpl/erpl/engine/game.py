@@ -3,7 +3,7 @@
 import os
 import threading
 
-# Configuração para ocultar a mensagem de boas-vindas do Pygame
+# Configuração para ocultar a message de boas-vindas do Pygame
 os.environ["PYGAME_HIDE_SUPPORT_PROMPT"] = "1"
 
 import pygame
@@ -31,9 +31,9 @@ def do_event(event,room : EscapeRoom, inventory : Inventory,state : GameState):
 
 def try_do_events(room : EscapeRoom, inventory : Inventory,state : GameState):
     for event in room.events.values():
-        if event.pre_conditions.root == None: #nao tem preconditions
+        if event.pre_conditions.root == None: #not tem preconditions
             continue
-        if not event.inifity_repetitions and not event.repetitions > 0: #nao tem mais repetiçoes
+        if not event.inifity_repetitions and not event.repetitions > 0: #not tem mais repetiçoes
             continue
         if event.pre_conditions.test_tree(room, inventory,state):
             do_event(event=event, room=room, inventory=inventory, state=state)
@@ -101,13 +101,13 @@ def play_game(screen,room, inventory, state):
         else:
             created_thread = False
 
-        #Tenta fazer eventos
+        #Tenta fazer events
         try_do_events(room,inventory,state)
 
-        #Atualiza os buffers depois dos eventos
+        #Atualiza os buffers depois dos events
         state.update_buffers(room)
         
-        #Atualiza os eventos do inventário
+        #Atualiza os events do inventário
         inventory.update_items()
 
         if state.is_running():
@@ -123,7 +123,7 @@ def play_game(screen,room, inventory, state):
             inventory.draw(screen)
             state.challenge.draw(screen)
         
-        #Tela de fim de jogo
+        #Tela de end of game
         elif state.is_finished():
             state.draw_finish_screen(screen)
              
@@ -147,17 +147,17 @@ def init_game(args = None):
     pygame.mixer.init()
 
     
-    ## Carregue a música de fundo
+    ## Carregue a música de background
     #filename = f'{current_folder}/../../../../assets/sounds/soundtrack.mp3'
     #pygame.mixer.music.load(filename)
     #pygame.mixer.music.play(-1)
 
     screen = pygame.display.set_mode((WIDTH, HEIGHT))
-    pygame.display.set_caption("Escape Room 2D")
 
     # Loading do modelo
     room,state = load(args.input[0]) if args and args.input else load()
 
+    pygame.display.set_caption(room.title)
     # Inicializar o inventário  
     inventory = Inventory()
 

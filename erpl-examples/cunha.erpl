@@ -1,231 +1,238 @@
 EscapeRoom(
-    título="Sala buéde fixe",
-    tamanho=[1300,700],
-    cenários=[cena,cena2],
-    eventos=[abrir_porta,abrir_porta2,muda_cena,muda_cena2,fim,chave_inventario,tentar_abrir_cofre,abrir_cofre,mostrar_erro,mensagem_trancada,arrasta_lupa,aumentar_nota,move_lupa,desaparecer_nota_lupa],
-    transições=[]
+    title="Sala bué de fixe",
+    size=[1300,700],
+    scenarios=[cena,cena2],
+    events=[abrir_porta,abrir_porta2,muda_cena,muda_cena2,fim,chave_inventario,tentar_abrir_cofre,abrir_cofre,mostrar_erro,message_trancada,motion_lupa,aumentar_nota,move_lupa,desaparecer_nota_lupa],
+    transitions=[]
 )
 
-importa Objeto.porta
-importa Objeto.cofre
+import Object.porta
+import Object.cofre
 
 
 
-.room        = Python.Function.dotpng("room")
-.room2       = room
-.tamanho     = Python.Local.tamanho
-.posicao     = Python.Local.posicao
-.num         = Python.Local.num
-.codigo      = Python.Local.codigo
-.lista       = Python.Local.door
-.lista2      = Python.Local.puzzle
+room        = Python.Function.dotpng("room")
+room2       = room
+size     = Python.Local.size
+position     = Python.Local.position
+num         = Python.Local.num
+codigo      = Python.Local.codigo
+list       = Python.Local.door
+list2      = Python.Local.puzzle
 
-.porta       = Objeto.porta(posição=(600,342),tamanho=tamanho)
-.porta2      = Objeto.porta(posição=(0,342),tamanho=tamanho)
-.cofre       = Objeto.cofre(posição=posicao, tamanho=[172,num])
 
-.normal      = Estado.Estático(
-                imagem="../assets/images/key.png"
+number = 100
+var = [number,100]
+
+
+porta       = Object.porta(position=(600,342),size=size)
+porta2      = Object.porta(position=(0,342),size=size)
+cofre       = Object.cofre(position=position, size=[172,num])
+
+normal      = View.Static(
+                image="../assets/images/key.png"
+                )
+ 
+chave       = Object(
+                views=[normal],
+                position=(1020,520),
+                size=[50,25]
                 )
 
-.ativa       = Estado.Estático(
-                imagem="../assets/images/active_key.png"
+chave.add_View(
+                View.Static.ativa(
+                    image="../assets/images/active_key.png"
                 )
-.chave       = Objeto(
-                estados=[normal],
-                posição=(1020,520),
-                tamanho=[50,25]
                 )
 
-.chave.adiciona_Estado(ativa)
-
-.nota_normal = Estado.Estático(
-                imagem=Python.Function.dotpng("nota"),
-                posição=(400,600),
-                tamanho=[30,30]
+nota_normal = View.Static(
+                image=Python.Function.dotpng("nota"),
+                position=(400,600),
+                size=[30,30]
                 )
 
-.nota       = Objeto(
-                estado_inicial=nota_normal,
-                estados=[nota_normal]
+nota       = Object(
+                initial_view=nota_normal,
+                views=[nota_normal]
                 )
 
-.abrir_porta_som = Som(
-                fonte=Python.Function.dotmp3("door-1-open")
+abrir_porta_sound = Sound(
+                source=Python.Function.dotmp3("door-1-open")
                 )
 
-.porta.adiciona_Som(abrir_porta_som)
-.porta2.adiciona_Som(abrir_porta_som)
+porta.add_Sound(abrir_porta_sound)
+porta2.add_Sound(abrir_porta_sound)
 
 
-.visivel    = Estado.Estático(
-                imagem=Python.Function.dotpng("nota_nova")
+visivel    = View.Static(
+                image=Python.Function.dotpng("nota_nova")
 )
 
-.lupa_normal = Estado.Estático(imagem=Python.Function.dotpng("lupa"))
+lupa_normal = View.Static(image=Python.Function.dotpng("lupa"))
 
-.lupa_ativa = Estado.Estático(imagem=Python.Function.dotpng("active_lupa"))
+lupa_ativa = View.Static(image=Python.Function.dotpng("active_lupa"))
 
-.lupa = Objeto(
-            estado_inicial=lupa_normal,
-            estados=[lupa_normal,lupa_ativa],
-            posição=(200,500),
-            tamanho=[40,40]
+lupa = Object(
+            initial_view=lupa_normal,
+            views=[lupa_normal,lupa_ativa],
+            position=(200,500),
+            size=[40,40]
 )
 
-.aberta = Estado.Estático(
-            imagem=Python.Function.dotpng("open_door")
+aberta = View.Static(
+            image=Python.Function.dotpng("open_door")
             )
             
-.porta3 = Objeto(estado_inicial=aberta,estados=[aberta],posição=(600,342),tamanho=[225,300])
+porta3 = Object(initial_view=aberta,views=[aberta],position=(600,342),size=[225,300])
 
-.background = Estado.Estático(imagem=room)
+background = View.Static(image=room)
 
-.cena        = Cenário(
-                estado_inicial=background,
-                estados=[background],
-                objetos=[porta,porta2,cofre,chave,nota, Objeto.nota_lupa(estados=[], posição=(300,500), tamanho=[200,200]),lupa]
+cena        = Scenario(
+                initial_view=background,
+                views=[background],
+                objects=[porta,porta2,cofre,chave,nota, Object.nota_lupa(views=[], position=(300,500), size=[200,200]),lupa]
                 )
 
-.cena2        = Cenário(
-                estado_inicial=background,
-                estados=[background],
-                objetos=[porta3]
+cena2        = Scenario(
+                initial_view=background,
+                views=[background],
+                objects=[porta3]
                 )
 
-.nota_lupa.adiciona_Estado(visivel)
+nota_lupa.add_View(visivel)
 
-.abrir_cofre = Evento(
-    então=cofre muda para cofre_aberto e chave muda para normal
+abrir_cofre = Event(
+    then=cofre change to cofre_aberto and chave change to normal
 )
 
-.mostrar_erro = Evento(
-    então=mostra mensagem "Código errado!" em (1000, 485)
+mostrar_erro = Event(
+    then=show message "Código errado!" in (1000, 485)
 )
 
 
 
-.codigo_cofre = Desafio.Pergunta(
-                pergunta="Qual é o código do cofre?",
-                resposta=codigo,
-                sucesso=abrir_cofre,
-                falha=mostrar_erro
+
+aumentar_nota = Event(
+    then=nota_lupa change to visivel
+)
+
+
+move_lupa = Event(
+    then=lupa move to (200,500)
+)
+
+codigo_cofre = Challenge.Question(
+                question="Qual é o código do cofre?",
+                answer=codigo,
+                sucess=abrir_cofre,
+                fail=mostrar_erro
                 )
 
-.aumentar_nota = Evento(
-    então=nota_lupa muda para visivel
-)
 
-
-.move_lupa = Evento(
-    então=lupa muda posição para (200,500)
-)
-
-.arrasta_lupa_des = Desafio.Arrasta(
-                objeto_id=lupa,
-                objeto_gatilho=nota,
-                sucesso=aumentar_nota,
-                falha=move_lupa
+motion_lupa_des = Challenge.Motion(
+                motion_object=lupa,
+                trigger_object=nota,
+                sucess=aumentar_nota,
+                fail=move_lupa
                 )
 
                 
-.escolha_multipla = Desafio.Escolha_Múltipla(
-    pergunta="Qual destes códigos, corresponde corretamente a esta expressão regular:\n[0-9]{3}-\[0-9]-\[0-9]{3}",
-    escolhas=["147-852-963","45-987-855","458-98-874","210-233-90"],
-    resposta="147-852-963",
-    sucesso=abrir_cofre,
-    falha=mostrar_erro
+multiple_choice = Challenge.Multiple_Choice(
+    question="Qual destes códigos, corresponde corretamente a is expressão regular:\n[0-9]{3}-\[0-9]-\[0-9]{3}",
+    choices=["147-852-963","45-987-855","458-98-874","210-233-90"],
+    answer="147-852-963",
+    sucess=abrir_cofre,
+    fail=mostrar_erro
     )
-.conexao = Desafio.Conexão(
-    pergunta="Conecta corretamente",
-    lista1=["book","pencil","cat","dog"],
-    lista2=["livro","lápis","gato","cão"],
-    sucesso=abrir_cofre,
-    falha=mostrar_erro
+connection = Challenge.Connection(
+    question="Conecta corretamente",
+    list1=["book","pencil","cat","dog"],
+    list2=["livro","lápis","gato","cão"],
+    sucess=abrir_cofre,
+    fail=mostrar_erro
 )
-.sequencia = Desafio.Sequência(
-    pergunta="Escolha por ordem crescente",
-    sequência=["320","600","1000","2500"],
-    sucesso=abrir_cofre,
-    falha=mostrar_erro
+sequence = Challenge.Sequence(
+    question="Escolha por ordem crescente",
+    sequence=["320","600","1000","2500"],
+    sucess=abrir_cofre,
+    fail=mostrar_erro
 )
-.puzzle = Desafio.Puzzle(
-    imagem=Python.Function.dotpng("puzzle"),
-    sucesso=abrir_cofre
+puzzle = Challenge.Puzzle(
+    image=Python.Function.dotpng("puzzle"),
+    sucess=abrir_cofre
 )
-.slidepuzzle = Desafio.SlidePuzzle(
-    imagem=Python.Function.dotpng("puzzle"),
-    sucesso=abrir_cofre
+slidepuzzle = Challenge.SlidePuzzle(
+    image=Python.Function.dotpng("puzzle"),
+    sucess=abrir_cofre
 )
-.socket = Desafio.Socket(
+socket = Challenge.Socket(
     host="127.0.0.1",
     port=65433,
-    mensagem="à escuta...",
-    sucesso=abrir_cofre,
-    falha=mostrar_erro
+    message="à escuta...",
+    sucess=abrir_cofre,
+    fail=mostrar_erro
 )
 
-.abrir_porta = Evento(
-    se=clique porta e porta está porta_fechada e chave está em uso,
-    então=porta muda para porta_aberta e chave é removida e toca porta_abrir da porta,
-    repetições=1
+abrir_porta = Event(
+    if=click porta and porta is porta_fechada and chave is in use,
+    then=porta change to porta_aberta and chave is removed and play porta_abrir of porta,
+    repetitions=1
 )
 
-.abrir_porta2 = Evento(
-    se=clique porta2 e porta2 está porta_fechada e já passaram 5 segundos,
-    então=porta2 muda para porta_aberta e toca porta_abrir da porta2,
-    repetições=1
-)
-
-
-.muda_cena = Evento(
-    se=clique porta2 e porta2 está porta_aberta,
-    então=muda para cenário cena2
-)
-
-.muda_cena2 = Evento(
-    se=clique porta3 e porta3 está aberta,
-    então=muda para cenário cena
-)
-
-.fim = Evento(
-    se=clique porta e porta está porta_aberta,
-    então=fim de jogo,
-    repetições=1
-)
-
-.chave_inventario = Evento(
-    se=clique chave e cofre está cofre_aberto,
-    então=chave vai para o inventário,
-    repetições=1
-)
-
-.tentar_abrir_cofre = Evento(
-    se=clique cofre e cofre está cofre_fechado,
-    então=começa desafio slidepuzzle,
-    repetições=1
-)
-
-.mensagem_trancada = Evento(
-    se=clique porta e porta está porta_fechada e não chave está em uso,
-    então=mostra mensagem "porta trancada! procura uma chave!" em (600,385) e toca porta_locked do porta
-)
-
-.arrasta_lupa = Evento(
-    se=clique lupa,
-    então=começa desafio arrasta_lupa_des
+abrir_porta2 = Event(
+    if=click porta2 and porta2 is porta_fechada and 5 seconds have already passed,
+    then=porta2 change to porta_aberta and play porta_abrir of porta2,
+    repetitions=1
 )
 
 
-.desaparecer_nota_lupa = Evento(
-    se=clique não nota_lupa e nota_lupa está visivel,
-    então=nota_lupa muda para none
+muda_cena = Event(
+    if=click porta2 and porta2 is porta_aberta,
+    then=change to scenario cena2
 )
 
-Python =
+muda_cena2 = Event(
+    if=click porta3 and porta3 is aberta,
+    then=change to scenario cena
+)
+
+fim = Event(
+    if=click porta and porta is porta_aberta,
+    then=end of game,
+    repetitions=1
+)
+
+chave_inventario = Event(
+    if=click chave and cofre is cofre_aberto,
+    then=chave goes to inventory,
+    repetitions=1
+)
+
+tentar_abrir_cofre = Event(
+    if=click cofre and cofre is cofre_fechado,
+    then=start challenge slidepuzzle,
+    repetitions=1
+)
+
+message_trancada = Event(
+    if=click porta and porta is porta_fechada and not chave is in use,
+    then=show message "porta trancada! procura uma chave!" in (600,385) and play porta_locked of porta
+)
+
+motion_lupa = Event(
+    if=click lupa,
+    then=start challenge motion_lupa_des
+)
+
+
+desaparecer_nota_lupa = Event(
+    if=click not nota_lupa and nota_lupa is visivel,
+    then=nota_lupa change to none
+)
+
+__Python__
 import glob
 import os
-from imageplustxt import add_text_to_image
 
 from erpl.engine.model.object import Object
 from erpl.engine.model.utils import *
@@ -246,12 +253,11 @@ def dotmp3(string):
     return current_folder+"/../assets/sounds/"+string+".mp3"
 
 
-posicao = (1000,485)
+position = (1000,485)
 room = dotpng("room")
 num = 100
-tamanho = [225,300]
+size = [225,300]
 codigo = "932"
 current_folder = os.getcwd()
 door = glob.glob(f"{current_folder}/../assets/images/door/*.png")
 puzzle = glob.glob(f"{current_folder}/../assets/images/puzzle/*.png")
-add_text_to_image(dotpng("nota"),dotpng("nota_nova"),"932",(255,255,255),dotttf("arial"))

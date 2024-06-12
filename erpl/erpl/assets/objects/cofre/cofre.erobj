@@ -1,8 +1,8 @@
-Estados:
-- Estado aberto:
+Views:
+- View aberto:
     - Imagem: "open_cofre.png"
-- Estado fechado:
+- View fechado:
     - Imagem: "cofre.png"
-Estado inicial: fechado
+View inicial: fechado
 Posição: (0,0)
 Tamanho: [172,100]

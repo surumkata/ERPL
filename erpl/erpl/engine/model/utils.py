@@ -2,7 +2,7 @@ import pygame
 import os
 
 debug_mode = True
-WIDTH, HEIGHT = 1300, 700
+WIDTH, HEIGHT = 1280,720
 
 
 class Color():
@@ -11,6 +11,7 @@ class Color():
     RED = (255, 0, 0)
     BLACK = (0,0,0)
     BLUE = (0,0,255)
+    GRAY = (89,89,89)
 
 current_folder = os.path.dirname(__file__)
 __sounds = f"{current_folder}/../../../../assets/sounds/"

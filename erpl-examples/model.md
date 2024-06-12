@@ -7,99 +7,99 @@ ERPL (Escape Room Programming Language) é uma DSL para a criação de Escape Ro
 
 EscapeRoom
 - titúlo: titúlo da escape room.
-- tamanho: tamanho dos cenários da escape room.
-- cenários: cenários presentes na escape room.
-- eventos: eventos presentes na escape room.
+- size: size dos scenarios da escape room.
+- scenarios: scenarios presentes na escape room.
+- events: events presentes na escape room.
 - transições: transições presentes na escape room.
 
-Cenário
-- id: identifcador do cenário.
-- estados: visuais do cenário.
-- sons: aúdios do cenário.
-- objetos: objetos presentes no cenário.
+Scenario
+- id: identifcador do scenario.
+- views: visuais do scenario.
+- sounds: aúdios do scenario.
+- objects: objects presentes no scenario.
 
-Objeto
-- id: identificador do objeto.
-- estados: visuais do objeto.
-- sons: aúdios do objeto.
-- posição: posição do objeto no cenário.
-- tamanho: tamanho do objeto.
+Object
+- id: identificador do object.
+- views: visuais do object.
+- sounds: aúdios do object.
+- position: position do object no scenario.
+- size: size do object.
 
-Estado
-- Estado Estático:
- -- id: identificador do estado.
- -- imagem: imagem do estado.
- -- posição: posição do estado.
- -- tamanho: tamanho do estado.
-- Estado Dinâmico:
--- id: identificador do estado.
--- imagens: imagens da animação do estado.
--- posição: posição do estado.
--- tamanho: tamanho do estado.
+View
+- View Estático:
+ -- id: identificador do view.
+ -- image: image do view.
+ -- position: position do view.
+ -- size: size do view.
+- View Dinâmico:
+-- id: identificador do view.
+-- images: images da animação do view.
+-- position: position do view.
+-- size: size do view.
 -- repetições: número de repetições da animação.
--- tempo entre sprites: tempo entre cada imagem durante a animação.
+-- tempo entre sprites: tempo entre cada image durante a animação.
 
-Som
- - id: identificador do som.
- - fonte: fonte de aúdio.
+Sound
+ - id: identificador do sound.
+ - source: source de aúdio.
 
-Evento:
+Event:
  - id
- - pré-condições: condições para a realização do evento.
- - pós-condições: condições realizadas durante o evento.
+ - pré-condições: condições para a realização do event.
+ - pós-condições: condições realizadas durante o event.
 
-Desafio:
- - Desafio Pergunta:
+Challenge:
+ - Challenge Question:
     -- id
-    -- pergunta
-    -- resposta
-    -- evento de sucesso
-    -- evento de falha
- - Desafio Arrasta:
+    -- question
+    -- answer
+    -- event de sucess
+    -- event de fail
+ - Challenge Motion:
     -- id
-    -- objeto de arrasto
-    -- objeto de gatilho
-    -- evento de sucesso
-    -- evento de falha
- - Desafio Escolha Múltipla:
+    -- object de arrasto
+    -- object de trigger
+    -- event de sucess
+    -- event de fail
+ - Challenge Multiple_Choice:
     -- id
-    -- pergunta
-    -- escolhas
-    -- resposta
-    -- evento de sucesso
-    -- evento de falha 
- - Desafio Conexão:
+    -- question
+    -- choices
+    -- answer
+    -- event de sucess
+    -- event de fail 
+ - Challenge Connection:
     -- id
-    -- pergunta
-    -- primeira lista
-    -- segunda lista
-    -- evento de sucesso
-    -- evento de falha
- - Desafio Sequência:
+    -- question
+    -- primeira list
+    -- segunda list
+    -- event de sucess
+    -- event de fail
+ - Challenge Sequence:
     -- id
-    -- pergunta
-    -- sequência
-    -- evento de sucesso
-    -- evento de falha
- - Desafio Puzzle:
+    -- question
+    -- sequence
+    -- event de sucess
+    -- event de fail
+ - Challenge Puzzle:
     -- id
-    -- imagem
-    -- evento de sucesso
- - Desafio Slide Puzzle:
+    -- image
+    -- event de sucess
+ - Challenge Slide Puzzle:
     -- id
-    -- imagem
-    -- evento de sucesso
- - Desafio Socket
+    -- image
+    -- event de sucess
+ - Challenge Socket
     -- id
     -- host
     -- port
-    -- mensagem
-    -- evento de sucesso
-    -- evento de falha
+    -- message
+    -- event de sucess
+    -- event de fail
 
-Transição:
- - id: identificador da transição.
- - fundo: estado de fundo da transição.
- - música: som a passar na transição.
- - história: texto a passar na transição. 
- - próxima cena|transição: o que vem a seguir da transição.
+Transition:
+ - id: identificador da transition.
+ - background: view de background da transition.
+ - música: sound a passar na transition.
+ - história: text a passar na transition. 
+ - próxima cena|transition: o que vem a seguir da transition.

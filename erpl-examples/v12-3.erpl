@@ -16,10 +16,10 @@ def dotmp3(string):
     return current_folder+"/../assets/sounds/"+string+".mp3"
 
 
-posicao = (1000,485)
+position = (1000,485)
 room = dotpng("room")
 num = 100
-tamanho = [225,300]
+size = [225,300]
 codigo = "932"
 current_folder = os.getcwd()
 door = glob.glob(f"{current_folder}/../assets/images/door/*.png")
@@ -28,126 +28,126 @@ add_text_to_image(dotpng("nota"),dotpng("nota_nova"),"932",(255,255,255),dotttf(
 }ep
 
 $room = pfunc_dotpng("room")
-$tamanho = plocal_tamanho
-$posicao = plocal_posicao
+$size = plocal_size
+$position = plocal_position
 $num = plocal_num
 $codigo = plocal_codigo
-$lista = plocal_door
-$lista2 = plocal_puzzle
+$list = plocal_door
+$list2 = plocal_puzzle
 
 Sala sala [1300,700] {
     contém Cena cena {
-        tem Estado inicial background $room
-        contém Objeto porta (600,342) $tamanho {
-            tem Estado inicial fechada pfunc_dotpng("door")
-            tem Estado animado(3,1) aberta $lista
+        tem View inicial background $room
+        contém Object porta (600,342) $size {
+            tem View inicial fechada pfunc_dotpng("door")
+            tem View animado(3,1) aberta $list
         }
-        contém Objeto porta2 (0,342) $tamanho {
-            tem Estado inicial fechada pfunc_dotpng("door/door0")
-            tem Estado animado(3,1) aberta $lista
+        contém Object porta2 (0,342) $size {
+            tem View inicial fechada pfunc_dotpng("door/door0")
+            tem View animado(3,1) aberta $list
         }
-        contém Objeto cofre $posicao [172,$num] {
-            tem Estado inicial fechado pfunc_dotpng("cofre")
-            tem Estado aberto pfunc_dotpng("open_cofre")
+        contém Object cofre $position [172,$num] {
+            tem View inicial fechado pfunc_dotpng("cofre")
+            tem View aberto pfunc_dotpng("open_cofre")
         }
-        contém Objeto chave (1020,520) [50,25] {
-            tem Estado normal pfunc_dotpng("key")
-            tem Estado ativa pfunc_dotpng("active_key")
+        contém Object chave (1020,520) [50,25] {
+            tem View normal pfunc_dotpng("key")
+            tem View ativa pfunc_dotpng("active_key")
         }   
-        contém Objeto nota {
-            tem Estado inicial normal pfunc_dotpng("nota") (400,600) [30,30]
+        contém Object nota {
+            tem View inicial normal pfunc_dotpng("nota") (400,600) [30,30]
         }
-        contém Objeto nota_lupa (300,500) [200,200] {
-            tem Estado visivel pfunc_dotpng("nota_nova")
+        contém Object nota_lupa (300,500) [200,200] {
+            tem View visivel pfunc_dotpng("nota_nova")
         }
-        contém Objeto lupa (200,500) [40,40] {
-            tem Estado inicial normal pfunc_dotpng("lupa")
-            tem Estado ativa pfunc_dotpng("active_lupa")
+        contém Object lupa (200,500) [40,40] {
+            tem View inicial normal pfunc_dotpng("lupa")
+            tem View ativa pfunc_dotpng("active_lupa")
         }
     }
     contém Cena cena2 {
-        tem Estado inicial background pfunc_dotpng("room")
-        contém Objeto porta3 (600,342) [225,300] {
-            tem Estado inicial aberta pfunc_dotpng("open_door")
+        tem View inicial background pfunc_dotpng("room")
+        contém Object porta3 (600,342) [225,300] {
+            tem View inicial aberta pfunc_dotpng("open_door")
         }
     }
 }
 
 #Sons:
 
-Som porta_a_abrir: pfunc_dotmp3("door-1-open")
-Som porta-locked: pfunc_dotmp3("door-locked")
+Sound porta_a_abrir: pfunc_dotmp3("door-1-open")
+Sound porta-locked: pfunc_dotmp3("door-locked")
 
-#Desafios:
+#Challenges:
 
-Desafio codigo_cofre:
-pede código $codigo com mensagem "Qual é o código do cofre?" em (1000, 485), se acertar faz abrir_cofre e se errar faz mostrar_erro.
+Challenge codigo_cofre:
+pede código $codigo com message "Qual é o código do cofre?" em (1000, 485), se acertar faz abrir_cofre e se errar faz mostrar_erro.
 
-Desafio arrasta_lupa:
-arrasta lupa, se deixar em cima de nota faz aumentar_nota e se não faz move_lupa.
+Challenge motion_lupa:
+motion lupa, se deixar em cima de nota faz aumentar_nota e se not faz move_lupa.
 
-Desafio escolha_multipla:
-pergunta "Qual destes códigos, corresponde corretamente a esta expressão regular:\n[0-9]{3}-\[0-9]-\[0-9]{3}" com as escolhas múltiplas ["147-852-963","45-987-855","458-98-874","210-233-90"] em que a respota é "147-852-963", se acertar faz abrir_cofre e se errar faz mostrar_erro.
+Challenge multiple_choice:
+question "Qual destes códigos, corresponde corretamente a is expressão regular:\n[0-9]{3}-\[0-9]-\[0-9]{3}" com as choices múltiplas ["147-852-963","45-987-855","458-98-874","210-233-90"] em que a respota é "147-852-963", se acertar faz abrir_cofre e se errar faz mostrar_erro.
 
-Desafio conexao:
-conecta ["book":"livro","pencil":"lápis","cat":"gato","dog":"cão"] com mensagem "Conecta corretamente", se acertar faz abrir_cofre e se errar faz mostrar_erro.
+Challenge connection:
+conecta ["book":"livro","pencil":"lápis","cat":"gato","dog":"cão"] com message "Conecta corretamente", se acertar faz abrir_cofre e se errar faz mostrar_erro.
 
-Desafio sequencia:
-escolhe em ordem ["320","600","1000","2500"] com mensagem "Escolha por ordem crescente", se acertar faz abrir_cofre e se errar faz mostrar_erro.
+Challenge sequence:
+escolhe em ordem ["320","600","1000","2500"] com message "Escolha por ordem crescente", se acertar faz abrir_cofre e se errar faz mostrar_erro.
 
-Desafio puzzle:
-puzzle $lista2, se completar faz abrir_cofre.
+Challenge puzzle:
+puzzle $list2, se completar faz abrir_cofre.
 
-#Eventos:
+#Events:
 
-Evento abrir_porta(1):
-Se clique porta e porta está fechada e chave está em uso,
-então porta muda para aberta e chave é removida e toca porta_a_abrir.
+Event abrir_porta(1):
+Se click porta e porta is fechada e chave is in use,
+then porta change to aberta e chave é removida e play porta_a_abrir.
 
-Evento abrir_porta2(1):
-Se clique porta2 e porta2 está fechada,
-então porta2 muda para aberta e toca porta_a_abrir.
+Event abrir_porta2(1):
+Se click porta2 e porta2 is fechada,
+then porta2 change to aberta e play porta_a_abrir.
 
-Evento muda_cena():
-Se clique porta2 e porta2 está aberta,
-então muda para cena cena2.
+Event muda_cena():
+Se click porta2 e porta2 is aberta,
+then change to cena cena2.
 
-Evento muda_cena2():
-Se clique porta3 e porta3 está aberta,
-então muda para cena cena.
+Event muda_cena2():
+Se click porta3 e porta3 is aberta,
+then change to cena cena.
 
-Evento fim(1):
-se clique porta e porta está aberta,
-então fim de jogo.
+Event fim(1):
+se click porta e porta is aberta,
+then end of game.
 
-Evento chave_inventario(1):
-Se clique chave e cofre está aberto,
-Então chave vai para o inventário.
+Event chave_inventario(1):
+Se click chave e cofre is aberto,
+Então chave goes to inventory.
 
-Evento tentar_abrir_cofre():
-Se clique cofre e cofre está fechado,
-então começa desafio sequencia.
+Event tentar_abrir_cofre():
+Se click cofre e cofre is fechado,
+then start challenge sequence.
 
-Evento abrir_cofre(-):
-cofre muda para aberto e chave muda para normal.
+Event abrir_cofre(-):
+cofre change to aberto e chave change to normal.
 
-Evento mostrar_erro(-):
-mostra mensagem "Código errado!" em (1000, 485).
+Event mostrar_erro(-):
+show message "Código errado!" em (1000, 485).
 
-Evento mensagem_trancada():
-Se clique porta e porta está fechada e não chave está em uso,
-então mostra mensagem "porta trancada! procura uma chave!" em (600,385) e toca porta-locked.
+Event message_trancada():
+Se click porta e porta is fechada e not chave is in use,
+then show message "porta trancada! procura uma chave!" em (600,385) e play porta-locked.
 
-Evento arrasta_lupa():
-Se clique lupa,
-Então começa desafio arrasta_lupa.
+Event motion_lupa():
+Se click lupa,
+Então start challenge motion_lupa.
 
-Evento aumentar_nota(-):
-nota_lupa muda para visivel.
+Event aumentar_nota(-):
+nota_lupa change to visivel.
 
-Evento move_lupa(-):
-lupa muda posição para (200,500).
+Event move_lupa(-):
+lupa move to (200,500).
 
-Evento desaparecer_nota_lupa():
-Se clique não nota_lupa e nota_lupa está visivel,
-então nota_lupa muda para null.
+Event desaparecer_nota_lupa():
+Se click not nota_lupa e nota_lupa is visivel,
+then nota_lupa change to null.

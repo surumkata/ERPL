@@ -17,23 +17,23 @@ class EscapeRoom:
         self.events_buffer = {}
         self.transitions = {}
 
-    #Função que adiciona uma cena
+    #Função que add uma cena
     def add_scenario(self,scenario : Scenario):
         self.scenarios[scenario.id] = scenario
 
-    #Função que adiciona um objeto
+    #Função que add um object
     def add_object(self, object : Object):
         self.objects[object.id] = object
 
-    #Função que adiciona um evento de cena
+    #Função que add um event de cena
     def add_event(self, event : Event):
         self.events[event.id] = event
     
-    #Função que adiciona uma transição
+    #Função que add uma transition
     def add_transition(self, transition : Transition):
         self.transitions[transition.id] = transition
     
-    #Função que adiciona um evento de cena
+    #Função que add um event de cena
     def add_event_buffer(self, id,pre_conditions,pos_conditions,repetitions):
         self.events_buffer[id] = Event(id,pre_conditions,pos_conditions,repetitions)
     
@@ -42,9 +42,9 @@ class EscapeRoom:
         #Desenhar a cena
         self.scenarios[current_scenario].draw(screen)
 
-        #Desenhar objetos na cena
+        #Desenhar objects na cena
         for object in self.objects.values():
-            #Se o objeto pertence à cena atual
+            #Se o object pertence à cena atual
             if current_scenario == object.reference:
                 object.draw(screen)
 
@@ -75,7 +75,7 @@ class EscapeRoom:
             self.events[event.id] = event
         self.events_buffer = {}
 #
-    #Função que verifica se um evento happen
+    #Função que verifica se um event happen
     def check_if_event_occurred(self,event_id : str):
         if event_id in self.events:
             return self.events[event_id].happen

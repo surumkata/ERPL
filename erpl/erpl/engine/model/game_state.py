@@ -31,15 +31,15 @@ class GameState:
         
 
     def update_buffers(self, room):
-        #Atualiza os eventos que foram feitos
+        #Atualiza os events que foram feitos
         for event in self.buffer_events_happened:
             room.update_event(event)
         self.buffer_events_happened = []
         
-        #Adiciona os eventos do buffer à room
+        #Adiciona os events do buffer à room
         room.update_events_buffer()
 
-        #Atualiza os estados dos objetos
+        #Atualiza os views dos objects
         for obj,obj_state in self.buffer_obj_states.items():
             room.change_object_current_state(obj,obj_state)
         self.buffer_obj_states = {}
@@ -112,8 +112,8 @@ class GameState:
             
     
     def draw_finish_screen(self,screen):
-        pygame.draw.rect(screen, Color.GREEN, (0, 0, WIDTH, HEIGHT))  # Fundo colorido/
+        pygame.draw.rect(screen, Color.GRAY, (0, 0, WIDTH, HEIGHT))  # Fundo colorido/
         font = pygame.font.Font(None, 36)
-        text = font.render("Você Escapou!", True, Color.WHITE)
+        text = font.render("Congratulations! You Escaped.", True, Color.WHITE)
         text_rect = text.get_rect(center=(WIDTH // 2, HEIGHT // 2))
         screen.blit(text, text_rect)

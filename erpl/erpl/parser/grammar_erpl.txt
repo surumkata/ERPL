@@ -1,204 +1,205 @@
 start         : er imports? decls? python_block?
 
 er            : "EscapeRoom(" er_parameters ")"
-er_parameters : param_titulo "," param_tamanho "," param_cenarios "," param_eventos "," param_transicoes
+er_parameters : param_title "," param_size "," param_scenarios "," param_events "," param_transitions "," param_start
 
 imports       : import_obj+
-import_obj    : "importa Objeto." ID
+import_obj    : "import Object." ID
 
-decls          : (var|decl)+
-decl           : adiciona_estado|adiciona_objeto|adiciona_som
+decls         : (var|decl)+
+decl          : add_view|add_object|add_sound
 
-adiciona_estado : "." ID         ".adiciona_Estado" "(" estado ")"
-adiciona_som    : "." ID         ".adiciona_Som"    "(" som    ")"
-adiciona_objeto : "." cenario_id ".adiciona_Objeto" "(" objeto ")"
+add_view   : ID         ".add_View"  "(" view   ")"
+add_sound  : ID         ".add_Sound" "(" sound  ")"
+add_object : cenario_id ".add_Object" "(" object ")"
 
 
-var            : VAR "=" value
-value          : ID|python_call|lista_texto_constructor|texto_constructor|tamanho_constructor|posicao_constructor|numero_constructor|estado_constructor|objeto_constructor|objeto_imported|som_constructor|cenario_constructor|evento_constructor|desafio_constructor|transicao_constructor
+var   : ID "=" value
+value : ID|python_call|list_text_constructor|text_constructor|size_constructor|position_constructor|number_constructor|view_constructor|object_constructor|object_imported|sound_constructor|cenario_constructor|event_constructor|challenge_constructor|transition_constructor
 
-python_call              : python_local|python_function
-python_local             : "Python.Local." ID
-python_function          : "Python.Function." FUNC
+python_call           : python_local|python_function
+python_local          : "Python.Local." ID
+python_function       : "Python.Function." FUNC
 
-lista_texto              : lista_texto_arg|lista_texto_constructor|lista_texto_python_call
-lista_texto_arg          : ID
-lista_texto_python_call  : python_call
-lista_texto_constructor  : "[" texto ("," texto)* "]"
+list_text             : list_text_arg|list_text_constructor|list_text_python_call
+list_text_arg         : ID
+list_text_python_call : python_call
+list_text_constructor : "[" text ("," text)* "]"
  
-texto                    : texto_arg|texto_constructor|texto_python_call
-texto_arg                : ID
-texto_python_call        : python_call
-texto_constructor        : TEXTO
+text                  : text_arg|text_constructor|text_python_call
+text_arg              : ID
+text_python_call      : python_call
+text_constructor      : TEXTO
      
-tamanho                  : tamanho_arg|tamanho_constructor|tamanho_python_call
-tamanho_arg              : ID
-tamanho_python_call      : python_call
-tamanho_constructor      : "[" numero "," numero "]"
+size                  : size_arg|size_constructor|size_python_call
+size_arg              : ID
+size_python_call      : python_call
+size_constructor      : "[" number "," number "]"
      
-posicao                  : posicao_arg|posicao_constructor|posicao_python_call
-posicao_arg              : ID
-posicao_python_call      : python_call
-posicao_constructor      : "(" numero "," numero ")"
+position              : position_arg|position_constructor|position_python_call
+position_arg          : ID
+position_python_call  : python_call
+position_constructor  : "(" number "," number ")"
      
-numero                   : numero_arg|numero_constructor|numero_python_call
-numero_arg               : ID
-numero_python_call       : python_call
-numero_constructor       : NUM
+number                : number_arg|number_constructor|number_python_call
+number_arg            : ID
+number_python_call    : python_call
+number_constructor    : NUM
      
-estados                  : "[" estado ("," estado)* "]"
-                         | "[" "]"
-estado                   : estado_arg|estado_constructor_id|estado_python_call
-estado_arg               : ID
-estado_id                : ID
-estado_python_call       : python_call
-estado_constructor       : estado_estatico|estado_dinamico
-estado_constructor_id    : estado_estatico_id|estado_dinamico_id
-estado_estatico          : "Estado.Estático" "(" param_imagem ("," param_posicao)? ("," param_tamanho)? ")"
-estado_dinamico          : "Estado.Dinâmico" "(" param_imagens "," param_repeticoes "," param_time_sprite ("," param_posicao)? ("," param_tamanho)? ")"
-estado_estatico_id       : "Estado.Estático." ID "(" param_imagem ("," param_posicao)? ("," param_tamanho)? ")"
-estado_dinamico_id       : "Estado.Dinâmico." ID "(" param_imagens "," param_repeticoes "," param_time_sprite ("," param_posicao)? ("," param_tamanho)? ")"
+views                 : "[" view ("," view)* "]"
+                      | "[" "]"
+view                  : view_arg|view_constructor_id|view_python_call
+view_arg              : ID
+view_id               : ID
+view_python_call      : python_call
+view_constructor      : view_static|view_animated
+view_constructor_id   : view_static_id|view_animated_id
+view_static           : "View.Static"       "(" param_image ("," param_position)? ("," param_size)? ")"
+view_animated         : "View.Animated"     "(" param_images "," param_repetitions "," param_time_sprite ("," param_position)? ("," param_size)? ")"
+view_static_id        : "View.Static." ID   "(" param_image ("," param_position)? ("," param_size)? ")"
+view_animated_id      : "View.Animated." ID "(" param_images "," param_repetitions "," param_time_sprite ("," param_position)? ("," param_size)? ")"
  
-sons                     : "[" som ("," som)* "]"
-                         | "[" "]"
-som                      : som_arg|som_constructor_id|som_python_call
-som_arg                  : ID
-som_id                   : ID
-som_python_call          : python_call
-som_constructor          : "Som" "(" param_fonte ")"
-som_constructor_id       : "Som." ID "(" param_fonte ")"
+sounds                : "[" sound ("," sound)* "]"
+                      | "[" "]"
+sound                 : sound_arg|sound_constructor_id|sound_python_call
+sound_arg             : ID
+sound_id              : ID
+sound_python_call     : python_call
+sound_constructor     : "Sound" "(" param_source ")"
+sound_constructor_id  : "Sound." ID "(" param_source ")"
  
-objetos                  : "[" objeto ("," objeto)* "]"
-objeto                   : objeto_imported_id|objeto_arg|objeto_constructor_id|objeto_python_call
-objeto_arg               : ID
-objeto_id                : ID
-objeto_python_call       : python_call
-objeto_imported          : "Objeto." ID ("(" (param_posicao|param_tamanho|(param_posicao "," param_tamanho)) ")")?
-objeto_constructor       : "Objeto" "(" (param_estado_inicial ",")? param_estados ("," param_posicao)? ("," param_tamanho)? ("," param_sons)? ")"
-objeto_imported_id       : "Objeto." ID "." ID ("(" (param_posicao|param_tamanho|(param_posicao "," param_tamanho)) ")")?
-objeto_constructor_id    : "Objeto." ID "(" (param_estado_inicial ",")? param_estados ("," param_posicao)? ("," param_tamanho)? ("," param_sons)? ")"
+objects               : "[" object ("," object)* "]"
+object                : object_imported_id|object_arg|object_constructor_id|object_python_call
+object_arg            : ID
+object_id             : ID
+object_python_call    : python_call
+object_imported       : "Object." ID ("(" (param_position|param_size|(param_position "," param_size)) ")")?
+object_constructor    : "Object" "(" (param_view_inicial ",")? param_views ("," param_position)? ("," param_size)? ("," param_sounds)? ")"
+object_imported_id    : "Object." ID "." ID ("(" (param_position|param_size|(param_position "," param_size)) ")")?
+object_constructor_id : "Object." ID "(" (param_view_inicial ",")? param_views ("," param_position)? ("," param_size)? ("," param_sounds)? ")"
 
 
-cenarios                 : "[" cenario ("," cenario)* "]"
-                         | "[" "]"
-cenario                  : cenario_arg|cenario_constructor_id|cenario_python_call
-cenario_arg              : ID
-cenario_id               : ID
-cenario_python_call      : python_call
-cenario_constructor      : "Cenário" "(" param_estado_inicial "," param_estados "," param_objetos ("," param_sons)? ")"
-cenario_constructor_id   : "Cenário." ID "(" param_estado_inicial "," param_estados "," param_objetos ("," param_sons)? ")"
+scenarios               : "[" cenario ("," cenario)* "]"
+                        | "[" "]"
+cenario                 : cenario_arg|cenario_constructor_id|cenario_python_call
+cenario_arg             : ID
+cenario_id              : ID
+cenario_python_call     : python_call
+cenario_constructor     : "Scenario"     "(" param_view_inicial "," param_views "," param_objects ("," param_sounds)? ")"
+cenario_constructor_id  : "Scenario." ID "(" param_view_inicial "," param_views "," param_objects ("," param_sounds)? ")"
 
 
-transicoes               : "[" transicao ("," transicao)* "]"
-                         | "[" "]"
-transicao                : transicao_arg|transicao_constructor_id|transicao_python_call
-transicao_arg            : ID
-transicao_id             : ID
-transicao_python_call    : python_call
-transicao_constructor    : "Transição" "(" param_fundo "," param_musica "," param_historia "," (param_prox_cena|param_prox_trans)")"
-transicao_constructor_id : "Transição." ID "(" param_fundo "," param_musica "," param_historia "," (param_prox_cena|param_prox_trans)")"
+transitions               : "[" transition ("," transition)* "]"
+                          | "[" "]"
+transition                : transition_arg|transition_constructor_id|transition_python_call
+transition_arg            : ID
+transition_id             : ID
+transition_python_call    : python_call
+transition_constructor    : "Transition"     "(" param_background "," param_music "," param_story "," (param_next_scene|param_next_trans)")"
+transition_constructor_id : "Transition." ID "(" param_background "," param_music "," param_story "," (param_next_scene|param_next_trans)")"
 
 
-desafio                  : desafio_arg|desafio_constructor_id|desafio_python_call
-desafio_arg              : ID
-desafio_python_call      : python_call
-desafio_constructor      : desafio_pergunta|desafio_arrasta|desafio_escolha_multipla|desafio_conexao|desafio_sequencia|desafio_puzzle|desafio_slidepuzzle|desafio_socket
-desafio_pergunta         : "Desafio.Pergunta"         "(" param_pergunta "," param_resposta       "," param_sucesso   "," param_falha                   ")"
-desafio_arrasta          : "Desafio.Arrasta"          "(" param_objeto   "," param_objeto_gatilho "," param_sucesso    "," param_falha                  ")"
-desafio_escolha_multipla : "Desafio.Escolha_Múltipla" "(" param_pergunta "," param_escolhas       "," param_resposta "," param_sucesso "," param_falha  ")"
-desafio_conexao          : "Desafio.Conexão"          "(" param_pergunta "," param_lista1         "," param_lista2   "," param_sucesso "," param_falha  ")"
-desafio_sequencia        : "Desafio.Sequência"        "(" param_pergunta "," param_sequencia      "," param_sucesso   "," param_falha                   ")"
-desafio_puzzle           : "Desafio.Puzzle"           "(" param_imagem   "," param_sucesso                                                              ")"
-desafio_slidepuzzle      : "Desafio.SlidePuzzle"      "(" param_imagem   "," param_sucesso                                                              ")"
-desafio_socket           : "Desafio.Socket"           "(" param_host     "," param_port      "," param_mensagem  "," param_sucesso "," param_falha ")"
-desafio_constructor_id      : desafio_pergunta_id|desafio_arrasta_id|desafio_escolha_multipla_id|desafio_conexao_id|desafio_sequencia_id|desafio_puzzle_id|desafio_slidepuzzle_id|desafio_socket_id
-desafio_pergunta_id         : "Desafio.Pergunta."         ID "(" param_pergunta "," param_resposta       "," param_sucesso   "," param_falha                   ")"
-desafio_arrasta_id          : "Desafio.Arrasta."          ID "(" param_objeto   "," param_objeto_gatilho "," param_sucesso    "," param_falha                  ")"
-desafio_escolha_multipla_id : "Desafio.Escolha_Múltipla." ID "(" param_pergunta "," param_escolhas       "," param_resposta "," param_sucesso "," param_falha  ")"
-desafio_conexao_id          : "Desafio.Conexão."          ID "(" param_pergunta "," param_lista1         "," param_lista2   "," param_sucesso "," param_falha  ")"
-desafio_sequencia_id        : "Desafio.Sequência."        ID "(" param_pergunta "," param_sequencia      "," param_sucesso   "," param_falha                   ")"
-desafio_puzzle_id           : "Desafio.Puzzle."           ID "(" param_imagem   "," param_sucesso                                                              ")"
-desafio_slidepuzzle_id      : "Desafio.SlidePuzzle."      ID "(" param_imagem   "," param_sucesso                                                              ")"
-desafio_socket_id           : "Desafio.Socket."           ID "(" param_host     "," param_port           "," param_mensagem  "," param_sucesso "," param_falha ")"
+challenge                    : challenge_arg|challenge_constructor_id|challenge_python_call
+challenge_arg                : ID
+challenge_python_call        : python_call
+challenge_constructor        : challenge_question|challenge_motion|challenge_multiple_choice|challenge_connection|challenge_sequence|challenge_puzzle|challenge_slidepuzzle|challenge_socket
+challenge_question           : "Challenge.Question"         "(" param_question      "," param_answer         "," param_sucess  "," param_fail                  ")"
+challenge_motion             : "Challenge.Motion"           "(" param_motion_object "," param_trigger_object "," param_sucess  "," param_fail                  ")"
+challenge_multiple_choice    : "Challenge.Multiple_Choice"  "(" param_question      "," param_choices        "," param_answer  "," param_sucess "," param_fail ")"
+challenge_connection         : "Challenge.Connection"       "(" param_question      "," param_list1          "," param_list2   "," param_sucess "," param_fail ")"
+challenge_sequence           : "Challenge.Sequence"         "(" param_question      "," param_sequence       "," param_sucess  "," param_fail                  ")"
+challenge_puzzle             : "Challenge.Puzzle"           "(" param_image         "," param_sucess                                                           ")"
+challenge_slidepuzzle        : "Challenge.SlidePuzzle"      "(" param_image         "," param_sucess                                                           ")"
+challenge_socket             : "Challenge.Socket"           "(" param_host          "," param_port           "," param_message "," param_sucess "," param_fail ")"
+
+challenge_constructor_id     : challenge_question_id|challenge_motion_id|challenge_multiple_choice_id|challenge_connection_id|challenge_sequence_id|challenge_puzzle_id|challenge_slidepuzzle_id|challenge_socket_id
+challenge_question_id        : "Challenge.Question."         ID "(" param_question      "," param_answer         "," param_sucess   "," param_fail                  ")"
+challenge_motion_id          : "Challenge.Motion."           ID "(" param_motion_object "," param_trigger_object "," param_sucess   "," param_fail                  ")"
+challenge_multiple_choice_id : "Challenge.Multiple_Choice."  ID "(" param_question      "," param_choices        "," param_answer   "," param_sucess "," param_fail ")"
+challenge_connection_id      : "Challenge.Connection."       ID "(" param_question      "," param_list1          "," param_list2    "," param_sucess "," param_fail ")"
+challenge_sequence_id        : "Challenge.Sequence."         ID "(" param_question      "," param_sequence       "," param_sucess   "," param_fail                  ")"
+challenge_puzzle_id          : "Challenge.Puzzle."           ID "(" param_image         "," param_sucess                                                            ")"
+challenge_slidepuzzle_id     : "Challenge.SlidePuzzle."      ID "(" param_image         "," param_sucess                                                            ")"
+challenge_socket_id          : "Challenge.Socket."           ID "(" param_host          "," param_port           "," param_message  "," param_sucess "," param_fail ")"
 
 
 
 
-eventos                  : "[" evento ("," evento)* "]"
-                         | "[" "]"
-evento                   : evento_arg|evento_constructor_id|evento_python_call
-evento_arg               : ID
-evento_id                : ID
-evento_python_call       : python_call
-evento_constructor       : "Evento"     "(" (param_se ",")? param_entao ("," param_repeticoes)? ")"
-evento_constructor_id    : "Evento." ID "(" (param_se ",")? param_entao ("," param_repeticoes)? ")"
+events               : "[" event ("," event)* "]"
+                     | "[" "]"
+event                : event_arg|event_constructor_id|event_python_call
+event_arg            : ID
+event_id             : ID
+event_python_call    : python_call
+event_constructor    : "Event"     "(" (param_if ",")? param_then ("," param_repetitions)? ")"
+event_constructor_id : "Event." ID "(" (param_if ",")? param_then ("," param_repetitions)? ")"
 
-param_cenarios           : "cenários"          "=" cenarios
-param_entao              : "então"             "=" poscondicoes
-param_estado_inicial     : "estado_inicial"    "=" estado_id
-param_estados            : "estados"           "=" estados
-param_escolhas           : "escolhas"          "=" lista_texto
-param_eventos            : "eventos"           "=" eventos
-param_falha              : "falha"             "=" evento_id
-param_fonte              : "fonte"             "=" texto
-param_fundo              : "fundo"             "=" estado
-param_historia           : "história"          "=" texto
-param_host               : "host"              "=" texto
-param_imagem             : "imagem"            "=" texto
-param_imagens            : "imagens"           "=" lista_texto
-param_lista1             : "lista1"            "=" lista_texto
-param_lista2             : "lista2"            "=" lista_texto
-param_mensagem           : "mensagem"          "=" texto
-param_musica             : "música"            "=" som
-param_objeto             : "objeto_id"         "=" objeto_id
-param_objeto_gatilho     : "objeto_gatilho"    "=" objeto_id
-param_objetos            : "objetos"           "=" objetos
-param_pergunta           : "pergunta"          "=" texto
-param_port               : "port"              "=" numero
-param_posicao            : "posição"           "=" posicao
-param_prox_cena          : "próxima_cenário"   "=" cenario_id
-param_prox_trans         : "próxima_transição" "=" transicao_id
-param_se                 : "se"                "=" precondicoes
-param_sequencia          : "sequência"         "=" lista_texto
-param_sons               : "sons"              "=" sons
-param_sucesso            : "sucesso"           "=" evento_id
-param_repeticoes         : "repetições"        "=" numero
-param_resposta           : "resposta"          "=" texto
-param_tamanho            : "tamanho"           "=" tamanho
-param_time_sprite        : "time_sprite"       "=" numero
-param_titulo             : "título"            "=" texto
-param_transicoes         : "transições"        "=" transicoes
+param_answer         : "answer"          "=" text
+param_background     : "background"      "=" view
+param_choices        : "choices"         "=" list_text
+param_events         : "events"          "=" events
+param_fail           : "fail"            "=" event_id
+param_host           : "host"            "=" text
+param_if             : "if"              "=" preconditions
+param_image          : "image"           "=" text
+param_images         : "images"          "=" list_text
+param_list1          : "list1"           "=" list_text
+param_list2          : "list2"           "=" list_text
+param_message        : "message"         "=" text
+param_motion_object  : "motion_object"   "=" object_id
+param_music          : "music"           "=" sound
+param_next_scene      : "next_scenario"  "=" cenario_id
+param_next_trans     : "next_transition" "=" transition_id
+param_objects        : "objects"         "=" objects
+param_port           : "port"            "=" number
+param_position       : "position"        "=" position
+param_question       : "question"        "=" text
+param_repetitions    : "repetitions"     "=" number
+param_scenarios      : "scenarios"       "=" scenarios
+param_sequence       : "sequence"        "=" list_text
+param_size           : "size"            "=" size
+param_sounds         : "sounds"          "=" sounds
+param_source         : "source"          "=" text
+param_start          : "start"           "=" ID
+param_story          : "story"           "=" text
+param_sucess         : "sucess"          "=" event_id
+param_then           : "then"            "=" posconditions
+param_time_sprite    : "time_sprite"     "=" number
+param_title          : "title"           "=" text
+param_transitions    : "transitions"     "=" transitions
+param_trigger_object : "trigger_object"  "=" object_id
+param_view_inicial   : "initial_view"    "=" view_id
+param_views          : "views"           "=" views
 
-precondicoes             : precondicao|preconds_e|preconds_ou|preconds_nao|preconds_grupo
-preconds_e               : precondicoes "e" precondicoes 
-preconds_ou              : precondicoes "ou" precondicoes
-preconds_nao             : "não" precondicoes            
-preconds_grupo           : "(" precondicoes ")"          
+preconditions  : precondition|preconds_and|preconds_ou|preconds_not|preconds_group
+preconds_and   : preconditions "and" preconditions 
+preconds_ou    : preconditions "or" preconditions
+preconds_not   : "not" preconditions            
+preconds_group : "(" preconditions ")"          
 
-precondicao                   : precond_clique_obj | precond_clique_nao_obj | precond_obj_esta_est | precond_ev_ja_aconteceu | precond_obj_uso | precond_depois_tempo
-precond_clique_obj            : "clique" objeto_id                                
-precond_clique_nao_obj        : "clique não" objeto_id                           
-precond_obj_esta_est          : objeto_id "está" estado_id                               
-precond_ev_ja_aconteceu       : evento_id "já aconteceu"
-precond_obj_uso               : objeto_id "está em uso"           
-precond_depois_tempo          : "já passaram" numero "segundos"                
+precondition            : precond_click_obj | precond_click_not_obj | precond_obj_is_view | precond_ev_already_hap | precond_obj_in_use | precond_already_passed
+precond_click_obj       : "click" object_id                                
+precond_click_not_obj   : "click not" object_id                           
+precond_obj_is_view     : object_id "is" view_id                               
+precond_ev_already_hap  : event_id "already happened"
+precond_obj_in_use      : object_id "is in use"           
+precond_already_passed  : number "seconds have already passed"                
 
-poscondicoes                  : poscondicao ("e" poscondicao)*
-poscondicao                   : poscond_obj_muda_est|poscond_obj_vai_inv|poscond_fim_de_jogo|poscond_mostra_msg|poscond_obj_muda_tam|poscond_obj_muda_pos|poscond_muda_cena|poscond_remove_obj|poscond_toca_som|poscond_comeca_des|poscond_trans
-poscond_obj_muda_est          : objeto_id "muda para" estado_id                  
-poscond_obj_vai_inv           : objeto_id "vai para o inventário"         
-poscond_fim_de_jogo           : "fim de jogo"                      
-poscond_mostra_msg            : "mostra mensagem" texto "em" posicao
-poscond_obj_muda_tam          : objeto_id "muda tamanho para" tamanho     
-poscond_obj_muda_pos          : objeto_id "muda posição para" posicao     
-poscond_muda_cena             : "muda para cenário" cenario_id                
-poscond_remove_obj            : objeto_id "é removid" ("o"|"a")           
-poscond_toca_som              : "toca" som_id "d"("o"|"a") ID                        
-poscond_comeca_des            : "começa desafio" desafio_arg                
-poscond_trans                 : "transição" transicao_id
+posconditions         : poscondition ("and" poscondition)*
+poscondition          : poscond_obj_muda_view|poscond_obj_vai_inv|poscond_fim_de_jogo|poscond_mostra_msg|poscond_obj_muda_tam|poscond_obj_muda_pos|poscond_muda_cena|poscond_remove_obj|poscond_play_sound|poscond_comeca_des|poscond_trans
+poscond_obj_muda_view : object_id "change to" view_id                  
+poscond_obj_vai_inv   : object_id "goes to inventory"         
+poscond_fim_de_jogo   : "end of game"                      
+poscond_mostra_msg    : "show message" text "in" position
+poscond_obj_muda_tam  : object_id "change size to" size     
+poscond_obj_muda_pos  : object_id "move to" position     
+poscond_muda_cena     : "change to scenario" cenario_id                
+poscond_remove_obj    : object_id "is removed"           
+poscond_play_sound    : "play" sound_id "of" ID                        
+poscond_comeca_des    : "start challenge" challenge_arg                
+poscond_trans         : "transition" transition_id
 
-python_block : "Python" "=" PYTHON_CODE
-
+python_block : "__Python__" PYTHON_CODE
 
 INICIAL : /inicial/
 REVERSE : /\.reverse\(\)/
@@ -216,7 +217,7 @@ COMMENT: /#[^\n]*/
 %import common.C_COMMENT
 %import common.WS
 
-%ignore C_COMMENT
+%ignore COMMENT
 %ignore WS
 
 

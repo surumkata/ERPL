@@ -2,7 +2,7 @@
 
 import os
 
-# Configuração para ocultar a mensagem de boas-vindas do Pygame
+# Configuração para ocultar a message de boas-vindas do Pygame
 os.environ["PYGAME_HIDE_SUPPORT_PROMPT"] = "1"
 
 import pygame
@@ -269,14 +269,14 @@ def play_editor(screen,room, inventory):
             
             fps = int(clock.get_fps())
 
-            # Renderize o texto do FPS na tela
+            # Renderize o text do FPS na tela
             fps_text = font.render(f"FPS: {fps}", True, Color.RED)
-            # Desenhe o texto do FPS na tela
+            # Desenhe o text do FPS na tela
             screen.blit(fps_text, (10, 440))
 
-            # Renderize o texto na tela
+            # Renderize o text na tela
             object_text = font.render(f"Object: {master_object}", True, Color.BLUE)
-            # Desenhe o texto na tela
+            # Desenhe o text na tela
             screen.blit(object_text, (10, 470))
 
         pygame.display.flip()

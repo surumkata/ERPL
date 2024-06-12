@@ -25,13 +25,13 @@ def parse_arguments():
     return parser.parse_args()
 
 def calculate_number_of_chars(image_width, font_size, width_percentage, font_path):
-    # Especifica a fonte
+    # Especifica a source
     font = ImageFont.truetype(font_path, font_size)
 
     # Calcula a largura real de um caractere
     char_width = font.getsize("a")[0]
 
-    # Calcula o número aproximado de caracteres que cabem na imagem
+    # Calcula o número aproximado de caracteres que cabem na image
     chars_numbers = int((image_width * width_percentage) // char_width)
 
     return chars_numbers
@@ -51,16 +51,16 @@ def text_linebreaker(text, max_chars_for_line):
 
 
 def add_text_to_image(image_path, output_path, text, text_color=(255, 255, 255), font_path="arial.ttf", min_font_size=8, linebreaker =False, max_font_size=100, width_percentage=0.8, height_percentage=0.8):
-    # Abre a imagem
+    # Abre a image
     original_image = Image.open(image_path)
 
-    # Obtém o tamanho da imagem
+    # Obtém o size da image
     image_width, image_height = original_image.size
 
-    # Cria um objeto para desenhar na imagem
+    # Cria um object para desenhar na image
     draw = ImageDraw.Draw(original_image)
 
-    # Inicializa o tamanho da fonte
+    # Inicializa o size da source
     font_size = min_font_size
 
     max_chars_for_line = calculate_number_of_chars(image_width, font_size,width_percentage,font_path)
@@ -69,35 +69,35 @@ def add_text_to_image(image_path, output_path, text, text_color=(255, 255, 255),
     else:
         lines = [text]
 
-    # Define o tamanho máximo do texto como 80% da largura da imagem
+    # Define o size máximo do text como 80% da largura da image
     max_text_width = int(width_percentage * image_width)
 
-    # Define o tamanho máximo do texto como 80% da altura da imagem
+    # Define o size máximo do text como 80% da altura da image
     max_text_height = int(height_percentage * image_height)
 
-    # Ajusta o tamanho da fonte até que o texto caiba dentro da largura máxima
+    # Ajusta o size da source até que o text caiba dentro da largura máxima
     while lines[0] != "" and draw.textsize(lines[0], ImageFont.truetype(font_path, font_size+1))[0] < max_text_width and font_size < max_font_size:  # Adicionamos uma verificação para evitar loops infinitos
         font_size += 1
     font = ImageFont.truetype(font_path, font_size)
 
     text_width, text_height = draw.textsize(lines[0], font)
-    # Calcula a posição para centralizar o texto
+    # Calcula a position para centralizar o text
     y = (image_height - len(lines) * text_height) // 2
 
-    # Adiciona o texto à imagem com a cor desejada
+    # Adiciona o text à image com a cor desejada
     for line in lines:
         text_width, text_height = draw.textsize(line, font)
-        # Garante que o texto não ultrapasse os limites da imagem
+        # Garante que o text not ultrapasse os limites da image
         if text_width > max_text_width:
-            raise ValueError("O seu texto ultrapassa os limites de largura da imagem establecidos.")
+            raise ValueError("O seu text ultrapassa os limites de largura da image establecidos.")
         elif y > max_text_height:
-            raise ValueError("O seu texto ultrapassa os limites de altura da imagem establecidos.")
+            raise ValueError("O seu text ultrapassa os limites de altura da image establecidos.")
         x = (image_width - text_width) // 2
 
         draw.text((x, y), line, font=font, fill=text_color)
         y += text_height
 
-    # Salva a imagem resultante
+    # Salva a image resultante
     original_image.save(output_path)
 
 def imageplustxt():
@@ -117,4 +117,4 @@ def imageplustxt():
     add_text_to_image(image_path=image_path, output_path=output_path, text=text, text_color=text_color, linebreaker=linebreaker,
                        font_path=font_path, min_font_size=min_font_size, max_font_size=max_font_size, width_percentage= width_percentage, height_percentage=height_percentage)
 
-    print(f'Imagem com texto salva em {output_path}')
+    print(f'Imagem com text salva em {output_path}')

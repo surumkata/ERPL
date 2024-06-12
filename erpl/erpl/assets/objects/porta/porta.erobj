@@ -1,15 +1,15 @@
-Estados:
-- Estado animado aberta:
+Views:
+- View animado aberta:
     - Imagens: ["door0.png","door1.png","door2.png","door3.png","door4.png","door5.png"]
     - Repitições: 1
     - Time-Sprite: 3
-- Estado fechada:
+- View fechada:
     - Imagem: "door0.png"
 Sons:
-- Som abrir:
+- Sound abrir:
     - Fonte: "door-1-open.mp3"
-- Som locked:
+- Sound locked:
     - Fonte: "door-locked.mp3"
-Estado inicial: fechada
+View inicial: fechada
 Posição: (0,0)
 Tamanho: [225,300]

@@ -1,65 +1,65 @@
 __Declarações__
 
 $room = pfunc_dotpng("room")
-$tamanho = plocal_tamanho
-$posicao = plocal_posicao
+$size = plocal_size
+$position = plocal_position
 $num = plocal_num
 $codigo = plocal_codigo
-$lista = plocal_door
-$lista2 = plocal_puzzle
+$list = plocal_door
+$list2 = plocal_puzzle
 
 __Sala__
 
 + Cena cena=
-    - Estado background:
+    - View background:
         - Inicial
         - Fonte: $room
-    + Objeto porta:
-        - Estado fechada:
+    + Object porta:
+        - View fechada:
             - Inicial
             - Fonte: pfunc_dotpng("door")
-        - Estado aberta:
+        - View aberta:
             - Animado(3,1)
-            - Fonte: $lista
+            - Fonte: $list
         - Posição: (600,342)
-        - Tamanho: $tamanho
-    + Objeto porta2:
-        - Estado fechada:
+        - Tamanho: $size
+    + Object porta2:
+        - View fechada:
             - Inicial
             - Fonte: pfunc_dotpng("door/door0")
-        - Estado aberta:
+        - View aberta:
             - Animado(3,1)
-            - Fonte: $lista
+            - Fonte: $list
         - Posição: (0,342)
-        - Tamanho: $tamanho
-    + Objeto cofre:
-        - Estado fechado:
+        - Tamanho: $size
+    + Object cofre:
+        - View fechado:
             - Inicial
             - Fonte: pfunc_dotpng("cofre")
-        - Estado aberto:
+        - View aberto:
             - Fonte: pfunc_dotpng("open_cofre")
-        - Posição: $posicao
+        - Posição: $position
         - Tamanho: [172,$num]
-    + Objeto chave:
-        - Estado normal:
+    + Object chave:
+        - View normal:
             - Fonte: pfunc_dotpng("key")
-        - Estado ativa:
+        - View ativa:
             - Fonte: pfunc_dotpng("active_key")
         - Posição: (1020,520)
         - Tamanho: [50,25]
-    + Objeto nota:
-        - Estado normal:
+    + Object nota:
+        - View normal:
             - Inicial
             - Fonte: pfunc_dotpng("nota")
             - Posição: (400,600)
             - Tamanho: [30,30]
-    + Objeto nota_lupa:
-        - Estado visivel:
+    + Object nota_lupa:
+        - View visivel:
             - Fonte: pfunc_dotpng("nota_nova")
         - Posição: (300,500)
         - Tamanho: [200,200]
-    + Objeto lupa:
-        - Estado normal:
+    + Object lupa:
+        - View normal:
             - Inicial
             - Fonte: pfunc_dotpng("lupa")
         - Estadp ativa:
@@ -67,11 +67,11 @@ __Sala__
         - Posição: (200,500)
         - Tamanho: [40,40]
 + Cena cena2:
-    - Estado background:
+    - View background:
         - Inicial
         - Fonte: pfunc_dotpng("room")
-    + Objeto porta3:
-        - Estado aberta:
+    + Object porta3:
+        - View aberta:
             - Inicial
             - Fonte: pfunc_dotpng("open_door")
         - Posição: (600,342)
@@ -79,106 +79,106 @@ __Sala__
 
 __Sons__
 
-Som porta_a_abrir:
+Sound porta_a_abrir:
 - Fonte: pfunc_dotmp3("door-1-open")
 
-Som porta-locked:
+Sound porta-locked:
 - Fonte: pfunc_dotmp3("door-locked")
 
-__Desafios__
+__Challenges__
 
-Desafio codigo_cofre:
+Challenge codigo_cofre:
 - Tipo: Pergunta
 - Pergunta: "Qual é o código do cofre?"
 - Acerto: abrir_cofre
 - Erro: mostrar_erro
 
-Desafio arrasta_lupa:
+Challenge motion_lupa:
 - Tipo: Motion
-- Objeto: lupa
+- Object: lupa
 - Acerto: aumentar_nota
 - Erro: move_lupa
 
-Desafio escolha_multipla:
+Challenge multiple_choice:
 - Tipo: Escolha-múltipla
-- Pergunta: "Qual destes códigos, corresponde corretamente a esta expressão regular:\n[0-9]{3}-\[0-9]-\[0-9]{3}"
+- Pergunta: "Qual destes códigos, corresponde corretamente a is expressão regular:\n[0-9]{3}-\[0-9]-\[0-9]{3}"
 - Resposta Certa: "147-852-963"
 - Alternativas: ["45-987-855","458-98-874","210-233-90"]
 - Acerto: abrir_cofre
 - Erro: mostrar_erro
 
-Desafio conexao:
-- Tipo: Conexão
+Challenge connection:
+- Tipo: Connection
 - Pergunta: "Conecta corretamente"
 - Conexões: ["book":"livro","pencil":"lápis","cat":"gato","dog":"cão"]
 - Acerto: abrir_cofre
 - Erro: mostrar_erro
 
-Desafio ordem:
+Challenge ordem:
 - Tipo: Ordenação
 - Pergunta: "Escolha por ordem crescente"
 - Ordem: ["320","600","1000","2500"]
 - Acerto: abrir_cofre
 - Erro: mostrar_erro
 
-Desafio puzzle:
+Challenge puzzle:
 - Tipo: puzzle
-- Peças: $lista2
+- Peças: $list2
 - Acerto: abrir_cofre
 
-__Eventos__
+__Events__
 
-Evento abrir_porta(1):
-Se clique porta e porta está fechada e chave está em uso,
-então porta muda para aberta e chave é removida e toca porta_a_abrir.
+Event abrir_porta(1):
+Se click porta e porta is fechada e chave is in use,
+then porta change to aberta e chave é removida e play porta_a_abrir.
 
-Evento abrir_porta2(1):
-Se clique porta2 e porta2 está fechada,
-então porta2 muda para aberta e toca porta_a_abrir.
+Event abrir_porta2(1):
+Se click porta2 e porta2 is fechada,
+then porta2 change to aberta e play porta_a_abrir.
 
-Evento muda_cena():
-Se clique porta2 e porta2 está aberta,
-então muda para cena cena2.
+Event muda_cena():
+Se click porta2 e porta2 is aberta,
+then change to cena cena2.
 
-Evento muda_cena2():
-Se clique porta3 e porta3 está aberta,
-então muda para cena cena.
+Event muda_cena2():
+Se click porta3 e porta3 is aberta,
+then change to cena cena.
 
-Evento fim(1):
-se clique porta e porta está aberta,
-então fim de jogo.
+Event fim(1):
+se click porta e porta is aberta,
+then end of game.
 
-Evento chave_inventario(1):
-Se clique chave e cofre está aberto,
-Então chave vai para o inventário.
+Event chave_inventario(1):
+Se click chave e cofre is aberto,
+Então chave goes to inventory.
 
-Evento tentar_abrir_cofre():
-Se clique cofre e cofre está fechado,
-então começa desafio codigo_cofre.
+Event tentar_abrir_cofre():
+Se click cofre e cofre is fechado,
+then start challenge codigo_cofre.
 
-Evento abrir_cofre(-):
-cofre muda para aberto e chave muda para normal.
+Event abrir_cofre(-):
+cofre change to aberto e chave change to normal.
 
-Evento mostrar_erro(-):
-mostra mensagem "Código errado!" em (1000, 485).
+Event mostrar_erro(-):
+show message "Código errado!" em (1000, 485).
 
-Evento mensagem_trancada():
-Se clique porta e porta está fechada e não chave está em uso,
-então mostra mensagem "porta trancada! procura uma chave!" em (600,385) e toca porta-locked.
+Event message_trancada():
+Se click porta e porta is fechada e not chave is in use,
+then show message "porta trancada! procura uma chave!" em (600,385) e play porta-locked.
 
-Evento arrasta_lupa():
-Se clique lupa,
-Então começa desafio arrasta_lupa.
+Event motion_lupa():
+Se click lupa,
+Então start challenge motion_lupa.
 
-Evento aumentar_nota(-):
-nota_lupa muda para visivel.
+Event aumentar_nota(-):
+nota_lupa change to visivel.
 
-Evento move_lupa(-):
-lupa muda posição para (200,500).
+Event move_lupa(-):
+lupa move to (200,500).
 
-Evento desaparecer_nota_lupa():
-Se clique não nota_lupa e nota_lupa está visivel,
-então nota_lupa muda para null.
+Event desaparecer_nota_lupa():
+Se click not nota_lupa e nota_lupa is visivel,
+then nota_lupa change to null.
 
 __Python__
 
@@ -199,10 +199,10 @@ def dotmp3(string):
     return current_folder+"/../assets/sounds/"+string+".mp3"
 
 
-posicao = (1000,485)
+position = (1000,485)
 room = dotpng("room")
 num = 100
-tamanho = [225,300]
+size = [225,300]
 codigo = "932"
 current_folder = os.getcwd()
 door = glob.glob(f"{current_folder}/../assets/images/door/*.png")

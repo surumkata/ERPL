@@ -55,17 +55,17 @@ class Interpreter(Interpreter):
                 print(f"ERROR: Esperado uma variável do tipo {type}, mas a variável {id} é do tipo {self.dict_vars[id]['type']}.",file=sys.stderr)
                 exit(-1)
         else:
-            print(f"ERROR: Variável {id} não foi inicializada anteriormente.",file=sys.stderr)
+            print(f"ERROR: Variável {id} not foi inicializada anteriormente.",file=sys.stderr)
             exit(-1)
         
-    def get_image_size(self,path_imagem):
+    def get_image_size(self,path_image):
         #TODO: melhorar talvez
         try:
-            with Image.open(path_imagem) as img:
+            with Image.open(path_image) as img:
                 largura, altura = img.size
                 return largura, altura
         except IOError:
-            print(f"ERROR: Não foi possível abrir a imagem em {path_imagem}.", file=sys.stderr)
+            print(f"ERROR: Não foi possível abrir a image em {path_image}.", file=sys.stderr)
             exit(-1)
 
     def verify_pos_and_size(self,objects):
@@ -74,15 +74,15 @@ class Interpreter(Interpreter):
         aux_w = round(self.WIDTH/len(objects),2)
         i = 1
         for object in objects:
-            #verifica se o objeto nao tem size
-            if 'size' not in object: #se nao temos de ver o size estado a estado
-                for state in object['states']:
-                    #verificar se o estado ja tem size
-                    if 'size' in state:
+            #verifica se o object not tem size
+            if 'size' not in object: #se not temos de ver o size view a view
+                for view in object['views']:
+                    #verificar se o view ja tem size
+                    if 'size' in view:
                         continue
-                    else: #se nao tiver temos deduzir o tamanho
-                        img = state['images'][0] if 'images' in state else state['image']
-                        state['size'] = self.get_image_size(img)
+                    else: #se not tiver temos deduzir o size
+                        img = view['images'][0] if 'images' in view else view['image']
+                        view['size'] = self.get_image_size(img)
             #now verify the position
             if 'position' not in object:
                 if 'size' in object:
@@ -91,31 +91,31 @@ class Interpreter(Interpreter):
                     w = max(0,round(aux_w * i - aux_w/2 - size_w/2,2))
                     h = max(0,round(self.HEIGHT/2 - size_h/2,2))
                     object['position'] = (w,h)
-                else: #temos de ver a posiçao estado a estado
-                    for state in object['states']:
-                        if 'position' not in state:
-                            size_w = state['size'][0]
-                            size_h = state['size'][1]
+                else: #temos de ver a posiçao view a view
+                    for view in object['views']:
+                        if 'position' not in view:
+                            size_w = view['size'][0]
+                            size_h = view['size'][1]
                             w = max(0,round(aux_w * i - aux_w/2 - size_w/2,2))
                             h = max(0,round(self.HEIGHT/2 - size_h/2,2))
-                            state['position'] = (w,h)
+                            view['position'] = (w,h)
             i+=1
         return objects
 
     def decode_python_type(self,python_type,value):
         if python_type == str:
-            return 'Texto'
+            return 'Text'
         elif python_type == tuple and len(value) == 2 and all(isinstance(element, (int, float)) for element in value):
-            return 'Posição'
+            return 'Position'
         elif python_type == list and len(value) == 2 and all(isinstance(element, (int, float)) for element in value):
-            return 'Tamanho'
+            return 'Size'
         elif python_type == list and all(isinstance(element, str) for element in value):
-            return 'Lista_Texto'
+            return 'Text_List'
         elif python_type == int or python_type == float:
-            return 'Número'
+            return 'Number'
         elif python_type == dict:
-            #TODO: Objeto/Som/Estado/Desafio/Transição/Cenário/Evento
-            return 'Objeto' 
+            #TODO: Object/Sound/View/Challenge/Transition/Scenario/Event
+            return 'Object' 
         return python_type
 
     def start(self,start):
@@ -146,7 +146,7 @@ class Interpreter(Interpreter):
         return self.visit(child)
 
     def er_parameters(self,er_parameters):
-        '''er_parameters : param_titulo "," param_tamanho "," param_cenarios "," param_eventos "," param_transicoes'''
+        '''er_parameters : param_title "," param_size "," param_scenarios "," param_events "," param_transitions'''
         children = er_parameters.children
         escape_room = {}
         for child in children:
@@ -169,18 +169,18 @@ class Interpreter(Interpreter):
             self.visit(child)
 
     def import_obj(self,import_obj):
-        '''import_obj : "importa Objeto." ID'''
+        '''import_obj : "import Object." ID'''
         children = import_obj.children
         id = children[0].value
         obj = parse_obj(id,current_folder)
         self.dict_imports['objects'][id] = obj
 
-        for state in obj['states']:
-            state_id = state['id']
-            if not self.verify_id_exist(state_id):
-                self.dict_vars[state_id] = {
-                    "type" : "Estado",
-                    "value" : state
+        for view in obj['views']:
+            view_id = view['id']
+            if not self.verify_id_exist(view_id):
+                self.dict_vars[view_id] = {
+                    "type" : "View",
+                    "value" : view
             }
             
         if 'sounds' in obj:
@@ -188,7 +188,7 @@ class Interpreter(Interpreter):
                 sound_id = sound['id']
                 if not self.verify_id_exist(sound_id):
                     self.dict_vars[sound_id] = {
-                        "type" : "Som",
+                        "type" : "Sound",
                         "value" : sound
                     }
 
@@ -198,69 +198,69 @@ class Interpreter(Interpreter):
         for child in children:
             self.visit(child)
 
-    def adiciona_estado(self,adiciona_estado):
-        '''adiciona_estado : "." ID         ".adiciona_Estado" "(" estado ")"'''
-        children = adiciona_estado.children
+    def add_view(self,add_view):
+        '''add_view : ID         ".add_View" "(" view ")"'''
+        children = add_view.children
         id = children[0].value
 
         if id in self.dict_vars:
             type = self.dict_vars[id]['type']
-            if type == 'Objeto' or type == 'Cenário':
-                estado = self.visit(children[1])
-                self.dict_vars[id]['value']['states'].append(estado)
+            if type == 'Object' or type == 'Scenario':
+                view = self.visit(children[1])
+                self.dict_vars[id]['value']['views'].append(view)
             else:
-                print(f"ERROR: Não é possível adicionar um 'Estado' a uma variável do tipo {type}, apenas a variáveis do tipo 'Objeto' e 'Cenário'.",file=sys.stderr)
+                print(f"ERROR: Não é possível addr um 'View' a uma variável do tipo {type}, apenas a variáveis do tipo 'Object' e 'Scenario'.",file=sys.stderr)
                 exit(-1)
         else:
-            print(f'ERROR: A variável {id} não foi inicializada.',file=sys.stderr)
+            print(f'ERROR: A variável {id} not foi inicializada.',file=sys.stderr)
             exit(-1)
 
-    def adiciona_som(self,adiciona_som):
-        '''adiciona_som    : "." ID         ".adiciona_Som"    "(" som    ")"'''
-        children = adiciona_som.children
+    def add_sound(self,add_sound):
+        '''add_sound    : ID         ".add_Sound"    "(" sound    ")"'''
+        children = add_sound.children
         id = children[0].value
 
         if id in self.dict_vars:
             type = self.dict_vars[id]['type']
-            if type == 'Objeto' or type == 'Cenário':
-                som = self.visit(children[1])
+            if type == 'Object' or type == 'Scenario':
+                sound = self.visit(children[1])
                 if 'sounds' in self.dict_vars[id]['value']:
-                    self.dict_vars[id]['value']['sounds'].append(som)
+                    self.dict_vars[id]['value']['sounds'].append(sound)
                 else:
-                    self.dict_vars[id]['value']['sounds'] = [som]
+                    self.dict_vars[id]['value']['sounds'] = [sound]
             else:
-                print(f"ERROR: Não é possível adicionar um 'Som' a uma variável do tipo {type}, apenas a variáveis do tipo 'Objeto' e 'Cenário'.",file=sys.stderr)
+                print(f"ERROR: Não é possível addr um 'Sound' a uma variável do tipo {type}, apenas a variáveis do tipo 'Object' e 'Scenario'.",file=sys.stderr)
                 exit(-1)
         else:
-            print(f'ERROR: A variável {id} não foi inicializada.',file=sys.stderr)
+            print(f'ERROR: A variável {id} not foi inicializada.',file=sys.stderr)
             exit(-1)
 
 
-    def adiciona_objeto(self,adiciona_objeto):
-        '''adiciona_objeto : "." cenario_id ".adiciona_Objeto" "(" objeto ")"'''
-        children = adiciona_objeto.children
+    def add_object(self,add_object):
+        '''add_object : cenario_id ".add_Object" "(" object ")"'''
+        children = add_object.children
         id = self.visit(children[0])
         if id in self.dict_vars:
             type = self.dict_vars[id]['type']
-            if type == 'Objeto':
-                objeto = self.visit(children[1])
-                self.dict_vars[id]['value']['objects'].append(objeto)
+            if type == 'Object':
+                object = self.visit(children[1])
+                self.dict_vars[id]['value']['objects'].append(object)
             else:
-                print(f"ERROR: Não é possível adicionar um 'Objeto' a uma variável do tipo {type}, apenas a variáveis do tipo 'Cenário'.",file=sys.stderr)
+                print(f"ERROR: Não é possível addr um 'Object' a uma variável do tipo {type}, apenas a variáveis do tipo 'Scenario'.",file=sys.stderr)
                 exit(-1)
         else:
-            print(f'ERROR: A variável {id} não foi inicializada.',file=sys.stderr)
+            print(f'ERROR: A variável {id} not foi inicializada.',file=sys.stderr)
 
     def var(self,var):
-        '''var : VAR "=" value'''
+        '''var : ID "=" value'''
         children = var.children
-        var_name = children[0].value[1:]
+        var_name = children[0].value
         test = self.visit(children[1])
         #print(test)
         (type,value) = test
 
-        #Colocar id nao for tipo primário:
-        if type in ["Estado", "Som", "Objeto", "Cenário", "Transição", "Desafio", "Evento"]:
+        #Colocar id not for tipo primário:
+        if type in ["View", "Sound", "Object", "Scenario", "Transition", 'Challenge', "Event"]:
             value["id"] = var_name
 
         if not self.verify_id_exist(var_name):
@@ -270,20 +270,20 @@ class Interpreter(Interpreter):
             }
 
     def value(self,val):
-        '''value : ID|python_call|lista_texto_constructor|texto_constructor|tamanho_constructor|posicao_constructor|numero_constructor|estado_constructor|objeto_constructor|objeto_imported|som_constructor|cenario_constructor|evento_constructor|desafio_constructor|transicao_constructor'''
+        '''value : ID|python_call|list_text_constructor|text_constructor|size_constructor|position_constructor|number_constructor|view_constructor|object_constructor|object_imported|sound_constructor|cenario_constructor|event_constructor|challenge_constructor|transition_constructor'''
         child = val.children[0]
         #TODO: ver se é ID
         if isinstance(child, Token):
             id = child.value
             if id in self.dict_vars:
                 type = self.dict_vars[id]['type']
-                if type in ["Estado", "Som", "Objeto", "Cenário", "Transição", "Desafio", "Evento"]:
+                if type in ["View", "Sound", "Object", "Scenario", "Transition", 'Challenge', "Event"]:
                     value = dict(self.dict_vars[id]['value'])
                 else:
                     value = self.dict_vars[id]['value']
                 return (type,value)
             else:
-                print(f'ERROR: A variável {id} não foi inicializada.',file=sys.stderr)
+                print(f'ERROR: A variável {id} not foi inicializada.',file=sys.stderr)
                 exit(-1)
         else:
             return self.visit(child)
@@ -307,242 +307,242 @@ class Interpreter(Interpreter):
         value = eval(func,self.namespace)
         return (self.decode_python_type(type(value),value),value) #(python_type,python_value)
 
-    def lista_texto(self,lista_texto):
-        '''lista_texto : lista_texto_arg|lista_texto_constructor|lista_texto_python_call'''
-        child = lista_texto.children[0]
-        if child.data == 'lista_texto_constructor':
+    def list_text(self,list_text):
+        '''list_text : list_text_arg|list_text_constructor|list_text_python_call'''
+        child = list_text.children[0]
+        if child.data == 'list_text_constructor':
             (_,value) = self.visit(child)
         else:
             value = self.visit(child)
         return value
 
-    def lista_texto_arg(self,lista_texto_arg):
-        '''lista_texto_arg : ID'''
-        child = lista_texto_arg.children[0]
+    def list_text_arg(self,list_text_arg):
+        '''list_text_arg : ID'''
+        child = list_text_arg.children[0]
         id = child.value
-        if self.verify_arg(id,'Lista_Texto'):
+        if self.verify_arg(id,'Text_List'):
             return self.dict_vars[id]['value'] 
 
-    def lista_texto_python_call(self,lista_texto_python_call):
-        '''lista_texto_python_call : python_call'''
-        child = lista_texto_python_call.children[0]
+    def list_text_python_call(self,list_text_python_call):
+        '''list_text_python_call : python_call'''
+        child = list_text_python_call.children[0]
         (type,value) = self.visit(child)
-        if type == 'Lista_Texto':
+        if type == 'Text_List':
             return value
         else:
             print(f"ERROR: Esperado uma variável vinda do Python do tipo Lista_Texto, mas é do tipo {type}.",file=sys. stderr)
             exit(-1)
 
-    def lista_texto_constructor(self,lista_texto_constructor):
-        '''lista_texto_constructor : "[" texto ("," texto)* "]"'''
-        children = lista_texto_constructor.children
-        lista = []
+    def list_text_constructor(self,list_text_constructor):
+        '''list_text_constructor : "[" text ("," text)* "]"'''
+        children = list_text_constructor.children
+        list = []
         for child in children:
-            lista.append(self.visit(child))
-        return ("Lista_Texto",lista)
+            list.append(self.visit(child))
+        return ("Lista_Texto",list)
 
-    def texto(self,texto):
-        '''texto : texto_arg|texto_constructor|texto_python_call'''
-        child = texto.children[0]
-        if child.data == 'texto_constructor':
+    def text(self,text):
+        '''text : text_arg|text_constructor|text_python_call'''
+        child = text.children[0]
+        if child.data == 'text_constructor':
             (_,value) = self.visit(child)
         else:
             value = self.visit(child)
         return value
 
-    def texto_arg(self,texto_arg):
-        '''texto_arg : ID'''
-        child = texto_arg.children[0]
+    def text_arg(self,text_arg):
+        '''text_arg : ID'''
+        child = text_arg.children[0]
         id = child.value
-        if self.verify_arg(id,'Texto'):
+        if self.verify_arg(id,'Text'):
             return self.dict_vars[id]['value'] 
 
-    def texto_python_call(self,texto_python_call):
-        '''texto_python_call : python_call'''
-        child = texto_python_call.children[0]
+    def text_python_call(self,text_python_call):
+        '''text_python_call : python_call'''
+        child = text_python_call.children[0]
         (type,value) = self.visit(child)
-        if type == 'Texto':
+        if type == 'Text':
             return value
         else:
             print(f"ERROR: Esperado uma variável vinda do Python do tipo Texto, mas é do tipo {type}.",file=sys. stderr)
             exit(-1)
 
-    def texto_constructor(self,texto_constructor):
-        '''texto_constructor : TEXTO'''
-        children = texto_constructor.children
-        texto = children[0].value[1:-1]
-        return ("Texto",texto) #(type,value)
+    def text_constructor(self,text_constructor):
+        '''text_constructor : TEXTO'''
+        children = text_constructor.children
+        text = children[0].value[1:-1]
+        return ('Text',text) #(type,value)
 
-    def tamanho(self,tamanho):
-        '''tamanho : tamanho_arg|tamanho_constructor|tamanho_python_call'''
-        child = tamanho.children[0]
-        if child.data == 'tamanho_constructor':
+    def size(self,size):
+        '''size : size_arg|size_constructor|size_python_call'''
+        child = size.children[0]
+        if child.data == 'size_constructor':
             (_,value) = self.visit(child)
         else:
             value = self.visit(child)
         return value
 
-    def tamanho_arg(self,tamanho_arg):
-        '''tamanho_arg : ID'''
-        child = tamanho_arg.children[0]
+    def size_arg(self,size_arg):
+        '''size_arg : ID'''
+        child = size_arg.children[0]
         id = child.value
-        if self.verify_arg(id,'Tamanho'):
+        if self.verify_arg(id,'Size'):
             return self.dict_vars[id]['value'] 
 
-    def tamanho_python_call(self,tamanho_python_call):
-        '''tamanho_python_call : python_call'''
-        child = tamanho_python_call.children[0]
+    def size_python_call(self,size_python_call):
+        '''size_python_call : python_call'''
+        child = size_python_call.children[0]
         (type,value) = self.visit(child)
-        if type == 'Tamanho':
+        if type == 'Size':
             return value
         else:
             print(f"ERROR: Esperado uma variável vinda do Python do tipo Tamanho, mas é do tipo {type}.",file=sys. stderr)
             exit(-1)
 
-    def tamanho_constructor(self,tamanho_constructor):
-        '''tamanho_constructor : "[" NUM "," NUM "]"'''
-        children = tamanho_constructor.children
+    def size_constructor(self,size_constructor):
+        '''size_constructor : "[" NUM "," NUM "]"'''
+        children = size_constructor.children
         w = self.visit(children[0])
         h = self.visit(children[1])
-        return("Tamanho",(w,h)) #(type,value)
+        return('Size',(w,h)) #(type,value)
 
-    def posicao(self,posicao):
-        '''posicao : posicao_arg|posicao_constructor|posicao_python_call'''
-        child = posicao.children[0]
-        if child.data == 'posicao_constructor':
+    def position(self,position):
+        '''position : position_arg|position_constructor|position_python_call'''
+        child = position.children[0]
+        if child.data == 'position_constructor':
             (_,value) = self.visit(child)
         else:
             value = self.visit(child)
         return value
 
-    def posicao_arg(self,posicao_arg):
-        '''posicao_arg : ID'''
-        child = posicao_arg.children[0]
+    def position_arg(self,position_arg):
+        '''position_arg : ID'''
+        child = position_arg.children[0]
         id = child.value
-        if self.verify_arg(id,'Posição'):
+        if self.verify_arg(id,'Position'):
             return self.dict_vars[id]['value'] 
 
-    def posicao_python_call(self,posicao_python_call):
-        '''posicao_python_call : python_call'''
-        child = posicao_python_call.children[0]
+    def position_python_call(self,position_python_call):
+        '''position_python_call : python_call'''
+        child = position_python_call.children[0]
         (type,value) = self.visit(child)
-        if type == 'Posição':
+        if type == 'Position':
             return value
         else:
             print(f"ERROR: Esperado uma variável vinda do Python do tipo Posição, mas é do tipo {type}.",file=sys. stderr)
             exit(-1)
 
-    def posicao_constructor(self,posicao_constructor):
-        '''posicao_constructor : "(" numero "," numero ")"'''
-        children = posicao_constructor.children
+    def position_constructor(self,position_constructor):
+        '''position_constructor : "(" number "," number ")"'''
+        children = position_constructor.children
         x = self.visit(children[0])
         y = self.visit(children[1])
-        return ("Posição",(x,y))
+        return ('Position',(x,y))
 
-    def numero(self,numero):
-        '''numero : numero_arg|numero_constructor|numero_python_call'''
-        child = numero.children[0]
-        if child.data == 'numero_constructor':
+    def number(self,number):
+        '''number : number_arg|number_constructor|number_python_call'''
+        child = number.children[0]
+        if child.data == 'number_constructor':
             (_,value) = self.visit(child)
         else:
             value = self.visit(child)
         return value
 
-    def numero_arg(self,numero_arg):
-        '''numero_arg : ID'''
-        child = numero_arg.children[0]
+    def number_arg(self,number_arg):
+        '''number_arg : ID'''
+        child = number_arg.children[0]
         id = child.value
-        if self.verify_arg(id,'Número'):
+        if self.verify_arg(id,'Number'):
             return self.dict_vars[id]['value'] 
 
-    def numero_python_call(self,numero_python_call):
-        '''numero_python_call : python_call'''
-        child = numero_python_call.children[0]
+    def number_python_call(self,number_python_call):
+        '''number_python_call : python_call'''
+        child = number_python_call.children[0]
         (type,value) = self.visit(child)
-        if type == 'Número':
+        if type == 'Number':
             return value
         else:
             print(f"ERROR: Esperado uma variável vinda do Número do tipo Posição, mas é do tipo {type}.",file=sys. stderr)
             exit(-1)
 
-    def numero_constructor(self,numero_constructor):
-        '''numero_constructor : NUM'''
-        children = numero_constructor.children
+    def number_constructor(self,number_constructor):
+        '''number_constructor : NUM'''
+        children = number_constructor.children
         num = int(children[0].value)
-        return("Número",num) #(type,value)
+        return('Number',num) #(type,value)
 
-    def estados(self,estados):
-        '''estados : "[" estado ("," estado)* "]"'''
-        children = estados.children
+    def views(self,views):
+        '''views : "[" view ("," view)* "]"'''
+        children = views.children
         result = []
         for child in children:
             result.append(self.visit(child))
         return result
 
-    def estado(self,estado):
-        '''estado : estado_arg|estado_constructor_id|estado_python_call'''
-        child = estado.children[0]
+    def view(self,view):
+        '''view : view_arg|view_constructor_id|view_python_call'''
+        child = view.children[0]
         value = self.visit(child)
         return value
 
-    def estado_arg(self,estado_arg):
-        '''estado_arg : ID'''
-        child = estado_arg.children[0]
+    def view_arg(self,view_arg):
+        '''view_arg : ID'''
+        child = view_arg.children[0]
         id = child.value
-        if self.verify_arg(id,'Estado'):
+        if self.verify_arg(id,'View'):
             return self.dict_vars[id]['value'] 
 
-    def estado_id(self,estado_id):
-        '''estado_id : ID'''
-        child = estado_id.children[0]
+    def view_id(self,view_id):
+        '''view_id : ID'''
+        child = view_id.children[0]
         id = child.value
         #TODO: ver isto melhor do none depois
         if id == "none":
             return id
-        if self.verify_arg(id,'Estado'):
+        if self.verify_arg(id,'View'):
             return id
 
-    def estado_python_call(self,estado_python_call):
-        '''estado_python_call : python_call'''
-        child = estado_python_call.children[0]
+    def view_python_call(self,view_python_call):
+        '''view_python_call : python_call'''
+        child = view_python_call.children[0]
         (type,value) = self.visit(child)
-        if type == 'Estado':
+        if type == 'View':
             return value
         else:
-            print(f"ERROR: Esperado uma variável vinda do Estado do tipo Posição, mas é do tipo {type}.",file=sys. stderr)
+            print(f"ERROR: Esperado uma variável vinda do View do tipo Posição, mas é do tipo {type}.",file=sys. stderr)
             exit(-1)
 
-    def estado_constructor(self,estado_constructor):
-        '''estado_constructor : estado_estatico|estado_dinamico'''
-        child = estado_constructor.children[0]
+    def view_constructor(self,view_constructor):
+        '''view_constructor : view_static|view_animated'''
+        child = view_constructor.children[0]
         return self.visit(child)
     
-    def estado_constructor_id(self,estado_constructor):
-        '''estado_constructor_id : estado_estatico_id|estado_dinamico_id'''
-        child = estado_constructor.children[0]
+    def view_constructor_id(self,view_constructor):
+        '''view_constructor_id : view_static_id|view_animated_id'''
+        child = view_constructor.children[0]
         return self.visit(child)
 
-    def estado_estatico(self,estado_estatico):
-        '''estado_estatico : "Estado.Estático" "(" param_imagem ("," param_posicao)? ("," param_tamanho)? ")"'''
-        children = estado_estatico.children
+    def view_static(self,view_static):
+        '''view_static : "View.Estático" "(" param_image ("," param_position)? ("," param_size)? ")"'''
+        children = view_static.children
         value = {}
         for child in children:
             (param,param_value) = self.visit(child)
             value[param] = param_value
-        return ("Estado",value)
+        return ('View',value)
 
-    def estado_dinamico(self,estado_dinamico):
-        '''estado_dinamico : "Estado.Dinâmico" "(" param_imagens "," param_repeticoes "," param_time_sprite ("," param_posicao)? ("," param_tamanho)? ")"'''
-        children = estado_dinamico.children
+    def view_animated(self,view_animated):
+        '''view_animated : "View.Dinâmico" "(" param_images "," param_repetitions "," param_time_sprite ("," param_position)? ("," param_size)? ")"'''
+        children = view_animated.children
         value = {}
         for child in children:
             (param,param_value) = self.visit(child)
             value[param] = param_value
-        return ("Estado",value)
+        return ('View',value)
     
-    def estado_estatico_id(self,estado_estatico_id):
-        '''estado_estatico_id : "Estado.Estático." ID "(" param_imagem ("," param_posicao)? ("," param_tamanho)? ")"'''
-        children = estado_estatico_id.children
+    def view_static_id(self,view_static_id):
+        '''view_static_id : "View.Estático." ID "(" param_image ("," param_position)? ("," param_size)? ")"'''
+        children = view_static_id.children
         id = children[0].value
         value = {}
         value["id"] = id
@@ -552,15 +552,15 @@ class Interpreter(Interpreter):
 
         if not self.verify_id_exist(id):
             self.dict_vars[id] = {
-                "type" : "Estado",
+                "type" : 'View',
                 "value" : value
             }
 
         return value
 
-    def estado_dinamico_id(self,estado_dinamico_id):
-        '''estado_dinamico_id : "Estado.Dinâmico." ID "(" param_imagens "," param_repeticoes "," param_time_sprite ("," param_posicao)? ("," param_tamanho)? ")"'''
-        children = estado_dinamico_id.children
+    def view_animated_id(self,view_animated_id):
+        '''view_animated_id : "View.Dinâmico." ID "(" param_images "," param_repetitions "," param_time_sprite ("," param_position)? ("," param_size)? ")"'''
+        children = view_animated_id.children
         id = children[0].value
         value = {}
         value["id"] = id
@@ -569,62 +569,62 @@ class Interpreter(Interpreter):
             value[param] = param_value
 
         self.dict_vars[id] = {
-            "type" : "Estado",
+            "type" : 'View',
             "value" : value
         }
 
         return value
 
-    def sons(self,sons):
-        '''sons : "[" som ("," som)* "]"'''
-        children = sons.children
+    def sounds(self,sounds):
+        '''sounds : "[" sound ("," sound)* "]"'''
+        children = sounds.children
         result = []
         for child in children:
             result.append(self.visit(child))
         return result
 
-    def som(self,som):
-        '''som : som_arg|som_constructor_id|som_python_call'''
-        child = som.children[0]
+    def sound(self,sound):
+        '''sound : sound_arg|sound_constructor_id|sound_python_call'''
+        child = sound.children[0]
         value = self.visit(child)
         return value
 
-    def som_arg(self,som_arg):
-        '''som_arg : ID'''
-        child = som_arg.children[0]
+    def sound_arg(self,sound_arg):
+        '''sound_arg : ID'''
+        child = sound_arg.children[0]
         id = child.value
-        if self.verify_arg(id,'Som'):
+        if self.verify_arg(id,'Sound'):
             return self.dict_vars[id]['value'] 
 
-    def som_id(self,som_id):
-        '''som_id : ID'''
-        child = som_id.children[0]
+    def sound_id(self,sound_id):
+        '''sound_id : ID'''
+        child = sound_id.children[0]
         id = child.value
-        if self.verify_arg(id,'Som'):
+        if self.verify_arg(id,'Sound'):
             return id
         
 
-    def som_python_call(self,som_python_call):
-        '''som_python_call : python_call'''
-        child = som_python_call.children[0]
+    def sound_python_call(self,sound_python_call):
+        '''sound_python_call : python_call'''
+        child = sound_python_call.children[0]
         (type,value) = self.visit(child)
-        if type == 'Som':
+        if type == 'Sound':
             return value
         else:
-            print(f"ERROR: Esperado uma variável vinda do Som do tipo Posição, mas é do tipo {type}.",file=sys. stderr)
+            print(f"ERROR: Esperado uma variável vinda do Sound do tipo Posição, mas é do tipo {type}.",file=sys. stderr)
             exit(-1)
 
-    def som_constructor(self,som_constructor):
-        '''som_constructor : "Som" "(" param_fonte ")"'''
-        child = som_constructor.children[0]
+    def sound_constructor(self,sound_constructor):
+        '''sound_constructor : "Sound" "(" param_source ")"'''
+        child = sound_constructor.children[0]
         value = {}
         (param,param_value) = self.visit(child)
         value[param] = param_value
-        return ("Som",value) #(type,value)
+        return ('Sound',value) #(type,value)
     
-    def som_constructor_id(self,som_constructor_id):
-        '''som_constructor_id : "Som." ID "(" param_fonte ")"'''
-        children = som_constructor_id.children
+    def sound_constructor_id(self,sound_constructor_id):
+        '''sound_constructor_id : "Sound." ID "(" param_source ")"'''
+        children = sound_constructor_id.children
         id = children[0].value
         value = {}
         value["id"] = id
@@ -633,56 +633,56 @@ class Interpreter(Interpreter):
         return value
 
 
-    def objetos(self,objetos):
-        '''objetos : "[" objeto ("," objeto)* "]"'''
-        children = objetos.children
+    def objects(self,objects):
+        '''objects : "[" object ("," object)* "]"'''
+        children = objects.children
         result = []
         for child in children:
             result.append(self.visit(child))
         return result
 
-    def objeto(self,objeto):
-        '''objeto : objeto_imported_id|objeto_arg|objeto_constructor_id|objeto_python_call'''
-        child = objeto.children[0]
+    def object(self,object):
+        '''object : object_imported_id|object_arg|object_constructor_id|object_python_call'''
+        child = object.children[0]
         value = self.visit(child)
         return value
 
-    def objeto_arg(self,objeto_arg):
-        '''objeto_arg : ID'''
-        child = objeto_arg.children[0]
+    def object_arg(self,object_arg):
+        '''object_arg : ID'''
+        child = object_arg.children[0]
         id = child.value
-        if self.verify_arg(id,'Objeto'):
+        if self.verify_arg(id,'Object'):
             return self.dict_vars[id]['value'] 
 
-    def objeto_id(self,objeto_id):
-        '''objeto_id : ID'''
-        child = objeto_id.children[0]
+    def object_id(self,object_id):
+        '''object_id : ID'''
+        child = object_id.children[0]
         id = child.value
-        if self.verify_arg(id,'Objeto'):
+        if self.verify_arg(id,'Object'):
             return id
 
-    def objeto_python_call(self,objeto_python_call):
-        '''objeto_python_call : python_call'''
-        child = objeto_python_call.children[0]
+    def object_python_call(self,object_python_call):
+        '''object_python_call : python_call'''
+        child = object_python_call.children[0]
         (type,value) = self.visit(child)
-        if type == 'Objeto':
+        if type == 'Object':
             return value
         else:
-            print(f"ERROR: Esperado uma variável vinda do Objeto do tipo Posição, mas é do tipo {type}.",file=sys. stderr)
+            print(f"ERROR: Esperado uma variável vinda do Object do tipo Posição, mas é do tipo {type}.",file=sys. stderr)
             exit(-1)
 
-    def objeto_constructor(self,objeto_constructor):
-        '''objeto_constructor : "Objeto" "(" (param_estado_inicial ",")? param_estados ("," param_posicao)? ("," param_tamanho)? ("," param_sons)? ")"'''
-        children = objeto_constructor.children
+    def object_constructor(self,object_constructor):
+        '''object_constructor : "Object" "(" (param_view_inicial ",")? param_views ("," param_position)? ("," param_size)? ("," param_sounds)? ")"'''
+        children = object_constructor.children
         value = {}
         for child in children:
             param,param_value = self.visit(child)
             value[param] = param_value
-        return ("Objeto",value)
+        return ('Object',value)
 
-    def objeto_imported(self,objeto_imported):
-        '''objeto_imported : "Objeto." ID ("(" (param_posicao|param_tamanho|(param_posicao "," param_tamanho)) ")")?'''
-        children = objeto_imported.children
+    def object_imported(self,object_imported):
+        '''object_imported : "Object." ID ("(" (param_position|param_size|(param_position "," param_size)) ")")?'''
+        children = object_imported.children
         id = children[0].value
         if id in self.dict_imports['objects']:
             object = dict(self.dict_imports['objects'][id])
@@ -691,13 +691,13 @@ class Interpreter(Interpreter):
                 param,param_value = self.visit(child)
                 object[param] = param_value
 
-            return ('Objeto',object)
+            return ('Object',object)
         else:
-           print(f"ERROR: Objeto {id} não importado anteriormente.",file=sys. stderr) 
+           print(f"ERROR: Object {id} not importdo anteriormente.",file=sys. stderr) 
 
-    def objeto_constructor_id(self,objeto_constructor_id):
-        '''objeto_constructor_id : "Objeto." ID "(" (param_estado_inicial ",")? param_estados ("," param_posicao)? ("," param_tamanho)? ("," param_sons)? ")"'''
-        children = objeto_constructor_id.children
+    def object_constructor_id(self,object_constructor_id):
+        '''object_constructor_id : "Object." ID "(" (param_view_inicial ",")? param_views ("," param_position)? ("," param_size)? ("," param_sounds)? ")"'''
+        children = object_constructor_id.children
         id = children[0]
         value = {}
         value["id"] = id
@@ -707,15 +707,15 @@ class Interpreter(Interpreter):
 
         if not self.verify_id_exist(id):
             self.dict_vars[id] = {
-                "type" : "Objeto",
+                "type" : 'Object',
                 "value" : value
             }
 
         return value
 
-    def objeto_imported_id(self,objeto_imported_id):
-        '''objeto_imported_id : "Objeto." ID "." ID ("(" (param_posicao|param_tamanho|(param_posicao "," param_tamanho)) ")")?'''
-        children = objeto_imported_id.children
+    def object_imported_id(self,object_imported_id):
+        '''object_imported_id : "Object." ID "." ID ("(" (param_position|param_size|(param_position "," param_size)) ")")?'''
+        children = object_imported_id.children
         id_import = children[0].value
         id_value = children[1].value
         if id_import in self.dict_imports['objects']:
@@ -728,18 +728,18 @@ class Interpreter(Interpreter):
 
             if not self.verify_id_exist(id):
                 self.dict_vars[id] = {
-                    "type" : "Objeto",
+                    "type" : 'Object',
                     "value" : object
                 }
 
             return object
         else:
-           print(f"ERROR: Objeto {id_import} não importado anteriormente.",file=sys. stderr)
+           print(f"ERROR: Object {id_import} not importdo anteriormente.",file=sys. stderr)
            exit(-1)
 
-    def cenarios(self,cenarios):
-        '''cenarios : "[" cenario ("," cenario)* "]"'''
-        children = cenarios.children
+    def scenarios(self,scenarios):
+        '''scenarios : "[" cenario ("," cenario)* "]"'''
+        children = scenarios.children
         result = []
         for child in children:
             result.append(self.visit(child))
@@ -755,14 +755,14 @@ class Interpreter(Interpreter):
         '''cenario_arg : ID'''
         child = cenario_arg.children[0]
         id = child.value
-        if self.verify_arg(id,'Cenário'):
+        if self.verify_arg(id,'Scenario'):
             return self.dict_vars[id]['value'] 
 
     def cenario_id(self,cenario_id):
         '''cenario_id : ID'''
         child = cenario_id.children[0]
         id = child.value
-        if self.verify_arg(id,'Cenário'):
+        if self.verify_arg(id,'Scenario'):
             return id
         
 
@@ -770,23 +770,23 @@ class Interpreter(Interpreter):
         '''cenario_python_call : python_call'''
         child = cenario_python_call.children[0]
         (type,value) = self.visit(child)
-        if type == 'Cenário':
+        if type == 'Scenario':
             return value
         else:
-            print(f"ERROR: Esperado uma variável vinda do Cenário do tipo Posição, mas é do tipo {type}.",file=sys. stderr)
+            print(f"ERROR: Esperado uma variável vinda do Scenario do tipo Posição, mas é do tipo {type}.",file=sys. stderr)
             exit(-1)
 
     def cenario_constructor(self,cenario_constructor):
-        '''cenario_constructor : "Cenário" "(" param_estado_inicial "," param_estados "," param_objetos ("," param_sons)? ")"'''
+        '''cenario_constructor : "Scenario" "(" param_view_inicial "," param_views "," param_objects ("," param_sounds)? ")"'''
         children = cenario_constructor.children
         value = {}
         for child in children:
             param,param_value = self.visit(child)
             value[param] = param_value
-        return ("Cenário",value)
+        return ('Scenario',value)
     
     def cenario_constructor_id(self,cenario_constructor_id):
-        '''cenario_constructor_id : "Cenário." ID "(" param_estado_inicial "," param_estados "," param_objetos ("," param_sons)? ")"'''
+        '''cenario_constructor_id : "Scenario." ID "(" param_view_inicial "," param_views "," param_objects ("," param_sounds)? ")"'''
         children = cenario_constructor_id.children
         id = children[0]
         value = {}
@@ -797,63 +797,63 @@ class Interpreter(Interpreter):
 
         if not self.verify_id_exist(id):
             self.dict_vars[id] = {
-                    "type" : "Cenário",
+                    "type" : 'Scenario',
                     "value" : value
                 }
 
         return value
 
-    def transicoes(self,transicoes):
-        '''transicoes : "[" transicao ("," transicao)* "]"'''
-        children = transicoes.children
+    def transitions(self,transitions):
+        '''transitions : "[" transition ("," transition)* "]"'''
+        children = transitions.children
         result = []
         for child in children:
             result.append(self.visit(child))
         return result
 
-    def transicao(self,transicao):
-        '''transicao : transicao_arg|transicao_constructor_id|transicao_python_call'''
-        child = transicao.children[0]
+    def transition(self,transition):
+        '''transition : transition_arg|transition_constructor_id|transition_python_call'''
+        child = transition.children[0]
         value = self.visit(child)
         return value
 
-    def transicao_arg(self,transicao_arg):
-        '''transicao_arg : ID'''
-        child = transicao_arg.children[0]
+    def transition_arg(self,transition_arg):
+        '''transition_arg : ID'''
+        child = transition_arg.children[0]
         id = child.value
-        if self.verify_arg(id,'Transição'):
+        if self.verify_arg(id,'Transition'):
             return self.dict_vars[id]['value'] 
 
-    def transicao_id(self,transicao_id):
-        '''transicao_id : ID'''
-        child = transicao_id.children[0]
+    def transition_id(self,transition_id):
+        '''transition_id : ID'''
+        child = transition_id.children[0]
         id = child.value
-        if self.verify_arg(id,'Transição'):
+        if self.verify_arg(id,'Transition'):
             return id
 
-    def transicao_python_call(self,transicao_python_call):
-        '''transicao_python_call : python_call'''
-        child = transicao_python_call.children[0]
+    def transition_python_call(self,transition_python_call):
+        '''transition_python_call : python_call'''
+        child = transition_python_call.children[0]
         (type,value) = self.visit(child)
-        if type == 'Transição':
+        if type == 'Transition':
             return value
         else:
-            print(f"ERROR: Esperado uma variável vinda do Transição do tipo Posição, mas é do tipo {type}.",file=sys. stderr)
+            print(f"ERROR: Esperado uma variável vinda do Transition do tipo Posição, mas é do tipo {type}.",file=sys. stderr)
             exit(-1)
 
-    def transicao_constructor(self,transicao_constructor):
-        '''transicao_constructor : "Transição" "(" param_fundo "," param_musica "," param_historia "," (param_prox_cena|param_prox_trans)")"'''
-        children = transicao_constructor.children
+    def transition_constructor(self,transition_constructor):
+        '''transition_constructor : "Transition" "(" param_background "," param_music "," param_story "," (param_next_scene|param_next_trans)")"'''
+        children = transition_constructor.children
         value = {}
         for child in children:
             param,param_value = self.visit(child)
             value[param] = param_value
         
-        return ("Transição",value)
+        return ('Transition',value)
     
-    def transicao_constructor_id(self,transicao_constructor_id):
-        '''transicao_constructor_id : "Transição." ID "(" param_fundo "," param_musica "," param_historia "," (param_prox_cena|param_prox_trans)")"'''
-        children = transicao_constructor_id.children
+    def transition_constructor_id(self,transition_constructor_id):
+        '''transition_constructor_id : "Transition." ID "(" param_background "," param_music "," param_story "," (param_next_scene|param_next_trans)")"'''
+        children = transition_constructor_id.children
         id = children[0]
         value = {}
         value["id"] = id
@@ -863,47 +863,47 @@ class Interpreter(Interpreter):
 
         if not self.verify_id_exist(id):
             self.dict_vars[id] = {
-                    "type" : "Transição",
+                    "type" : 'Transition',
                     "value" : value
                 }
         
         return value
 
-    def desafio(self,desafio):
-        '''desafio : desafio_arg|desafio_constructor_id|desafio_python_call'''
-        child = desafio.children[0]
+    def challenge(self,challenge):
+        '''challenge : challenge_arg|challenge_constructor_id|challenge_python_call'''
+        child = challenge.children[0]
         value = self.visit(child)
         return value
 
-    def desafio_arg(self,desafio_arg):
-        '''desafio_arg : ID'''
-        child = desafio_arg.children[0]
+    def challenge_arg(self,challenge_arg):
+        '''challenge_arg : ID'''
+        child = challenge_arg.children[0]
         id = child.value
-        if self.verify_arg(id,'Desafio'):
+        if self.verify_arg(id,'Challenge'):
             return self.dict_vars[id]['value'] 
 
-    def desafio_python_call(self,desafio_python_call):
-        '''desafio_python_call : python_call'''
-        child = desafio_python_call.children[0]
+    def challenge_python_call(self,challenge_python_call):
+        '''challenge_python_call : python_call'''
+        child = challenge_python_call.children[0]
         (type,value) = self.visit(child)
-        if type == 'Desafio':
+        if type == 'Challenge':
             return value
         else:
-            print(f"ERROR: Esperado uma variável vinda do Desafio do tipo Posição, mas é do tipo {type}.",file=sys. stderr)
+            print(f"ERROR: Esperado uma variável vinda do Challenge do tipo Posição, mas é do tipo {type}.",file=sys. stderr)
 
-    def desafio_constructor(self,desafio_constructor):
-        '''desafio_constructor : desafio_pergunta|desafio_arrasta|desafio_escolha_multipla|desafio_conexao|desafio_sequencia|desafio_puzzle|desafio_slidepuzzle|desafio_socket'''
-        child = desafio_constructor.children[0]
+    def challenge_constructor(self,challenge_constructor):
+        '''challenge_constructor : challenge_question|challenge_motion|challenge_multiple_choice|challenge_connection|challenge_sequence|challenge_puzzle|challenge_slidepuzzle|challenge_socket'''
+        child = challenge_constructor.children[0]
         return self.visit(child)
     
-    def desafio_constructor_id(self,desafio_constructor_id):
-        '''desafio_constructor_id : desafio_pergunta_id|desafio_arrasta_id|desafio_escolha_multipla_id|desafio_conexao_id|desafio_sequencia_id|desafio_puzzle_id|desafio_slidepuzzle_id|desafio_socket_id'''
-        child = desafio_constructor_id.children[0]
+    def challenge_constructor_id(self,challenge_constructor_id):
+        '''challenge_constructor_id : challenge_question_id|challenge_motion_id|challenge_multiple_choice_id|challenge_connection_id|challenge_sequence_id|challenge_puzzle_id|challenge_slidepuzzle_id|challenge_socket_id'''
+        child = challenge_constructor_id.children[0]
         return self.visit(child)
 
-    def desafio_pergunta(self,desafio_pergunta):
-        '''desafio_pergunta : "Desafio.Pergunta" "(" param_pergunta "," param_resposta "," param_acerto "," param_falha ")"'''
-        children = desafio_pergunta.children
+    def challenge_question(self,challenge_question):
+        '''challenge_question : "Challenge.Pergunta" "(" param_question "," param_answer "," param_acerto "," param_fail ")"'''
+        children = challenge_question.children
         value = {}
         for child in children:
             param,param_value = self.visit(child)
@@ -911,11 +911,11 @@ class Interpreter(Interpreter):
         
         value['type'] = 'QUESTION'
 
-        return ("Desafio",value)
+        return ('Challenge',value)
     
-    def desafio_pergunta_id(self,desafio_pergunta_id):
-        '''desafio_pergunta_id : "Desafio.Pergunta." ID "(" param_pergunta "," param_resposta "," param_acerto "," param_falha ")"'''
-        children = desafio_pergunta_id.children
+    def challenge_question_id(self,challenge_question_id):
+        '''challenge_question_id : "Challenge.Pergunta." ID "(" param_question "," param_answer "," param_acerto "," param_fail ")"'''
+        children = challenge_question_id.children
         id = children[0]
         value = {}
         value["id"] = id
@@ -927,27 +927,27 @@ class Interpreter(Interpreter):
 
         if not self.verify_id_exist(id):
             self.dict_vars[id] = {
-                    "type" : "Desafio",
+                    "type" : 'Challenge',
                     "value" : value
                 }
 
         return value
 
-    def desafio_arrasta(self,desafio_arrasta):
-        '''desafio_arrasta : "Desafio.Arrasta" "(" param_objeto "," param_objeto_gatilho "," param_acerto "," param_falha ")"'''
-        children = desafio_arrasta.children
+    def challenge_motion(self,challenge_motion):
+        '''challenge_motion : "Challenge.Motion" "(" param_motion_object "," param_trigger_object "," param_acerto "," param_fail ")"'''
+        children = challenge_motion.children
         value = {}
         for child in children:
             param,param_value = self.visit(child)
             value[param] = param_value
         
-        value['type'] = 'MOVE_OBJECT'
+        value['type'] = 'MOTION_OBJECT'
 
-        return ("Desafio",value)
+        return ('Challenge',value)
     
-    def desafio_arrasta_id(self,desafio_arrasta_id):
-        '''desafio_arrasta_id : "Desafio.Arrasta." ID "(" param_objeto "," param_objeto_gatilho "," param_acerto "," param_falha ")"'''
-        children = desafio_arrasta_id.children
+    def challenge_motion_id(self,challenge_motion_id):
+        '''challenge_motion_id : "Challenge.Motion." ID "(" param_motion_object "," param_trigger_object "," param_acerto "," param_fail ")"'''
+        children = challenge_motion_id.children
         id = children[0]
         value = {}
         value["id"] = id
@@ -955,19 +955,19 @@ class Interpreter(Interpreter):
             param,param_value = self.visit(child)
             value[param] = param_value
 
-        value["type"] = "MOVE_OBJECT"
+        value["type"] = "MOTION_OBJECT"
 
         if not self.verify_id_exist(id):
             self.dict_vars[id] = {
-                    "type" : "Desafio",
+                    "type" : 'Challenge',
                     "value" : value
                 }
         
         return value
 
-    def desafio_escolha_multipla(self,desafio_escolha_multipla):
-        '''desafio_escolha_multipla : "Desafio.Escolha_Múltipla" "(" param_pergunta "," param_escolhas "," param_resposta "," param_acerto "," param_falha ")"'''
-        children = desafio_escolha_multipla.children
+    def challenge_multiple_choice(self,challenge_multiple_choice):
+        '''challenge_multiple_choice : "Challenge.Multiple_Choice" "(" param_question "," param_choices "," param_answer "," param_acerto "," param_fail ")"'''
+        children = challenge_multiple_choice.children
         value = {}
         for child in children:
             param,param_value = self.visit(child)
@@ -975,11 +975,11 @@ class Interpreter(Interpreter):
         
         value['type'] = 'MULTIPLE_CHOICE'
 
-        return ("Desafio",value)
+        return ('Challenge',value)
     
-    def desafio_escolha_multipla_id(self,desafio_escolha_multipla_id):
-        '''desafio_escolha_multipla_id : "Desafio.Escolha_Múltipla." ID "(" param_pergunta "," param_escolhas "," param_resposta "," param_acerto "," param_falha ")"'''
-        children = desafio_escolha_multipla_id.children
+    def challenge_multiple_choice_id(self,challenge_multiple_choice_id):
+        '''challenge_multiple_choice_id : "Challenge.Multiple_Choice." ID "(" param_question "," param_choices "," param_answer "," param_acerto "," param_fail ")"'''
+        children = challenge_multiple_choice_id.children
         id = children[0]
         value = {}
         value["id"] = id
@@ -991,15 +991,15 @@ class Interpreter(Interpreter):
 
         if not self.verify_id_exist(id):
             self.dict_vars[id] = {
-                    "type" : "Desafio",
+                    "type" : 'Challenge',
                     "value" : value
                 }
         
         return value
 
-    def desafio_conexao(self,desafio_conexao):
-        '''desafio_conexao : "Desafio.Conexão" "(" param_pergunta "," param_lista1 "," param_lista2 "," param_acerto "," param_falha ")"'''
-        children = desafio_conexao.children
+    def challenge_connection(self,challenge_connection):
+        '''challenge_connection : "Challenge.Connection" "(" param_question "," param_list1 "," param_list2 "," param_acerto "," param_fail ")"'''
+        children = challenge_connection.children
         value = {}
         for child in children:
             param,param_value = self.visit(child)
@@ -1007,11 +1007,11 @@ class Interpreter(Interpreter):
         
         value['type'] = 'CONNECTIONS'
 
-        return ("Desafio",value)
+        return ('Challenge',value)
     
-    def desafio_conexao_id(self,desafio_conexao_id):
-        '''desafio_conexao_id : "Desafio.Conexão." ID "(" param_pergunta "," param_lista1 "," param_lista2 "," param_acerto "," param_falha ")"'''
-        children = desafio_conexao_id.children
+    def challenge_connection_id(self,challenge_connection_id):
+        '''challenge_connection_id : "Challenge.Connection." ID "(" param_question "," param_list1 "," param_list2 "," param_acerto "," param_fail ")"'''
+        children = challenge_connection_id.children
         id = children[0]
         value = {}
         value["id"] = id
@@ -1023,15 +1023,15 @@ class Interpreter(Interpreter):
         
         if not self.verify_id_exist(id):
             self.dict_vars[id] = {
-                    "type" : "Desafio",
+                    "type" : 'Challenge',
                     "value" : value
                 }
         
         return value
 
-    def desafio_sequencia(self,desafio_sequencia):
-        '''desafio_sequencia : "Desafio.Sequência" "(" param_pergunta "," param_sequencia "," param_acerto "," param_falha ")"'''
-        children = desafio_sequencia.children
+    def challenge_sequence(self,challenge_sequence):
+        '''challenge_sequence : "Challenge.Sequence" "(" param_question "," param_sequence "," param_acerto "," param_fail ")"'''
+        children = challenge_sequence.children
         value = {}
         for child in children:
             param,param_value = self.visit(child)
@@ -1039,11 +1039,11 @@ class Interpreter(Interpreter):
         
         value['type'] = 'SEQUENCE'
 
-        return ("Desafio",value)
+        return ('Challenge',value)
     
-    def desafio_sequencia_id(self,desafio_sequencia_id):
-        '''desafio_sequencia_id : "Desafio.Sequência." ID "(" param_pergunta "," param_sequencia "," param_acerto "," param_falha ")"'''
-        children = desafio_sequencia_id.children
+    def challenge_sequence_id(self,challenge_sequence_id):
+        '''challenge_sequence_id : "Challenge.Sequence." ID "(" param_question "," param_sequence "," param_acerto "," param_fail ")"'''
+        children = challenge_sequence_id.children
         id = children[0]
         value = {}
         value["id"] = id
@@ -1055,15 +1055,15 @@ class Interpreter(Interpreter):
 
         if not self.verify_id_exist(id):
             self.dict_vars[id] = {
-                    "type" : "Desafio",
+                    "type" : 'Challenge',
                     "value" : value
                 }
         
         return value
 
-    def desafio_puzzle(self,desafio_puzzle):
-        '''desafio_puzzle : "Desafio.Puzzle" "(" param_imagem "," param_acerto ")"'''
-        children = desafio_puzzle.children
+    def challenge_puzzle(self,challenge_puzzle):
+        '''challenge_puzzle : "Challenge.Puzzle" "(" param_image "," param_acerto ")"'''
+        children = challenge_puzzle.children
         value = {}
         for child in children:
             param,param_value = self.visit(child)
@@ -1071,11 +1071,11 @@ class Interpreter(Interpreter):
         
         value['type'] = 'PUZZLE'
 
-        return ("Desafio",value)
+        return ('Challenge',value)
 
-    def desafio_puzzle_id(self,desafio_puzzle_id):
-        '''desafio_puzzle_id : "Desafio.Puzzle." ID "(" param_imagem "," param_acerto ")"'''
-        children = desafio_puzzle_id.children
+    def challenge_puzzle_id(self,challenge_puzzle_id):
+        '''challenge_puzzle_id : "Challenge.Puzzle." ID "(" param_image "," param_acerto ")"'''
+        children = challenge_puzzle_id.children
         id = children[0]
         value = {}
         value["id"] = id
@@ -1087,15 +1087,15 @@ class Interpreter(Interpreter):
         
         if not self.verify_id_exist(id):
             self.dict_vars[id] = {
-                    "type" : "Desafio",
+                    "type" : 'Challenge',
                     "value" : value
                 }
         
         return value
 
-    def desafio_slidepuzzle(self,desafio_slidepuzzle):
-        '''desafio_slidepuzzle : "Desafio.SlidePuzzle" "(" param_imagem "," param_acerto ")"'''
-        children = desafio_slidepuzzle.children
+    def challenge_slidepuzzle(self,challenge_slidepuzzle):
+        '''challenge_slidepuzzle : "Challenge.SlidePuzzle" "(" param_image "," param_acerto ")"'''
+        children = challenge_slidepuzzle.children
         value = {}
         for child in children:
             param,param_value = self.visit(child)
@@ -1103,11 +1103,11 @@ class Interpreter(Interpreter):
         
         value['type'] = 'SLIDEPUZZLE'
 
-        return ("Desafio",value)
+        return ('Challenge',value)
     
-    def desafio_slidepuzzle_id(self,desafio_slidepuzzle_id):
-        '''desafio_slidepuzzle_id : "Desafio.SlidePuzzle." ID "(" param_imagem "," param_acerto ")"'''
-        children = desafio_slidepuzzle_id.children
+    def challenge_slidepuzzle_id(self,challenge_slidepuzzle_id):
+        '''challenge_slidepuzzle_id : "Challenge.SlidePuzzle." ID "(" param_image "," param_acerto ")"'''
+        children = challenge_slidepuzzle_id.children
         id = children[0]
         value = {}
         value["id"] = id
@@ -1119,15 +1119,15 @@ class Interpreter(Interpreter):
 
         if not self.verify_id_exist(id):
             self.dict_vars[id] = {
-                    "type" : "Desafio",
+                    "type" : 'Challenge',
                     "value" : value
                 }
         
         return value
 
-    def desafio_socket(self,desafio_socket):
-        '''desafio_socket : "Desafio.Socket" "(" param_host "," param_port "," param_mensagem "," param_acerto "," param_falha ")"'''
-        children = desafio_socket.children
+    def challenge_socket(self,challenge_socket):
+        '''challenge_socket : "Challenge.Socket" "(" param_host "," param_port "," param_message "," param_acerto "," param_fail ")"'''
+        children = challenge_socket.children
         value = {}
         for child in children:
             param,param_value = self.visit(child)
@@ -1135,11 +1135,11 @@ class Interpreter(Interpreter):
         
         value['type'] = 'SOCKET_CONNECTION'
 
-        return ("Desafio",value)
+        return ('Challenge',value)
     
-    def desafio_socket_id(self,desafio_socket_id):
-        '''desafio_socket_id : "Desafio.Socket." ID "(" param_host "," param_port "," param_mensagem "," param_acerto "," param_falha ")"'''
-        children = desafio_socket_id.children
+    def challenge_socket_id(self,challenge_socket_id):
+        '''challenge_socket_id : "Challenge.Socket." ID "(" param_host "," param_port "," param_message "," param_acerto "," param_fail ")"'''
+        children = challenge_socket_id.children
         id = children[0]
         value = {}
         value["id"] = id
@@ -1151,62 +1151,62 @@ class Interpreter(Interpreter):
         
         if not self.verify_id_exist(id):
             self.dict_vars[id] = {
-                    "type" : "Desafio",
+                    "type" : 'Challenge',
                     "value" : value
                 }
         
         return value
 
-    def eventos(self,eventos):
-        '''eventos : "[" evento ("," evento)* "]"'''
-        children = eventos.children
+    def events(self,events):
+        '''events : "[" event ("," event)* "]"'''
+        children = events.children
         value = []
         for child in children:
             value.append(self.visit(child))
         return value
 
-    def evento(self,evento):
-        '''evento : evento_arg|evento_constructor_id|evento_python_call'''
-        child = evento.children[0]
+    def event(self,event):
+        '''event : event_arg|event_constructor_id|event_python_call'''
+        child = event.children[0]
         value = self.visit(child)
         return value
 
-    def evento_arg(self,evento_arg):
-        '''evento_arg : ID'''
-        child = evento_arg.children[0]
+    def event_arg(self,event_arg):
+        '''event_arg : ID'''
+        child = event_arg.children[0]
         id = child.value
-        if self.verify_arg(id,'Evento'):
+        if self.verify_arg(id,'Event'):
             return self.dict_vars[id]['value'] 
 
-    def evento_id(self,evento_id):
-        '''evento_id : ID'''
-        child = evento_id.children[0]
+    def event_id(self,event_id):
+        '''event_id : ID'''
+        child = event_id.children[0]
         id = child.value
-        if self.verify_arg(id,'Evento'):
+        if self.verify_arg(id,'Event'):
             return id
 
-    def evento_python_call(self,evento_python_call):
-        '''evento_python_call : python_call'''
-        child = evento_python_call.children[0]
+    def event_python_call(self,event_python_call):
+        '''event_python_call : python_call'''
+        child = event_python_call.children[0]
         (type,value) = self.visit(child)
-        if type == 'Evento':
+        if type == 'Event':
             return value
         else:
-            print(f"ERROR: Esperado uma variável vinda do Evento do tipo Posição, mas é do tipo {type}.",file=sys. stderr)
+            print(f"ERROR: Esperado uma variável vinda do Event do tipo Posição, mas é do tipo {type}.",file=sys. stderr)
 
-    def evento_constructor(self,evento_constructor):
-        '''evento_constructor : "Evento" "(" (param_se ",")? param_entao ("," param_repeticoes)? ")"'''
-        children = evento_constructor.children
+    def event_constructor(self,event_constructor):
+        '''event_constructor : "Event" "(" (param_if ",")? param_then ("," param_repetitions)? ")"'''
+        children = event_constructor.children
         value = {}
         for child in children:
             param,param_value = self.visit(child)
             value[param] = param_value
 
-        return ("Evento",value)
+        return ("Event",value)
     
-    def evento_constructor_id(self,evento_constructor_id):
-        '''evento_constructor_id : "Evento." ID "(" (param_se ",")? param_entao ("," param_repeticoes)? ")"'''
-        children = evento_constructor_id.children
+    def event_constructor_id(self,event_constructor_id):
+        '''event_constructor_id : "Event." ID "(" (param_if ",")? param_then ("," param_repetitions)? ")"'''
+        children = event_constructor_id.children
         id = children[0]
         value = {}
         value["id"] = id
@@ -1216,58 +1216,58 @@ class Interpreter(Interpreter):
 
         if not self.verify_id_exist(id):
             self.dict_vars[id] = {
-                    "type" : "Evento",
+                    "type" : "Event",
                     "value" : value
                 }    
         
         return value
 
-    def param_cenarios(self,param_cenarios):
-        '''param_cenarios : "cenários" "=" cenarios'''
-        child = param_cenarios.children[0]
+    def param_scenarios(self,param_scenarios):
+        '''param_scenarios : "scenarios" "=" scenarios'''
+        child = param_scenarios.children[0]
         value = self.visit(child)
         return ('scenarios',value)
 
 
-    def param_entao(self,param_entao):
-        '''param_entao : "então" "=" poscondicoes'''
-        child = param_entao.children[0]
+    def param_then(self,param_then):
+        '''param_then : "then" "=" posconditions'''
+        child = param_then.children[0]
         value = self.visit(child)
         return ('posconditions',value)
 
-    def param_estado_inicial(self,param_estado_inicial):
-        '''param_estado_inicial : "estado_inicial" "=" estado_arg'''
-        child = param_estado_inicial.children[0]
+    def param_view_inicial(self,param_view_inicial):
+        '''param_view_inicial : "view_inicial" "=" view_arg'''
+        child = param_view_inicial.children[0]
         value = self.visit(child)
-        return ('initial_state',value)
+        return ('initial_view',value)
 
-    def param_estados(self,param_estados):
-        '''param_estados : "estados" "=" estados'''
-        child = param_estados.children[0]
+    def param_views(self,param_views):
+        '''param_views : "views" "=" views'''
+        child = param_views.children[0]
         value = self.visit(child)
-        return ('states',value)
+        return ('views',value)
 
-    def param_escolhas(self,param_escolhas):
-        '''param_escolhas : "escolhas" "=" lista_texto'''
-        child = param_escolhas.children[0]
+    def param_choices(self,param_choices):
+        '''param_choices : "choices" "=" list_text'''
+        child = param_choices.children[0]
         value = self.visit(child)
         return ('choices',value)
 
-    def param_eventos(self,param_eventos):
-        '''param_eventos : "eventos" "=" eventos'''
-        child = param_eventos.children[0]
+    def param_events(self,param_events):
+        '''param_events : "events" "=" events'''
+        child = param_events.children[0]
         value = self.visit(child)
         return ('events',value)
 
-    def param_falha(self,param_falha):
-        '''param_falha : "falha" "=" evento_arg'''
-        child = param_falha.children[0]
+    def param_fail(self,param_fail):
+        '''param_fail : "fail" "=" event_arg'''
+        child = param_fail.children[0]
         value = self.visit(child)
         return ('fail',value)
 
-    def param_fonte(self,param_fonte):
-        '''param_fonte : "fonte" "=" texto'''
-        child = param_fonte.children[0]
+    def param_source(self,param_source):
+        '''param_source : "source" "=" text'''
+        child = param_source.children[0]
         value = self.visit(child)
 
         try:
@@ -1275,32 +1275,51 @@ class Interpreter(Interpreter):
             src = os.path.realpath(file.name)
             file.close()
         except:
-            print(f"ERROR: Ficheiro de som '{value}' não encontrado!",file=sys.stderr)
+            print(f"ERROR: Ficheiro de sound '{value}' not encontrado!",file=sys.stderr)
             exit(-1)
 
         return ('source',src) #(param,value)
 
-    def param_fundo(self,param_fundo):
-        '''param_fundo : "fundo" "=" estado'''
-        child = param_fundo.children[0]
+    def param_background(self,param_background):
+        '''param_background : "background" "=" view'''
+        child = param_background.children[0]
         value = self.visit(child)
+        
         return ('background',value)
 
-    def param_historia(self,param_historia):
-        '''param_historia : "história" "=" texto'''
-        child = param_historia.children[0]
+    def param_story(self,param_story):
+        '''param_story : "história" "=" text'''
+        child = param_story.children[0]
         value = self.visit(child)
         return ('story',value)
 
+    def param_start(self,param_start):
+        '''param_start : "start" "=" ID'''
+
+        child = param_start.children[0]
+        source_id = child.value
+
+        if source_id in self.dict_vars:
+            source_type = self.dict_vars[source_id]['type']
+            if not source_type == 'Transition' or source_type == 'Scenario':
+                print(f"ERROR: Esperado uma variável do tipo Object ou Scenario, mas a variável {source_id} é do tipo {source_type}.",file=sys.stderr)
+                exit(-1)
+        else:
+            print(f"ERROR: Variável {source_id} not foi inicializada anteriormente.",file=sys.stderr)
+            exit(-1)
+
+
+        return ('start',{'source' : source_type, 'id' : source_id})
+
     def param_host(self,param_host):
-        '''param_host : "host" "=" texto'''
+        '''param_host : "host" "=" text'''
         child = param_host.children[0]
         value = self.visit(child)
         return ('host',value)
 
-    def param_imagem(self,param_imagem):
-        '''param_imagem : "imagem" "=" texto'''
-        child = param_imagem.children[0]
+    def param_image(self,param_image):
+        '''param_image : "image" "=" text'''
+        child = param_image.children[0]
         value = self.visit(child)
 
         try:
@@ -1308,14 +1327,14 @@ class Interpreter(Interpreter):
             src = os.path.realpath(file.name)
             file.close()
         except:
-            print(f"ERROR: Ficheiro de imagem '{value}' não encontrado!",file=sys.stderr)
+            print(f"ERROR: Ficheiro de image '{value}' not encontrado!",file=sys.stderr)
             exit(-1)
 
         return ('image',src)
 
-    def param_imagens(self,param_imagens):
-        '''param_imagens : "imagens" "=" lista_texto'''
-        child = param_imagens.children[0]
+    def param_images(self,param_images):
+        '''param_images : "images" "=" list_text'''
+        child = param_images.children[0]
         values = self.visit(child)
         
         srcs = []
@@ -1326,160 +1345,160 @@ class Interpreter(Interpreter):
                 file.close()
                 srcs.append(src)
             except:
-                print(f"ERROR: Ficheiro de imagem '{value}' não encontrado!",file=sys.stderr)
+                print(f"ERROR: Ficheiro de image '{value}' not encontrado!",file=sys.stderr)
                 exit(-1)
 
         return ('images',srcs)
 
-    def param_lista1(self,param_lista1):
-        '''param_lista1 : "lista1" "=" lista_texto'''
-        child = param_lista1.children[0]
+    def param_list1(self,param_list1):
+        '''param_list1 : "list1" "=" list_text'''
+        child = param_list1.children[0]
         value = self.visit(child)
         return ('list1',value)
 
-    def param_lista2(self,param_lista2):
-        '''param_lista2 : "lista2" "=" lista_texto'''
-        child = param_lista2.children[0]
+    def param_list2(self,param_list2):
+        '''param_list2 : "list2" "=" list_text'''
+        child = param_list2.children[0]
         value = self.visit(child)
         return ('list2',value)
 
-    def param_mensagem(self,param_mensagem):
-        '''param_mensagem : "mensagem" "=" texto'''
-        child = param_mensagem.children[0]
+    def param_message(self,param_message):
+        '''param_message : "message" "=" text'''
+        child = param_message.children[0]
         value = self.visit(child)
         return ('message',value)
 
-    def param_musica(self,param_musica):
-        '''param_musica : "música" "=" som'''
-        child = param_musica.children[0]
+    def param_music(self,param_music):
+        '''param_music : "música" "=" sound'''
+        child = param_music.children[0]
         value = self.visit(child)
         return ('music',value)
 
-    def param_objeto(self,param_objeto):
-        '''param_objeto : "objeto" "=" objeto_id'''
-        child = param_objeto.children[0]
+    def param_motion_object(self,param_motion_object):
+        '''param_motion_object : "motion_object" "=" object_id'''
+        child = param_motion_object.children[0]
         value = self.visit(child)
-        return ('object',value)
+        return ('motion_object',value)
     
-    def param_objeto_gatilho(self,param_objeto_gatilho):
-        '''param_objeto_gatilho : "objeto" "=" objeto_id'''
-        child = param_objeto_gatilho.children[0]
+    def param_trigger_object(self,param_trigger_object):
+        '''param_trigger_object : "object" "=" object_id'''
+        child = param_trigger_object.children[0]
         value = self.visit(child)
-        return ('object_trigger',value)
+        return ('trigger_object',value)
 
-    def param_objetos(self,param_objetos):
-        '''param_objetos : "objetos" "=" objetos'''
-        child = param_objetos.children[0]
+    def param_objects(self,param_objects):
+        '''param_objects : "objects" "=" objects'''
+        child = param_objects.children[0]
         value = self.visit(child)
 
         return ('objects',value)
 
-    def param_pergunta(self,param_pergunta):
-        '''param_pergunta : "pergunta" "=" texto'''
-        child = param_pergunta.children[0]
+    def param_question(self,param_question):
+        '''param_question : "question" "=" text'''
+        child = param_question.children[0]
         value = self.visit(child)
         return ('question',value)
 
     def param_port(self,param_port):
-        '''param_port : "port" "=" numero'''
+        '''param_port : "port" "=" number'''
         child = param_port.children[0]
         value = self.visit(child)
         return ('port',value)
 
-    def param_posicao(self,param_posicao):
-        '''param_posicao : "posição" "=" posição'''
-        child = param_posicao.children[0]
+    def param_position(self,param_position):
+        '''param_position : "position" "=" position'''
+        child = param_position.children[0]
         value = self.visit(child)
         return ('position',value)
 
-    def param_prox_cena(self,param_prox_cena):
-        '''param_prox_cena : "próxima_cena" "=" cenario_id'''
-        child = param_prox_cena.children[0]
+    def param_next_scene(self,param_next_scene):
+        '''param_next_scene : "próxima_cena" "=" cenario_id'''
+        child = param_next_scene.children[0]
         value = self.visit(child)
         return ('next_scenario',value)
 
-    def param_prox_trans(self,param_prox_trans):
-        '''param_prox_trans : "próxima_transição" "=" transicao_id'''
-        child = param_prox_trans.children[0]
+    def param_next_trans(self,param_next_trans):
+        '''param_next_trans : "próxima_transition" "=" transition_id'''
+        child = param_next_trans.children[0]
         value = self.visit(child)
         return ('next_transition',value)
 
-    def param_se(self,param_se):
-        '''param_se : "se" "=" precondicoes'''
-        child = param_se.children[0]
+    def param_if(self,param_if):
+        '''param_if : "se" "=" preconditions'''
+        child = param_if.children[0]
         value = self.visit(child)
         return ('preconditions',value)
 
-    def param_sequencia(self,param_sequencia):
-        '''param_sequencia : "sequência" "=" lista_texto'''
-        child = param_sequencia.children[0]
+    def param_sequence(self,param_sequence):
+        '''param_sequence : "sequence" "=" list_text'''
+        child = param_sequence.children[0]
         value = self.visit(child)
         return ('sequence',value)
 
-    def param_sons(self,param_sons):
-        '''param_sons : "sons" "=" sons'''
-        child = param_sons.children[0]
+    def param_sounds(self,param_sounds):
+        '''param_sounds : "sounds" "=" sounds'''
+        child = param_sounds.children[0]
         value = self.visit(child)
         return ('sounds',value)
     
-    def param_sucesso(self,param_sucesso):
-        '''param_sucesso : "sucesso" "=" evento_arg'''
-        child = param_sucesso.children[0]
+    def param_sucess(self,param_sucess):
+        '''param_sucess : "sucess" "=" event_arg'''
+        child = param_sucess.children[0]
         value = self.visit(child)
         return ('sucess',value)
 
-    def param_repeticoes(self,param_repeticoes):
-        '''param_repeticoes : "repetições" "=" numero'''
-        child = param_repeticoes.children[0]
+    def param_repetitions(self,param_repetitions):
+        '''param_repetitions : "repetições" "=" number'''
+        child = param_repetitions.children[0]
         value = self.visit(child)
         return ('repetitions',value)
 
-    def param_resposta(self,param_resposta):
-        '''param_resposta : "resposta" "=" texto'''
-        child = param_resposta.children[0]
+    def param_answer(self,param_answer):
+        '''param_answer : "answer" "=" text'''
+        child = param_answer.children[0]
         value = self.visit(child)
         return ('answer',value)
 
-    def param_tamanho(self,param_tamanho):
-        '''param_tamanho : "tamanho" "=" tamanho'''
-        child = param_tamanho.children[0]
+    def param_size(self,param_size):
+        '''param_size : "size" "=" size'''
+        child = param_size.children[0]
         value = self.visit(child)
         return ('size',value)
 
     def param_time_sprite(self,param_time_sprite):
-        '''param_time_sprite : "time_sprite" "=" numero'''
+        '''param_time_sprite : "time_sprite" "=" number'''
         child = param_time_sprite.children[0]
         value = self.visit(child)
         return ('time_sprite',value)
 
-    def param_titulo(self,param_titulo):
-        '''param_titulo : "título" "=" texto'''
-        child = param_titulo.children[0]
+    def param_title(self,param_title):
+        '''param_title : "title" "=" text'''
+        child = param_title.children[0]
         value = self.visit(child)
         return ('title',value)
 
-    def param_transicoes(self,param_transicoes):
-        '''param_transicoes : "transições" "=" (transicoes|"[""]")'''
-        children = param_transicoes.children
+    def param_transitions(self,param_transitions):
+        '''param_transitions : "transições" "=" (transitions|"[""]")'''
+        children = param_transitions.children
         if len(children) > 0:
             value = self.visit(children[0])
         else:
             value = []
         return ('transitions',value)
 
-    def precondicoes(self,precondicoes):
-        '''precondicoes : precondicao|preconds_e|preconds_ou|preconds_nao|preconds_grupo'''
-        child = precondicoes.children[0]
-        if child.data == 'precondicao':
+    def preconditions(self,preconditions):
+        '''preconditions : precondition|preconds_and|preconds_ou|preconds_not|preconds_group'''
+        child = preconditions.children[0]
+        if child.data == 'precondition':
             return {
                 "var" : self.visit(child)
             }
         else:
             return self.visit(child)
 
-    def preconds_e(self,preconds_e):
-        '''preconds_e : precondicoes "e" precondicoes'''
-        children = preconds_e.children
+    def preconds_and(self,preconds_and):
+        '''preconds_and : preconditions "and" preconditions'''
+        children = preconds_and.children
         left = self.visit(children[0])
         right = self.visit(children[1])
         result = {
@@ -1491,7 +1510,7 @@ class Interpreter(Interpreter):
         return result
 
     def preconds_ou(self,preconds_ou):
-        '''preconds_ou : precondicoes "ou" precondicoes'''
+        '''preconds_ou : preconditions "or" preconditions'''
         children = preconds_ou.children
         left = self.visit(children[0])
         right = self.visit(children[1])
@@ -1503,9 +1522,9 @@ class Interpreter(Interpreter):
         }
         return result
 
-    def preconds_nao(self,preconds_nao):
-        '''preconds_nao : "não" precondicoes'''
-        child = preconds_nao.children[0]
+    def preconds_not(self,preconds_not):
+        '''preconds_not : "not" preconditions'''
+        child = preconds_not.children[0]
         left = self.visit(child)
         right = None
         result = {
@@ -1516,85 +1535,85 @@ class Interpreter(Interpreter):
         }
         return result
 
-    def preconds_grupo(self,preconds_grupo):
-        '''preconds_grupo : "(" precondicoes ")"'''
-        child = preconds_grupo.children[0]
+    def preconds_group(self,preconds_group):
+        '''preconds_group : "(" preconditions ")"'''
+        child = preconds_group.children[0]
         return self.visit(child)
 
-    def precondicao(self,precondicao):
-        '''precondicao : precond_clique_obj | precond_clique_nao_obj | precond_obj_esta_est | precond_ev_ja_aconteceu | precond_obj_uso | precond_depois_tempo'''
-        child = precondicao.children[0]
+    def precondition(self,precondition):
+        '''precondition : precond_click_obj | precond_click_not_obj | precond_obj_is_view | precond_ev_already_hap | precond_obj_in_use | precond_already_passed'''
+        child = precondition.children[0]
         return self.visit(child)
 
-    def precond_clique_obj(self,precond_clique_obj):
-        '''precond_clique_obj : "clique" objeto_id'''
-        children = precond_clique_obj.children
+    def precond_click_obj(self,precond_click_obj):
+        '''precond_click_obj : "click" object_id'''
+        children = precond_click_obj.children
         
         return {
             'type' : 'CLICKED_OBJECT',
             'object' : self.visit(children[0]),
             }
 
-    def precond_clique_nao_obj(self,precond_clique_nao_obj):
-        '''precond_clique_nao_obj : "clique não" objeto_id'''
-        children = precond_clique_nao_obj.children
+    def precond_click_not_obj(self,precond_click_not_obj):
+        '''precond_click_not_obj : "click not" object_id'''
+        children = precond_click_not_obj.children
         return {
             'type' : 'CLICKED_NOT_OBJECT',
             'object' : self.visit(children[0]),
             }
 
-    def precond_obj_esta_est(self,precond_obj_esta_est):
-        '''precond_obj_esta_est : objeto_id "está" estado_id'''
-        children = precond_obj_esta_est.children
+    def precond_obj_is_view(self,precond_obj_is_view):
+        '''precond_obj_is_view : object_id "is" view_id'''
+        children = precond_obj_is_view.children
 
         object_id = self.visit(children[0])
-        state_id = self.visit(children[1])
+        view_id = self.visit(children[1])
 
-        #TODO: verificar se state faz parte do obj (SO FALTA TESTAR)
+        #TODO: verificar se view faz parte do obj (SO FALTA TESTAR)
 
         found = False
-        for state in self.dict_vars[object_id]['value']['states']:
-            if state['id'] == state_id:
+        for view in self.dict_vars[object_id]['value']['views']:
+            if view['id'] == view_id:
                 found = True
                 break
         
         if not found:
-            print(f'ERROR: Na pré condição "{object_id} está {state_id}", o {state_id} não é um \'Estado\' do \'Objeto\' {object_id}.',file=sys.stderr)
+            print(f'ERROR: Na pré condição "{object_id} is {view_id}", o {view_id} not é um \'View\' do \'Object\' {object_id}.',file=sys.stderr)
             exit(-1)
         
         return {
-            'type' : 'WHEN_OBJECT_IS_STATE',
+            'type' : 'WHEN_OBJECT_IS_VIEW',
             'object' : object_id,
-            'state' : state_id
+            'view' : view_id
         }
 
-    def precond_ev_ja_aconteceu(self,precond_ev_ja_aconteceu):
-        '''precond_ev_ja_aconteceu : evento_id "já aconteceu""'''
-        children = precond_ev_ja_aconteceu.children
+    def precond_ev_already_hap(self,precond_ev_already_hap):
+        '''precond_ev_already_hap : event_id "already happened""'''
+        children = precond_ev_already_hap.children
 
         return {
             'type' : 'AFTER_EVENT',
             'event' : self.visit(children[0])
             }
 
-    def precond_obj_uso(self,precond_obj_uso):
-        '''precond_obj_uso : objeto_id "está em uso"'''
-        children = precond_obj_uso.children
+    def precond_obj_in_use(self,precond_obj_in_use):
+        '''precond_obj_in_use : object_id "is in use"'''
+        children = precond_obj_in_use.children
         return {
                 'type' : 'ITEM_IS_IN_USE',
                 'item' : self.visit(children[0])
             }
-    def precond_depois_tempo(self, precond_depois_tempo):
-        '''precond_depois_tempo : "já tiver passado" numero "segundos"'''
-        children = precond_depois_tempo.children
+    def precond_already_passed(self, precond_already_passed):
+        '''precond_already_passed : "já tiver passado" number "seconds"'''
+        children = precond_already_passed.children
         return {
             'type' : 'AFTER_TIME',
-            'time' : self.visit(children[0]) * 1000 #segundos -> milisegundos
+            'time' : self.visit(children[0]) * 1000 #seconds -> miliseconds
         }
 
-    def poscondicoes(self,poscondicoes):
-        '''poscondicoes : poscondicao ("e" poscondicao)*'''
-        children = poscondicoes.children
+    def posconditions(self,posconditions):
+        '''posconditions : poscondition ("and" poscondition)*'''
+        children = posconditions.children
         posconds = []
         for child in children:
             posconds.append(self.visit(child))
@@ -1602,38 +1621,38 @@ class Interpreter(Interpreter):
         return posconds
 
 
-    def poscondicao(self,poscondicao):
-        '''poscondicao : poscond_obj_muda_est|poscond_obj_vai_inv|poscond_fim_de_jogo|poscond_mostra_msg|poscond_obj_muda_tam|poscond_obj_muda_pos|poscond_muda_cena|poscond_remove_obj|poscond_toca_som|poscond_comeca_des|poscond_trans'''
-        children = poscondicao.children
+    def poscondition(self,poscondition):
+        '''poscondition : poscond_obj_muda_view|poscond_obj_vai_inv|poscond_fim_de_jogo|poscond_mostra_msg|poscond_obj_muda_tam|poscond_obj_muda_pos|poscond_muda_cena|poscond_remove_obj|poscond_play_sound|poscond_comeca_des|poscond_trans'''
+        children = poscondition.children
         return self.visit(children[0])
 
-    def poscond_obj_muda_est(self,poscond_obj_muda_est):
-        '''poscond_obj_muda_est : objeto_id "muda para" estado_id'''
-        children = poscond_obj_muda_est.children
+    def poscond_obj_muda_view(self,poscond_obj_muda_view):
+        '''poscond_obj_muda_view : object_id "change to" view_id'''
+        children = poscond_obj_muda_view.children
 
         object_id = self.visit(children[0])
-        state_id = self.visit(children[1])
+        view_id = self.visit(children[1])
         
-        #TODO: verificar se estado_id está em objeto (SO FALTA TESTAR)
-        found = False if state_id != "none" else True #TODO: ver melhor isto do none
+        #TODO: verificar se view_id is em object (SO FALTA TESTAR)
+        found = False if view_id != "none" else True #TODO: ver melhor isto do none
         if not found:
-            for state in self.dict_vars[object_id]['value']['states']:
-                if state['id'] == state_id:
+            for view in self.dict_vars[object_id]['value']['views']:
+                if view['id'] == view_id:
                     found = True
                     break
         
         if not found:
-            print(f'ERROR: Na pós condição "{object_id} muda para {state_id}", o {state_id} não é um \'Estado\' do \'Objeto\' {object_id}.',file=sys.stderr)
+            print(f'ERROR: Na pós condição "{object_id} change to {view_id}", o {view_id} not é um \'View\' do \'Object\' {object_id}.',file=sys.stderr)
             exit(-1)
 
         return {
-            'type' : 'OBJ_CHANGE_STATE',
+            'type' : 'OBJ_CHANGE_VIEW',
             'object' : object_id,
-            'state' : state_id
+            'view' : view_id
             }
 
     def poscond_obj_vai_inv(self,poscond_obj_vai_inv):
-        '''poscond_obj_vai_inv : objeto_id "vai para o inventário"'''
+        '''poscond_obj_vai_inv : object_id "goes to inventory"'''
         children = poscond_obj_vai_inv.children
         return {
             'type' : 'OBJ_PUT_INVENTORY',
@@ -1641,13 +1660,13 @@ class Interpreter(Interpreter):
             }
 
     def poscond_fim_de_jogo(self,poscond_fim_de_jogo):
-        '''poscond_fim_de_jogo : "fim de jogo"'''
+        '''poscond_fim_de_jogo : "end of game"'''
         return {
             'type' : 'END_GAME',
             }
 
     def poscond_mostra_msg(self,poscond_mostra_msg):
-        '''poscond_mostra_msg : "mostra mensagem" text "em" posicao'''
+        '''poscond_mostra_msg : "show message" text "in" position'''
         children = poscond_mostra_msg.children
         return {
             'type' : 'SHOW_MESSAGE',
@@ -1656,7 +1675,7 @@ class Interpreter(Interpreter):
             }
 
     def poscond_obj_muda_tam(self,poscond_obj_muda_tam):
-        '''poscond_obj_muda_tam : objeto_id "muda tamanho para" tamanho'''
+        '''poscond_obj_muda_tam : object_id "change size to" size'''
         children = poscond_obj_muda_tam.children
         return {
                 'type' : 'OBJ_CHANGE_SIZE',
@@ -1665,7 +1684,7 @@ class Interpreter(Interpreter):
             }
 
     def poscond_obj_muda_pos(self,poscond_obj_muda_pos):
-        '''poscond_obj_muda_pos : objeto_id "muda posição para" posicao'''
+        '''poscond_obj_muda_pos : object_id "move to" position'''
         children = poscond_obj_muda_pos.children
         return {
                 'type' : 'OBJ_CHANGE_POSITION',
@@ -1674,7 +1693,7 @@ class Interpreter(Interpreter):
             }
 
     def poscond_muda_cena(self,poscond_muda_cena):
-        '''poscond_muda_cena : "muda para cena" cenario_id'''
+        '''poscond_muda_cena : "change to cena" cenario_id'''
         children = poscond_muda_cena.children
         return {
                 'type' : 'CHANGE_SCENARIO',
@@ -1682,16 +1701,16 @@ class Interpreter(Interpreter):
             }
 
     def poscond_remove_obj(self,poscond_remove_obj):
-        '''poscond_remove_obj : objeto_id "é removid" ("o"|"a")'''
+        '''poscond_remove_obj : object_id "is removed"'''
         children = poscond_remove_obj.children
         return {
                 'type' : 'DELETE_ITEM',
                 'item' : self.visit(children[0])
             }
 
-    def poscond_toca_som(self,poscond_toca_som):
-        '''poscond_toca_som : "toca" som_id "do" ID'''
-        children = poscond_toca_som.children
+    def poscond_play_sound(self,poscond_play_sound):
+        '''poscond_play_sound : "play" sound_id "do" ID'''
+        children = poscond_play_sound.children
 
 
         sound_id = self.visit(children[0])
@@ -1699,7 +1718,7 @@ class Interpreter(Interpreter):
 
         if source_id in self.dict_vars:
             source_type = self.dict_vars[source_id]['type']
-            if source_type == 'Objeto' or source_type == 'Cenário':
+            if source_type == 'Object' or source_type == 'Scenario':
                 found = False
                 if 'sounds' in self.dict_vars[source_id]['value']:
                     for sound in self.dict_vars[source_id]['value']['sounds']:
@@ -1708,20 +1727,15 @@ class Interpreter(Interpreter):
                             break
                 
                 if not found:
-                    print(f'ERROR: Na pós condição "toca {sound_id} do {source_id}", o {sound_id} não é um \'Som\' do \'{source_type}\' {source_id}.',file=sys.stderr)
+                    print(f'ERROR: Na pós condição "play {sound_id} do {source_id}", o {sound_id} not é um \'Sound\' do \'{source_type}\' {source_id}.',file=sys.stderr)
                     exit(-1)
                 
             else:
-                print(f"ERROR: Esperado uma variável do tipo Objeto ou Cenário, mas a variável {source_id} é do tipo {source_type}.",file=sys.stderr)
+                print(f"ERROR: Esperado uma variável do tipo Object ou Scenario, mas a variável {source_id} é do tipo {source_type}.",file=sys.stderr)
                 exit(-1)
         else:
-            print(f"ERROR: Variável {source_id} não foi inicializada anteriormente.",file=sys.stderr)
+            print(f"ERROR: Variável {source_id} not foi inicializada anteriormente.",file=sys.stderr)
             exit(-1)
-
-        if source_type == 'Objeto':
-            source_type = 'Object'
-        elif source_type == 'Cenário':
-            source_type = 'Scenario'
 
         return {
                 'type' : 'PLAY_SOUND',
@@ -1731,12 +1745,12 @@ class Interpreter(Interpreter):
             }
 
     def poscond_comeca_des(self,poscond_comeca_des):
-        '''poscond_comeca_des : "começa desafio" desafio_arg'''
+        '''poscond_comeca_des : "start challenge" challenge_arg'''
         children = poscond_comeca_des.children
         return self.visit(children[0])
 
     def poscond_trans(self,poscond_trans):
-        '''poscond_trans : "transição" transicao_arg'''
+        '''poscond_trans : "transition" transition_id'''
         children = poscond_trans.children
         return {
             'type' : 'TRANSITION',

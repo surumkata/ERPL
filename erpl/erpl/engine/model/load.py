@@ -21,9 +21,9 @@ def load_precondition(precondition):
     elif type == "CLICKED_NOT_OBJECT":
         object_id = precondition['object']
         event_precondition = EventPreConditionClickedNotObject(object_id)
-    elif type == "WHEN_OBJECT_IS_STATE":
+    elif type == "WHEN_OBJECT_IS_VIEW":
         object_id = precondition['object']
-        state_id = precondition['state']
+        state_id = precondition['view']
         event_precondition = EventPreConditionWhenObjectIsState(object_id,state_id)
     elif type == "AFTER_EVENT":
         after_event_id = precondition['event']
@@ -61,9 +61,9 @@ def load_posconditions(data_posconditions):
         type = data_action['type']
         if type == "END_GAME":
             event_poscondition = EventPosConditionEndGame()
-        elif type == "OBJ_CHANGE_STATE":
+        elif type == "OBJ_CHANGE_VIEW":
             object_id = data_action['object']
-            state_id = data_action['state']
+            state_id = data_action['view']
             event_poscondition = EventPosConditionObjChangeState(object_id,state_id)
         elif type == 'OBJ_CHANGE_POSITION':
             object_id = data_action['object']
@@ -98,12 +98,12 @@ def load_posconditions(data_posconditions):
             source_id = data_action['source_id']
             source_type = data_action['source_type']
             event_poscondition = EventPosConditionPlaySound(sound_id,source_id,source_type)
-        elif type == 'MOVE_OBJECT':
-            object_id = data_action['object']
-            object_trigger = data_action['object_trigger']
+        elif type == 'MOTION_OBJECT':
+            object_id = data_action['motion_object']
+            trigger_object = data_action['trigger_object']
             sucess = data_action['sucess']
             fail = data_action['fail']
-            event_poscondition = EventPosConditionMoveObject(object_id,object_trigger,sucess,fail)
+            event_poscondition = EventPosConditionMoveObject(object_id,trigger_object,sucess,fail)
         elif type == 'MULTIPLE_CHOICE':
             question = data_action['question']
             answer = data_action['answer']
@@ -119,10 +119,10 @@ def load_posconditions(data_posconditions):
             event_poscondition = EventPosConditionConnections(connections,question,sucess,fail)
         elif type == 'SEQUENCE':
             question = data_action['question']
-            order = data_action['order']
+            sequence = data_action['sequence']
             sucess = data_action['sucess']
             fail = data_action['fail']
-            event_poscondition = EventPosConditionSequence(order,question,sucess,fail)        
+            event_poscondition = EventPosConditionSequence(sequence,question,sucess,fail)        
         elif type == 'PUZZLE':
             image = data_action['puzzle']
             sucess = data_action['sucess']
@@ -148,8 +148,8 @@ def load_transitions(data_transitions):
     transitions = []
     for data_transition in data_transitions:
         id = data_transition['id']
-        background = data_transition['background']
-        music = data_transition['music'] if 'music' in data_transition else None
+        background = data_transition['background']['image'] #TODO: isto nao ta bem nao amg, pensa melhor nisto dps
+        music = data_transition['music']['source'] if 'music' in data_transition else None
         story = data_transition['story'] if 'story' in data_transition else None
         next_scenario = data_transition['next_scenario'] if 'next_scenario' in data_transition else None
         next_transition = data_transition['next_transition'] if 'next_transition' in data_transition else None
@@ -270,7 +270,12 @@ def load(filename=None):
     data_events = escape_room_json['events'] if 'events' in escape_room_json else []
     data_transitions = escape_room_json['transitions'] if 'transitions' in escape_room_json else []
     
+    
     room,state = load_room(title,size,data_scenarios)
+
+
+    start_id = escape_room_json['start']['id']
+    start_type = escape_room_json['start']['source']
 
     events = load_events(data_events)
     for event in events:
@@ -278,5 +283,10 @@ def load(filename=None):
     transitions = load_transitions(data_transitions)
     for transition in transitions:
         room.add_transition(transition)
+
+    if start_type == 'Transition':
+        state.active_transition_mode(room.transitions[start_id])
+    else:
+        state.current_scenario = start_id
 
     return room,state

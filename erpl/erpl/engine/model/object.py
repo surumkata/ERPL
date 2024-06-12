@@ -24,18 +24,18 @@ class Object:
         else:
             self.current_state = None
 
-    #Função que verifica se foi clicado na área do objeto
+    #Função que verifica se foi clicado na área do object
     def have_clicked(self, x : int, y : int):
         #TODO: melhor hit_box
         return self.position.x + self.size.x * 0.1 <= x <= self.position.x + self.size.x * 0.9 and self.position.y + self.size.y * 0.1 <= y <= self.position.y  + self.size.y * 0.9
 
-    #Função que muda a posição do objeto
+    #Função que muda a position do object
     def change_position(self,position : Position):
         self.position = position
         for state in self.states.values():
             state.change_position(position)
 
-    #Função que muda o tamanho do objeto
+    #Função que muda o size do object
     def change_size(self,size : Size):
         self.size = size
         for state in self.states.values():

@@ -36,7 +36,7 @@ class ChallengeStateQuestion(ChallengeState):
     
     def draw(self,screen):
         background = pygame.Rect(WIDTH/4, HEIGHT/4, WIDTH/2, HEIGHT/2)
-        pygame.draw.rect(screen, Color.GREEN, background)  # Fundo colorido
+        pygame.draw.rect(screen, Color.GRAY, background)  # Fundo colorido
         pygame.draw.rect(screen, Color.BLACK, background, 2) #borda preta do input
         font = pygame.font.Font(None, 32) #font
         pygame.draw.rect(screen, Color.WHITE, self.input_box) #quadrado branco de input
@@ -115,13 +115,13 @@ class ChallengeMultipleChoice(ChallengeState):
         ]
 
 
-    #Função que verifica se foi clicado na área do objeto
+    #Função que verifica se foi clicado na área do object
     def have_clicked(self, x : int, y : int, rect):
         return rect.x <= x <= rect.x + rect.w and rect.y <= y <= rect.y  + rect.h
 
 
     def draw(self,screen):
-        pygame.draw.rect(screen, Color.GREEN, self.background)  # Fundo colorido
+        pygame.draw.rect(screen, Color.GRAY, self.background)  # Fundo colorido
         pygame.draw.rect(screen, Color.BLACK, self.background, 2) #borda preta do input
         font = pygame.font.Font(None, 32) #font
 
@@ -204,12 +204,12 @@ class ChallengeConnections(ChallengeState):
             pygame.Rect(WIDTH/8+20 + 3*WIDTH/8-20, HEIGHT/8+10 + 5*(3*HEIGHT/4)/6, 3*WIDTH/8-20, (3*HEIGHT/4)/6-20)
         ]
 
-    #Função que verifica se foi clicado na área do objeto
+    #Função que verifica se foi clicado na área do object
     def have_clicked(self, x : int, y : int, rect):
         return rect.x <= x <= rect.x + rect.w and rect.y <= y <= rect.y  + rect.h
 
     def draw(self,screen):
-        pygame.draw.rect(screen, Color.GREEN, self.background)  # Fundo colorido
+        pygame.draw.rect(screen, Color.GRAY, self.background)  # Fundo colorido
         pygame.draw.rect(screen, Color.BLACK, self.background, 2) #borda preta do input
         font = pygame.font.Font(None, 32) #font
 
@@ -257,13 +257,13 @@ class ChallengeConnections(ChallengeState):
         return None
 
 class ChallengeSequence(ChallengeState):
-    def __init__(self, question, order, sucess_challenge, fail_challenge):
+    def __init__(self, question, sequence, sucess_challenge, fail_challenge):
         super().__init__(sucess_challenge,fail_challenge)
         self.question = question
-        self.order = order
+        self.sequence = sequence
 
-        self.shuffle_order = list(order)
-        random.shuffle(self.shuffle_order)
+        self.shuffle_sequence = list(sequence)
+        random.shuffle(self.shuffle_sequence)
 
         self.choice = 0
 
@@ -278,12 +278,12 @@ class ChallengeSequence(ChallengeState):
             pygame.Rect(WIDTH/8+10, HEIGHT/8+10 + 5*(3*HEIGHT/4)/6, 3*WIDTH/4-20, (3*HEIGHT/4)/6-20)
         ]
 
-    #Função que verifica se foi clicado na área do objeto
+    #Função que verifica se foi clicado na área do object
     def have_clicked(self, x : int, y : int, rect):
         return rect.x <= x <= rect.x + rect.w and rect.y <= y <= rect.y  + rect.h
 
     def draw(self,screen):
-        pygame.draw.rect(screen, Color.GREEN, self.background)  # Fundo colorido
+        pygame.draw.rect(screen, Color.GRAY, self.background)  # Fundo colorido
         pygame.draw.rect(screen, Color.BLACK, self.background, 2) #borda preta do input
         font = pygame.font.Font(None, 32) #font
 
@@ -295,11 +295,11 @@ class ChallengeSequence(ChallengeState):
 
         for i in range(4):
             color = Color.WHITE
-            if self.shuffle_order[i] in self.dones:
+            if self.shuffle_sequence[i] in self.dones:
                 color = Color.BLUE
             pygame.draw.rect(screen, color, self.boxes[i])  # Fundo colorido
             pygame.draw.rect(screen, Color.BLACK, self.boxes[i], 2) #borda preta do input
-            choice_surface = font.render(self.shuffle_order[i], True, Color.BLACK)
+            choice_surface = font.render(self.shuffle_sequence[i], True, Color.BLACK)
             screen.blit(choice_surface, (self.boxes[i].x+10, self.boxes[i].y+10)) #print question
 
 
@@ -308,12 +308,12 @@ class ChallengeSequence(ChallengeState):
             #se carregou dentro ou fora da área de challenge
             if self.have_clicked(pygame_event.pos[0],pygame_event.pos[1],self.background):
                 for i in range(4):
-                    if self.shuffle_order[i] not in self.dones and self.have_clicked(pygame_event.pos[0],pygame_event.pos[1],self.boxes[i]):
-                        if self.order[self.choice] != self.shuffle_order[i]:
+                    if self.shuffle_sequence[i] not in self.dones and self.have_clicked(pygame_event.pos[0],pygame_event.pos[1],self.boxes[i]):
+                        if self.sequence[self.choice] != self.shuffle_sequence[i]:
                             return self.fail_challenge
                         else:
                             self.choice+=1
-                            self.dones.append(self.shuffle_order[i])
+                            self.dones.append(self.shuffle_sequence[i])
                             if self.choice == 4:
                                 return self.sucess_challenge
 
@@ -347,11 +347,11 @@ class ChallengeSlidePuzzle(ChallengeState):
             self.matrix.append(("P",peaces[i],positions[i]))
         self.matrix.append(("R",rect,positions[i+1]))
 
-    #Função que verifica se foi clicado na área do objeto
+    #Função que verifica se foi clicado na área do object
     def have_clicked_peace(self, x : int, y : int, position):
         return position.x <= x <= position.x + self.size_piece and position.y <= y <= position.y  + self.size_piece
 
-    #Função que verifica se foi clicado na área do objeto
+    #Função que verifica se foi clicado na área do object
     def have_clicked(self, x : int, y : int, rect):
         return rect.x <= x <= rect.x + rect.w and rect.y <= y <= rect.y  + rect.h
     
@@ -391,12 +391,12 @@ class ChallengeSlidePuzzle(ChallengeState):
         return True
 
     def recort_image(self, image_path):
-        # Abra a imagem
+        # Abra a image
         image = Image.open(image_path)
         peaces = []
         size = 300
         
-        # Redimensione a imagem para um quadrado
+        # Redimensione a image para um quadrado
         image = image.resize((size,size))
 
         # Calcule as dimensões de cada célula do grid
@@ -411,11 +411,11 @@ class ChallengeSlidePuzzle(ChallengeState):
                 right = left + cell_width
                 lower = upper + cell_height
 
-                # Recorte a imagem usando as coordenadas calculadas
+                # Recorte a image usando as coordenadas calculadas
                 cell_image = image.crop((left, upper, right, lower))
 
-                # Salve ou faça o que for necessário com a célula da imagem
-                # Aqui você pode adicionar ao seu array de imagens
+                # Salve ou faça o que for necessário com a célula da image
+                # Aqui você pode addr ao seu array de images
                 buffer = io.BytesIO()
                 cell_image.save(buffer, format='PNG')
                 buffer.seek(0)
@@ -426,7 +426,7 @@ class ChallengeSlidePuzzle(ChallengeState):
                 peaces.append((i,py_image))
                 if len(peaces) == self.grid_size[0]*self.grid_size[1]-1:
                     break
-                # Fechar o objeto io.BytesIO
+                # Fechar o object io.BytesIO
                 buffer.close()
                 i+=1
         # Garante que o embaralhamento seja possível de resolver
@@ -447,14 +447,14 @@ class ChallengeSlidePuzzle(ChallengeState):
                     inversions += 1
         board_size = self.grid_size[0] * self.grid_size[1]
         if board_size % 2 != 0 : #Se o boardsize é impar
-            # entao é solucionável se o número total de inversões for par
+            # then é solucionável se o número total de inversões for par
             return inversions % 2 == 0
         else: #se for par
-            #entao é solucionavel se o numero total de inversoes mais a linha em que se encontra o espaço vazio (que neste caso é sempre a ultima) for impar
+            #then é solucionavel se o number total de inversoes mais a linha em que se encontra o espaço vazio (que neste caso é sempre a ultima) for impar
             return (inversions + self.grid_size[1]-1) % 2 != 0
         
     def draw(self, screen):
-        pygame.draw.rect(screen, Color.GREEN, self.background)  # Fundo colorido
+        pygame.draw.rect(screen, Color.GRAY, self.background)  # Fundo colorido
         pygame.draw.rect(screen, Color.BLACK, self.background, 2) #borda preta do input
 
         for type,rect,position in self.matrix:
@@ -557,58 +557,58 @@ class ChallengePuzzle(ChallengeState):
         self.motion = False
         self.motion_peace = -1
         self.dones = []
-    #Função que verifica se foi clicado na área do objeto
+    #Função que verifica se foi clicado na área do object
     def have_clicked_peace(self, x : int, y : int, p : int):
         return self.peaces[p].position.x <= x <= self.peaces[p].position.x + self.sizes[p].x and self.peaces[p].position.y <= y <= self.peaces[p].position.y  + self.sizes[p].y
 
-    #Função que verifica se foi clicado na área do objeto
+    #Função que verifica se foi clicado na área do object
     def have_clicked(self, x : int, y : int, rect):
         return rect.x <= x <= rect.x + rect.w and rect.y <= y <= rect.y  + rect.h
         
     def recort_image(self, image):
-        # Abra as imagens
+        # Abra as images
         image = Image.open(image)
         self.peaces = []
         for i in range(0, 12):
             mask = Image.open(f'{current_folder}/../../assets/images/moldes/molde{i}.jpg').convert('L')
     	
-            # Redimensione a imagem para as dimensões do molde
+            # Redimensione a image para as dimensões do molde
             image_resized = image.resize(mask.size)
 
-            # Empilhe as imagens
+            # Empilhe as images
             image_with_transparency = np.dstack((np.array(image_resized), np.array(mask)))
 
-            # Converta para imagem do tipo PIL
+            # Converta para image do tipo PIL
             image_with_transparency_pil = Image.fromarray(image_with_transparency)
 
-            # Encontre os limites não transparentes
+            # Encontre os limites not transparentes
             bbox = image_with_transparency_pil.getbbox()
 
-            # Recorte a imagem usando os limites encontrados
+            # Recorte a image usando os limites encontrados
             image_cropped = image_with_transparency_pil.crop(bbox)
 
             buffer = io.BytesIO()
             image_cropped.save(buffer, format='PNG')
             buffer.seek(0)
 
-            imagem_pygame = StatePeace(i,buffer,self.sizes[i],self.random_positions[i])
+            image_pygame = StatePeace(i,buffer,self.sizes[i],self.random_positions[i])
 
-            self.peaces.append(imagem_pygame)
+            self.peaces.append(image_pygame)
             
-            # Fechar o objeto io.BytesIO
+            # Fechar o object io.BytesIO
             buffer.close()
 
     
-    #Função que verifica se foi clicado na área do objeto
+    #Função que verifica se foi clicado na área do object
     def have_clicked_peace(self, x : int, y : int, p : int):
         return self.peaces[p].position.x <= x <= self.peaces[p].position.x + self.sizes[p].x and self.peaces[p].position.y <= y <= self.peaces[p].position.y  + self.sizes[p].y
 
-    #Função que verifica se foi clicado na área do objeto
+    #Função que verifica se foi clicado na área do object
     def have_clicked(self, x : int, y : int, rect):
         return rect.x <= x <= rect.x + rect.w and rect.y <= y <= rect.y  + rect.h
 
     def draw(self,screen):
-        pygame.draw.rect(screen, Color.GREEN, self.background)  # Fundo colorido
+        pygame.draw.rect(screen, Color.GRAY, self.background)  # Fundo colorido
         pygame.draw.rect(screen, Color.BLACK, self.background, 2) #borda preta do input
 
 
@@ -668,14 +668,14 @@ class ChallengeSocketConnection(ChallengeState):
                 socket_created = True
             except OSError as e:
                 if e.errno == 98:  # Address already in use
-                    print("Porta já em uso. Tentando novamente em alguns segundos...")
-                    time.sleep(5)  # Espera 5 segundos antes de tentar novamente
+                    print("Porta já in use. Tentando novamente em alguns seconds...")
+                    time.sleep(5)  # Espera 5 seconds antes de tentar novamente
                     continue
                 else:
                     raise
 
         
-        # Define um tempo limite de 5 segundos para s.accept()
+        # Define um tempo limite de 5 seconds para s.accept()
         self.socket.settimeout(1)
     
         # Começa a escutar conexões
@@ -686,13 +686,13 @@ class ChallengeSocketConnection(ChallengeState):
 
         self.background = pygame.Rect(WIDTH/4, HEIGHT/4, WIDTH/2, HEIGHT/2)
     
-    #Função que verifica se foi clicado na área do objeto
+    #Função que verifica se foi clicado na área do object
     def have_clicked(self, x : int, y : int, rect):
         return rect.x <= x <= rect.x + rect.w and rect.y <= y <= rect.y  + rect.h
 
     
     def draw(self,screen):
-        pygame.draw.rect(screen, Color.GREEN, self.background)  # Fundo colorido
+        pygame.draw.rect(screen, Color.GRAY, self.background)  # Fundo colorido
         pygame.draw.rect(screen, Color.BLACK, self.background, 2) #borda preta do input
 
         font = pygame.font.Font(None, 32) #font
@@ -711,7 +711,7 @@ class ChallengeSocketConnection(ChallengeState):
     def listen(self):
         while self.listening:
             try:
-                #print("Tentanto conexao...")
+                #print("Tentanto connection...")
                 conn, addr = self.socket.accept()
                 with conn:
                     #print('Conectado por', addr)
