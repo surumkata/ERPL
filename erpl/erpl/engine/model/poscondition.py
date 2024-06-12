@@ -66,12 +66,11 @@ class EventPosConditionShowMessage(EventPosCondition):
 
 #QUESTION = 5
 class EventPosConditionQuestion(EventPosCondition):
-    def __init__(self, code, question, sucess_event, fail_event, position):
+    def __init__(self, code, question, sucess_event, fail_event):
         self.code = code
         self.question = question
         self.sucess_event = sucess_event
         self.fail_event = fail_event
-        self.position = position
 
     def do(self,room,inventory,state):
         challenge_ask_code = ChallengeQuestion(self.question,self.code, self.sucess_event, self.fail_event)

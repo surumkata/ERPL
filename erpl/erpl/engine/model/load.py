@@ -78,12 +78,11 @@ def load_posconditions(data_posconditions):
             pos_x,pos_y = data_action['position']
             event_poscondition = EventPosConditionShowMessage(message,Position(pos_x,pos_y))
         elif type == 'QUESTION':
-            code = data_action['code']
-            message = data_action['message']
+            question = data_action['question']
+            answer = data_action['answer']
             sucess = data_action['sucess']
             fail = data_action['fail']
-            (pos_x,pos_y) = data_action['position']
-            event_poscondition = EventPosConditionQuestion(code,message,sucess,fail,Position(pos_x,pos_y))
+            event_poscondition = EventPosConditionQuestion(answer,question,sucess,fail)
         elif type == "OBJ_PUT_INVENTORY":
             object_id = data_action['object']
             event_poscondition = EventPosConditionObjPutInventory(object_id)

@@ -5,7 +5,7 @@ from .view import View
 
 
 class Item:
-    def __init__(self, id : str, size : Size, state : View, slot : int):
+    def __init__(self, id : str, size : Size, view : View, slot : int):
         self.id = id
         self.size = Size(0,0)
         self.position = Position(0,0)
@@ -19,8 +19,8 @@ class Item:
         self.position.x = (80-self.size.x) + 10+(slot*90)
         self.position.y = (80-self.size.x) + 10
 
-        state.change_size(self.size)
-        self.state = state
+        view.change_size(self.size)
+        self.view = view
 
         self.in_use = False
     
@@ -29,7 +29,7 @@ class Item:
         return self.position.x <= x <= self.position.x + self.size.x and self.position.y <= y <= self.position.y + self.size.y
     
     def draw(self, screen):
-        screen.blit(self.state.images[0], (self.position.x,self.position.y))
+        screen.blit(self.view.images[0], (self.position.x,self.position.y))
         if self.in_use:
             pygame.draw.rect(screen, Color.RED, (self.position.x, self.position.y, 10, 10))
             
@@ -51,7 +51,7 @@ class Inventory:
         return self.items
 
     def add(self, object, slot):
-        self.slots[slot] = Item(object.id,object.size,object.states[object.current_state], slot)
+        self.slots[slot] = Item(object.id,object.size,object.views[object.current_view], slot)
         self.items += 1
     
     def remove(self,item_id):
