@@ -297,25 +297,16 @@
          "preconditions": {
             "operator": "AND",
             "left": {
-               "operator": "AND",
-               "left": {
-                  "var": {
-                     "type": "CLICKED_OBJECT",
-                     "object": "porta2"
-                  }
-               },
-               "right": {
-                  "var": {
-                     "type": "WHEN_OBJECT_IS_VIEW",
-                     "object": "porta2",
-                     "view": "porta_fechada"
-                  }
+               "var": {
+                  "type": "CLICKED_OBJECT",
+                  "object": "porta2"
                }
             },
             "right": {
                "var": {
-                  "type": "AFTER_TIME",
-                  "time": 5000
+                  "type": "WHEN_OBJECT_IS_VIEW",
+                  "object": "porta2",
+                  "view": "porta_fechada"
                }
             }
          },
@@ -455,13 +446,14 @@
          },
          "posconditions": [
             {
-               "image": "/mnt/c/Users/35191/Desktop/MyEscapeRoom/assets/images/puzzle.png",
+               "question": "Qual \u00e9 o c\u00f3digo do cofre?",
+               "answer": "932",
                "sucess": "abrir_cofre",
-               "type": "SLIDEPUZZLE",
-               "id": "slidepuzzle"
+               "fail": "mostrar_erro",
+               "type": "QUESTION",
+               "id": "codigo_cofre"
             }
          ],
-         "repetitions": 1,
          "id": "tentar_abrir_cofre"
       },
       {
