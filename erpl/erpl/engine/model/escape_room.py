@@ -48,13 +48,13 @@ class EscapeRoom:
             if current_scenario == object.reference:
                 object.draw(screen)
 
-    ##Função que muda o state atual de um object
-    #def change_object_state(self, scenario_id : str, object_id : str ,state_id : str):
-    #    self.scenarios[scenario_id].change_object_state(object_id,state_id)
+    ##Função que muda o view atual de um object
+    #def change_object_view(self, scenario_id : str, object_id : str ,view_id : str):
+    #    self.scenarios[scenario_id].change_object_view(object_id,view_id)
 
-    def change_object_current_state(self, object_id : str, state_id):
+    def change_object_current_view(self, object_id : str, view_id):
         if object_id in self.objects:
-            self.objects[object_id].change_current_state(state_id)
+            self.objects[object_id].change_current_view(view_id)
 
     def change_object_position(self, object_id : str, position : Position):
         if object_id in self.objects:
@@ -80,9 +80,6 @@ class EscapeRoom:
         if event_id in self.events:
             return self.events[event_id].happen
             
-    #Função que devolve o state atual de um object
-    def check_state_of_object(self, object_id : str, state_id : str):
-        return self.objects[object_id].current_state == state_id if object_id in self.objects else False
-    
-    #def check_time (self, time):
-    #    return time >= self.state.time
+    #Função que devolve o view atual de um object
+    def check_view_of_object(self, object_id : str, view_id : str):
+        return self.objects[object_id].current_view == view_id if object_id in self.objects else False

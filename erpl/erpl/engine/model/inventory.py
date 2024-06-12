@@ -1,11 +1,11 @@
 import pygame
 
 from .utils import Position, Size, Color
-from .state import State
+from .view import View
 
 
 class Item:
-    def __init__(self, id : str, size : Size, state : State, slot : int):
+    def __init__(self, id : str, size : Size, state : View, slot : int):
         self.id = id
         self.size = Size(0,0)
         self.position = Position(0,0)

@@ -3,7 +3,7 @@ from .utils import debug, BalloonMessage, Position
 from .precondition import EventPreConditionClickedItem, EventPreConditionItemIsInUse, EventPreConditionItemNotInUse
 from .precondition_tree import PreConditionTree, PreConditionOperatorAnd, PreConditionVar
 import sys
-from .challenge import ChallengeSocketConnection, ChallengeSlidePuzzle, ChallengePuzzle, ChallengeSequence, ChallengeConnections, ChallengeStateQuestion, ChallengeMotion, ChallengeMultipleChoice
+from .challenge import ChallengeSocketConnection, ChallengeSlidePuzzle, ChallengePuzzle, ChallengeSequence, ChallengeConnections, ChallengeQuestion, ChallengeMotion, ChallengeMultipleChoice
 
 class EventPosCondition(ABC):
     def __init__(self,type):
@@ -24,13 +24,13 @@ class EventPosConditionEndGame(EventPosCondition):
 
 #OBJ_CHANGE_STATE = 1
 class EventPosConditionObjChangeState(EventPosCondition):
-    def __init__(self, object_id, state_id):
+    def __init__(self, object_id, view_id):
         self.object_id = object_id
-        self.state_id = state_id
+        self.view_id = view_id
 
     def do(self,room,inventory,state):
-        state.buffer_obj_states[self.object_id] = self.state_id #colocar no buffer o view do object para ser posteriormente alterado
-        debug("EVENT_CHANGE_STATE: Mudando o view do object "+self.object_id+" para "+self.state_id+".")
+        state.buffer_obj_views[self.object_id] = self.view_id #colocar no buffer o view do object para ser posteriormente alterado
+        debug("EVENT_CHANGE_STATE: Mudando o view do object "+self.object_id+" para "+self.view_id+".")
 
 #OBJ_CHANGE_POSITION = 2
 class EventPosConditionObjChangePosition(EventPosCondition):
@@ -74,7 +74,7 @@ class EventPosConditionQuestion(EventPosCondition):
         self.position = position
 
     def do(self,room,inventory,state):
-        challenge_ask_code = ChallengeStateQuestion(self.question,self.code, self.sucess_event, self.fail_event)
+        challenge_ask_code = ChallengeQuestion(self.question,self.code, self.sucess_event, self.fail_event)
         state.active_challenge_mode(challenge_ask_code)
         debug("EVENT_ASKCODE: Pedindo código "+self.code+".")
 

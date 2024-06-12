@@ -46,15 +46,15 @@ class EventPreConditionClickedNotObject(EventPreCondition):
         return tested
     
 #WHEN_OBJECT_IS_STATE
-class EventPreConditionWhenObjectIsState(EventPreCondition):
-    def __init__(self, object_id, state_id):
+class EventPreConditionWhenObjectIsView(EventPreCondition):
+    def __init__(self, object_id, view_id):
         self.object_id = object_id
-        self.state_id = state_id
+        self.view_id = view_id
 
     def test(self,room,inventory,state):
         object_id = self.object_id
-        state_id = self.state_id
-        tested = room.check_state_of_object(object_id,state_id)
+        view_id = self.view_id
+        tested = room.check_view_of_object(object_id,view_id)
         return tested
 
 #AFTER_EVENT

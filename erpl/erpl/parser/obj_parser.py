@@ -7,7 +7,7 @@ cf = os.path.dirname(__file__)
 
 class ObjInterpreter(Interpreter):
     def __init__(self,id, current_folder):
-        self.object = {'states' : []}
+        self.object = {'views' : []}
         self.id = id
         self.current_folder = current_folder
 
@@ -23,9 +23,9 @@ class ObjInterpreter(Interpreter):
 
         if len(elems) > i and elems[i].data == 'view_inicial':
             id = self.visit(elems[i])
-            for state in self.object['states']:
-                if state['id'] == id:
-                    self.object['initial_state'] = id
+            for view in self.object['views']:
+                if view['id'] == id:
+                    self.object['initial_view'] = id
             else:
                 pass
                 #TODO:print error
@@ -42,7 +42,7 @@ class ObjInterpreter(Interpreter):
         elems = views.children
         for elem in elems:
             result = self.visit(elem)
-            self.object['states'].append(result)
+            self.object['views'].append(result)
 
     def sounds(self,sounds):
         '''sounds : "Sons:" sound+'''

@@ -26,7 +26,7 @@ class GameState:
         self.buffer_click_events = []
         self.buffer_current_scenario = None
         self.buffer_messages = []
-        self.buffer_obj_states = {}
+        self.buffer_obj_views = {}
         self.buffer_events_happened = []
         
 
@@ -40,9 +40,9 @@ class GameState:
         room.update_events_buffer()
 
         #Atualiza os views dos objects
-        for obj,obj_state in self.buffer_obj_states.items():
-            room.change_object_current_state(obj,obj_state)
-        self.buffer_obj_states = {}
+        for obj,obj_view in self.buffer_obj_views.items():
+            room.change_object_current_view(obj,obj_view)
+        self.buffer_obj_views = {}
 
         #Atualiza a cena atual
         if self.buffer_current_scenario != None: 
@@ -54,7 +54,7 @@ class GameState:
     def reset_buffers(self):
         self.buffer_click_events = []
         self.buffer_current_scenario = None
-        self.buffer_obj_states = {}
+        self.buffer_obj_views = {}
         self.buffer_events_happened = []
 
     def draw_messages(self,screen):

@@ -2,11 +2,11 @@ import json
 from .escape_room import EscapeRoom
 from .scenario import Scenario
 from .object import Object
-from .state import State
+from .view import View
 from .utils import Position, Size
 from .precondition_tree import PreConditionOperatorAnd, PreConditionOperatorNot, PreConditionOperatorOr, PreConditionTree, PreConditionVar
 from .event import Event
-from .precondition import EventPreConditionAfterTime, EventPreConditionAfterEvent, EventPreConditionWhenObjectIsState, EventPreConditionItemIsInUse , EventPreConditionClickedObject, EventPreConditionClickedNotObject
+from .precondition import EventPreConditionAfterTime, EventPreConditionAfterEvent, EventPreConditionWhenObjectIsView, EventPreConditionItemIsInUse , EventPreConditionClickedObject, EventPreConditionClickedNotObject
 from .poscondition import EventPosConditionSocketConnection, EventPosConditionTransition, EventPosConditionSlidePuzzle, EventPosConditionPuzzle, EventPosConditionSequence, EventPosConditionConnections, EventPosConditionMultipleChoice,EventPosConditionMoveObject, EventPosConditionPlaySound, EventPosConditionChangeScenario, EventPosConditionObjChangePosition, EventPosConditionObjChangeSize, EventPosConditionObjChangeState, EventPosConditionEndGame,EventPosConditionDeleteItem, EventPosConditionObjPutInventory,EventPosConditionShowMessage,EventPosConditionQuestion
 from .sound import Sound
 from .game_state import GameState
@@ -23,8 +23,8 @@ def load_precondition(precondition):
         event_precondition = EventPreConditionClickedNotObject(object_id)
     elif type == "WHEN_OBJECT_IS_VIEW":
         object_id = precondition['object']
-        state_id = precondition['view']
-        event_precondition = EventPreConditionWhenObjectIsState(object_id,state_id)
+        view_id = precondition['view']
+        event_precondition = EventPreConditionWhenObjectIsView(object_id,view_id)
     elif type == "AFTER_EVENT":
         after_event_id = precondition['event']
         event_precondition = EventPreConditionAfterEvent(object_id,after_event_id)
@@ -63,8 +63,8 @@ def load_posconditions(data_posconditions):
             event_poscondition = EventPosConditionEndGame()
         elif type == "OBJ_CHANGE_VIEW":
             object_id = data_action['object']
-            state_id = data_action['view']
-            event_poscondition = EventPosConditionObjChangeState(object_id,state_id)
+            view_id = data_action['view']
+            event_poscondition = EventPosConditionObjChangeState(object_id,view_id)
         elif type == 'OBJ_CHANGE_POSITION':
             object_id = data_action['object']
             (pos_x,pos_y) = data_action['position']
@@ -182,16 +182,16 @@ def load_events(data_events):
 
     return events
 
-def load_state(data_state,size,position):
-    id = data_state['id']
-    size = Size(data_state['size'][0],data_state['size'][1]) if 'size' in data_state else size
-    position = Position(data_state['position'][0],data_state['position'][1]) if 'position' in data_state else position
-    repetitions = data_state['repetitions'] if 'repetitions' in data_state else 0
-    time_sprite = data_state['time_sprite'] if 'time_sprite' in data_state else 0
+def load_view(data_view,size,position):
+    id = data_view['id']
+    size = Size(data_view['size'][0],data_view['size'][1]) if 'size' in data_view else size
+    position = Position(data_view['position'][0],data_view['position'][1]) if 'position' in data_view else position
+    repetitions = data_view['repetitions'] if 'repetitions' in data_view else 0
+    time_sprite = data_view['time_sprite'] if 'time_sprite' in data_view else 0
 
-    scr_images = data_state['images'] if 'images' in data_state else [data_state['image']]
+    scr_images = data_view['images'] if 'images' in data_view else [data_view['image']]
 
-    return State(id=id,src_images=scr_images,size=size,position=position,time_sprite=time_sprite,repeate=repetitions)
+    return View(id=id,src_images=scr_images,size=size,position=position,time_sprite=time_sprite,repeate=repetitions)
 
 
 def load_object(data_object,scenario_id):
@@ -201,15 +201,15 @@ def load_object(data_object,scenario_id):
 
     object = Object(id=id,scenario_id=scenario_id,position=position,size=size)
     
-    initial_state = data_object['initial_state'] if 'initial_state' in data_object else None
+    initial_view = data_object['initial_view'] if 'initial_view' in data_object else None
 
-    data_states = data_object['states']
-    for data_state in data_states:
-        state = load_state(data_state,size,position)
-        if state.id == initial_state:
-            object.add_state(state=state,initial=True)
+    data_views = data_object['views']
+    for data_view in data_views:
+        view = load_view(data_view,size,position)
+        if view.id == initial_view:
+            object.add_view(view=view,initial=True)
         else:
-            object.add_state(state=state,initial=False)
+            object.add_view(view=view,initial=False)
     
     data_sounds = data_object['sounds'] if 'sounds' in data_object else []
     sounds = load_sounds(data_sounds)
@@ -221,15 +221,15 @@ def load_object(data_object,scenario_id):
 def load_scenario(data_scenario,size):
     id = data_scenario['id']
     scenario = Scenario(id=id)
-    data_states = data_scenario['states']
-    initial_state = data_scenario['initial_state'] if 'initial_state' in data_scenario else None
+    data_views = data_scenario['views']
+    initial_view = data_scenario['initial_view'] if 'initial_view' in data_scenario else None
 
-    for data_state in data_states:
-        state = load_state(data_state,size,Position(0,0))
-        if state.id == initial_state:
-            scenario.add_state(state=state,initial=True)
+    for data_view in data_views:
+        view = load_view(data_view,size,Position(0,0))
+        if view.id == initial_view:
+            scenario.add_view(view=view,initial=True)
         else:
-            scenario.add_state(state=state,initial=False)
+            scenario.add_view(view=view,initial=False)
 
     data_sounds = data_scenario['sounds'] if 'sounds' in data_scenario else []
     sounds = load_sounds(data_sounds)
@@ -271,7 +271,7 @@ def load(filename=None):
     data_transitions = escape_room_json['transitions'] if 'transitions' in escape_room_json else []
     
     
-    room,state = load_room(title,size,data_scenarios)
+    room,view = load_room(title,size,data_scenarios)
 
 
     start_id = escape_room_json['start']['id']
@@ -285,8 +285,8 @@ def load(filename=None):
         room.add_transition(transition)
 
     if start_type == 'Transition':
-        state.active_transition_mode(room.transitions[start_id])
+        view.active_transition_mode(room.transitions[start_id])
     else:
-        state.current_scenario = start_id
+        view.current_scenario = start_id
 
-    return room,state
+    return room,view

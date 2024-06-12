@@ -1301,8 +1301,8 @@ class Interpreter(Interpreter):
 
         if source_id in self.dict_vars:
             source_type = self.dict_vars[source_id]['type']
-            if not source_type == 'Transition' or source_type == 'Scenario':
-                print(f"ERROR: Esperado uma variável do tipo Object ou Scenario, mas a variável {source_id} é do tipo {source_type}.",file=sys.stderr)
+            if not (source_type == 'Transition' or source_type == 'Scenario'):
+                print(f"ERROR: Esperado uma variável do tipo Transition ou Scenario, mas a variável {source_id} é do tipo {source_type}.",file=sys.stderr)
                 exit(-1)
         else:
             print(f"ERROR: Variável {source_id} not foi inicializada anteriormente.",file=sys.stderr)

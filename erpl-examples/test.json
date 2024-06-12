@@ -609,5 +609,9 @@
          "id": "desaparecer_nota_lupa"
       }
    ],
-   "transitions": []
+   "transitions": [],
+   "start": {
+      "source": "Scenario",
+      "id": "cena"
+   }
 }

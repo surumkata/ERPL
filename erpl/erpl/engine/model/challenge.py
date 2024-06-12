@@ -1,7 +1,7 @@
 import pygame
 from .utils import WIDTH, HEIGHT, Color, Position, debug, Size
 import random
-from .state import State, StatePeace
+from .view import View, ViewPeace
 import numpy as np
 from PIL import Image
 import io
@@ -12,7 +12,7 @@ import time
 current_folder = os.path.dirname(__file__)
 
 
-class ChallengeState():
+class Challenge():
     def __init__(self, sucess_challenge, fail_challenge):
         self.sucess_challenge = sucess_challenge
         self.fail_challenge = fail_challenge
@@ -24,7 +24,7 @@ class ChallengeState():
         pass
 
 
-class ChallengeStateQuestion(ChallengeState):
+class ChallengeQuestion(Challenge):
     def __init__(self, question, code, sucess_challenge, fail_challenge):
         super().__init__(sucess_challenge,fail_challenge)
         self.question = question
@@ -68,7 +68,7 @@ class ChallengeStateQuestion(ChallengeState):
         return None
 
 
-class ChallengeMotion(ChallengeState):
+class ChallengeMotion(Challenge):
     def __init__(self, sucess_challenge, fail_challenge, object_motion, trigger_motion):
         super().__init__(sucess_challenge,fail_challenge)
         self.object_motion = object_motion
@@ -98,7 +98,7 @@ class ChallengeMotion(ChallengeState):
 
         return None
     
-class ChallengeMultipleChoice(ChallengeState):
+class ChallengeMultipleChoice(Challenge):
     def __init__(self, question, multiple_choices, answer, sucess_challenge, fail_challenge):
         super().__init__(sucess_challenge,fail_challenge)
         self.question = question
@@ -171,7 +171,7 @@ class ChallengeMultipleChoice(ChallengeState):
         return None
 
 
-class ChallengeConnections(ChallengeState):
+class ChallengeConnections(Challenge):
     def __init__(self, question, connections, sucess_challenge, fail_challenge):
         super().__init__(sucess_challenge,fail_challenge)
         self.question = question
@@ -256,7 +256,7 @@ class ChallengeConnections(ChallengeState):
                 return 0
         return None
 
-class ChallengeSequence(ChallengeState):
+class ChallengeSequence(Challenge):
     def __init__(self, question, sequence, sucess_challenge, fail_challenge):
         super().__init__(sucess_challenge,fail_challenge)
         self.question = question
@@ -322,7 +322,7 @@ class ChallengeSequence(ChallengeState):
         return None
     
 
-class ChallengeSlidePuzzle(ChallengeState):
+class ChallengeSlidePuzzle(Challenge):
     def __init__(self, image, sucess_challenge):
         super().__init__(sucess_challenge,None)
         self.background = pygame.Rect(WIDTH/8, HEIGHT/8, 3*WIDTH/4, 3*HEIGHT/4)
@@ -485,7 +485,7 @@ class ChallengeSlidePuzzle(ChallengeState):
                 return 0
         return None
 
-class ChallengePuzzle(ChallengeState):
+class ChallengePuzzle(Challenge):
     def __init__(self, image, sucess_challenge):
         super().__init__(sucess_challenge,None)
 
@@ -591,7 +591,7 @@ class ChallengePuzzle(ChallengeState):
             image_cropped.save(buffer, format='PNG')
             buffer.seek(0)
 
-            image_pygame = StatePeace(i,buffer,self.sizes[i],self.random_positions[i])
+            image_pygame = ViewPeace(i,buffer,self.sizes[i],self.random_positions[i])
 
             self.peaces.append(image_pygame)
             
@@ -652,7 +652,7 @@ class ChallengePuzzle(ChallengeState):
 
         return None
     
-class ChallengeSocketConnection(ChallengeState):
+class ChallengeSocketConnection(Challenge):
     def __init__(self, host, port, text,sucess_challenge, fail_challenge):
         super().__init__(sucess_challenge,fail_challenge)
         self.host = host
