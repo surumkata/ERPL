@@ -1,22 +1,19 @@
 #!/usr/bin/python3
 
+#Imports
 import os
 import threading
-
-# Configuração para ocultar a message de boas-vindas do Pygame
-os.environ["PYGAME_HIDE_SUPPORT_PROMPT"] = "1"
-
 import pygame
+import argparse
 from .model.load import load
-from .model.utils import WIDTH, HEIGHT, current_folder
+from .model.utils import WIDTH, HEIGHT
 from .model.inventory import Inventory
 from .model.escape_room import EscapeRoom
 from .model.game_state import GameState
-import argparse
 from .model.settings import Settings
 
-
-
+# Configuração para ocultar a message de boas-vindas do Pygame
+os.environ["PYGAME_HIDE_SUPPORT_PROMPT"] = "1"
 
 def game_parse_arguments():
     '''Define and parse arguments using argparse'''
@@ -25,11 +22,13 @@ def game_parse_arguments():
     return parser.parse_args()
 
 def do_event(event,room : EscapeRoom, inventory : Inventory,state : GameState):
+    '''Do the pos-conditions of an event'''
     for poscondition in event.pos_conditions:
         poscondition.do(room,inventory,state)
     state.buffer_events_happened.append(event.id)
 
 def try_do_events(room : EscapeRoom, inventory : Inventory,state : GameState):
+    '''Test whether an event is to be held'''
     for event in room.events.values():
         if event.pre_conditions.root == None: #not tem preconditions
             continue
@@ -39,6 +38,7 @@ def try_do_events(room : EscapeRoom, inventory : Inventory,state : GameState):
             do_event(event=event, room=room, inventory=inventory, state=state)
 
 def listening_challenge(room : EscapeRoom, inventory : Inventory,state : GameState):
+    '''Listen to the challenge'''
     event = state.challenge.listen()
     if event != None and event != 0:
         do_event(room.events[event],room,inventory,state)
@@ -48,6 +48,7 @@ def listening_challenge(room : EscapeRoom, inventory : Inventory,state : GameSta
 
 
 def play_game(screen,room, inventory, state):
+    '''Main function of the game'''
     running = True
     settings = Settings()
     created_thread = False

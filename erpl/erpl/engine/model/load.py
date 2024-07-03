@@ -143,6 +143,21 @@ def load_posconditions(data_posconditions):
         pos_conditions.append(event_poscondition)
     return pos_conditions
 
+
+def load_events(data_events):
+    events = []
+    for data_event in data_events:
+        id = data_event['id']
+        data_preconditions = data_event['preconditions'] if 'preconditions' in data_event else {}
+        data_posconditions = data_event['posconditions']
+        repetitions = data_event['repetitions'] if 'repetitions' in data_event else None
+        pre_conditions = PreConditionTree(load_preconditions(data_preconditions))
+        pos_conditions = load_posconditions(data_posconditions)
+
+        events.append(Event(id=id,pre_conditions=pre_conditions,pos_conditions=pos_conditions,repetitions=repetitions))
+
+    return events
+
 def load_transitions(data_transitions):
     transitions = []
     for data_transition in data_transitions:
@@ -165,21 +180,6 @@ def load_sounds(data_sounds):
         sound = Sound(id=id, src_sound=src_sound)
         sounds.append(sound)
     return sounds
-
-
-def load_events(data_events):
-    events = []
-    for data_event in data_events:
-        id = data_event['id']
-        data_preconditions = data_event['preconditions'] if 'preconditions' in data_event else {}
-        data_posconditions = data_event['posconditions']
-        repetitions = data_event['repetitions'] if 'repetitions' in data_event else None
-        pre_conditions = PreConditionTree(load_preconditions(data_preconditions))
-        pos_conditions = load_posconditions(data_posconditions)
-
-        events.append(Event(id=id,pre_conditions=pre_conditions,pos_conditions=pos_conditions,repetitions=repetitions))
-
-    return events
 
 def load_view(data_view,size,position):
     id = data_view['id']
@@ -270,7 +270,7 @@ def load(filename=None):
     data_transitions = escape_room_json['transitions'] if 'transitions' in escape_room_json else []
     
     
-    room,view = load_room(title,size,data_scenarios)
+    room,state = load_room(title,size,data_scenarios)
 
 
     start_id = escape_room_json['start']['id']
@@ -284,8 +284,8 @@ def load(filename=None):
         room.add_transition(transition)
 
     if start_type == 'Transition':
-        view.active_transition_mode(room.transitions[start_id])
+        state.active_transition_mode(room.transitions[start_id])
     else:
-        view.current_scenario = start_id
+        state.current_scenario = start_id
 
-    return room,view
+    return room,state

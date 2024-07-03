@@ -1,6 +1,6 @@
 EscapeRoom(
     title="Sala bué de fixe",
-    size=[1300,700],
+    size=[1280,720],
     scenarios=[cena,cena2],
     events=[abrir_porta,abrir_porta2,muda_cena,muda_cena2,fim,chave_inventario,tentar_abrir_cofre,abrir_cofre,mostrar_erro,message_trancada,motion_lupa,aumentar_nota,move_lupa,desaparecer_nota_lupa],
     transitions=[],
@@ -21,8 +21,8 @@ codigo      = Python.Local.codigo
 list       = Python.Local.door
 list2      = Python.Local.puzzle
 
-porta       = Object.porta(position=(600,342),size=size)
-porta2      = Object.porta(position=(0,342),size=size)
+porta       = Object.porta(position=(600,358),size=size)
+porta2      = Object.porta(position=(0,358),size=size)
 cofre       = Object.cofre(position=position, size=[172,num])
 
 normal      = View.Static(
@@ -43,7 +43,7 @@ chave.add_View(
 
 nota_normal = View.Static(
                 image=Python.Function.dotpng("nota"),
-                position=(400,600),
+                position=(400,400),
                 size=[30,30]
                 )
 
@@ -86,7 +86,7 @@ background = View.Static(image=room)
 cena        = Scenario(
                 initial_view=background,
                 views=[background],
-                objects=[porta,porta2,cofre,chave,nota, Object.nota_lupa(views=[], position=(300,500), size=[200,200]),lupa]
+                objects=[porta,porta2,cofre,chave,nota, Object.nota_lupa(views=[], position=(300,300), size=[200,200]),lupa]
                 )
 
 cena2        = Scenario(

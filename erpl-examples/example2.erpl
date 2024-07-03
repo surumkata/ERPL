@@ -1,0 +1,263 @@
+EscapeRoom(
+    title="Sala bué de fixe",
+    size=[1280,720],
+    scenarios=[cena,cena2],
+    events=[mover_tapete,abrir_porta,abrir_porta2,muda_cena,muda_cena2,fim,chave_inventario,tentar_abrir_cofre,abrir_cofre,mostrar_erro,message_trancada,motion_lupa,aumentar_nota,desaumentar_nota,desaparecer_nota_lupa],
+    transitions=[],
+    start=cena
+)
+
+import Object.porta
+import Object.cofre
+
+
+
+room        = Python.Function.dotpng("room")
+room2       = room
+size     = Python.Local.size
+position     = Python.Local.position
+num         = Python.Local.num
+codigo      = Python.Local.codigo
+list       = Python.Local.door
+list2      = Python.Local.puzzle
+
+porta       = Object.porta(position=(600,358),size=size)
+porta2      = Object.porta(position=(0,358),size=size)
+cofre       = Object.cofre(position=position, size=[172,num])
+
+normal      = View.Static(
+                image="../assets/images/key.png"
+                )
+ 
+chave       = Object(
+                views=[normal],
+                position=(1020,520),
+                size=[50,25]
+                )
+
+chave.add_View(
+                View.Static.ativa(
+                    image="../assets/images/active_key.png"
+                )
+                )
+
+nota_normal = View.Static(
+                image=Python.Function.dotpng("nota"),
+                position=(400,400),
+                size=[30,30]
+                )
+
+nota       = Object(
+                initial_view=nota_normal,
+                views=[nota_normal]
+                )
+
+abrir_porta_sound = Sound(
+                source=Python.Function.dotmp3("door-1-open")
+                )
+
+porta.add_Sound(abrir_porta_sound)
+porta2.add_Sound(abrir_porta_sound)
+
+
+visivel    = View.Static(
+                image=Python.Function.dotpng("nota_nova")
+)
+lupa_normal = View.Static(image=Python.Function.dotpng("lupa"))
+
+
+lupa = Object(
+            views=[lupa_normal],
+            position=(750,620),
+            size=[40,40]
+)
+
+rug = View.Static(image=Python.Function.dotpng("rug"))
+
+tapete = Object(
+            initial_view=rug,
+            views=[rug],
+            position=(690,608),
+            size=[130,80]
+        )
+
+aberta = View.Static(
+            image=Python.Function.dotpng("open_door")
+            )
+            
+porta3 = Object(initial_view=aberta,views=[aberta],position=(600,358),size=[225,300])
+
+background = View.Static(image=room)
+
+cena        = Scenario(
+                initial_view=background,
+                views=[background],
+                objects=[porta,porta2,cofre,chave,nota, Object.nota_lupa(views=[], position=(300,300), size=[200,200])]
+                )
+
+cena2        = Scenario(
+                initial_view=background,
+                views=[background],
+                objects=[porta3, lupa,tapete]
+                )
+
+nota_lupa.add_View(visivel)
+
+abrir_cofre = Event(
+    then=cofre change to cofre_aberto and chave change to normal
+)
+
+mostrar_erro = Event(
+    then=show message "Código errado!" in (1000, 485)
+)
+
+mover_tapete = Event(
+    if=click tapete,
+    then= tapete move to (600,608) and lupa change to lupa_normal,
+    repetitions=1
+)
+
+aumentar_nota = Event(
+    if= lupa is in use and click nota and not nota_lupa is visivel,
+    then=nota_lupa change to visivel
+)
+
+desaumentar_nota = Event(
+    if = nota_lupa is in use and nota_lupa is visivel,
+    then= nota_lupa change to none
+)
+
+codigo_cofre = Challenge.Question(
+                question="Qual é o código do cofre?",
+                answer=codigo,
+                sucess=abrir_cofre,
+                fail=mostrar_erro
+                )
+
+
+                
+multiple_choice = Challenge.Multiple_Choice(
+    question="Qual destes códigos, corresponde corretamente a is expressão regular:\n[0-9]{3}-\[0-9]-\[0-9]{3}",
+    choices=["147-852-963","45-987-855","458-98-874","210-233-90"],
+    answer="147-852-963",
+    sucess=abrir_cofre,
+    fail=mostrar_erro
+    )
+connection = Challenge.Connection(
+    question="Conecta corretamente",
+    list1=["book","pencil","cat","dog"],
+    list2=["livro","lápis","gato","cão"],
+    sucess=abrir_cofre,
+    fail=mostrar_erro
+)
+sequence = Challenge.Sequence(
+    question="Escolha por ordem crescente",
+    sequence=["320","600","1000","2500"],
+    sucess=abrir_cofre,
+    fail=mostrar_erro
+)
+puzzle = Challenge.Puzzle(
+    image=Python.Function.dotpng("puzzle"),
+    sucess=abrir_cofre
+)
+slidepuzzle = Challenge.SlidePuzzle(
+    image=Python.Function.dotpng("puzzle"),
+    sucess=abrir_cofre
+)
+socket = Challenge.Socket(
+    host="127.0.0.1",
+    port=65433,
+    message="à escuta...",
+    sucess=abrir_cofre,
+    fail=mostrar_erro
+)
+
+abrir_porta = Event(
+    if=click porta and porta is porta_fechada and chave is in use,
+    then=porta change to porta_aberta and chave is removed and play porta_abrir of porta,
+    repetitions=1
+)
+
+abrir_porta2 = Event(
+    if=click porta2 and porta2 is porta_fechada,
+    then=porta2 change to porta_aberta and play porta_abrir of porta2,
+    repetitions=1
+)
+
+
+muda_cena = Event(
+    if=click porta2 and porta2 is porta_aberta,
+    then=change to scenario cena2
+)
+
+muda_cena2 = Event(
+    if=click porta3 and porta3 is aberta,
+    then=change to scenario cena
+)
+
+fim = Event(
+    if=click porta and porta is porta_aberta,
+    then=end of game,
+    repetitions=1
+)
+
+chave_inventario = Event(
+    if=click chave and cofre is cofre_aberto,
+    then=chave goes to inventory,
+    repetitions=1
+)
+
+tentar_abrir_cofre = Event(
+    if=click cofre and cofre is cofre_fechado,
+    then=start challenge codigo_cofre
+)
+
+message_trancada = Event(
+    if=click porta and porta is porta_fechada and not chave is in use,
+    then=show message "porta trancada! procura uma chave!" in (600,385) and play porta_locked of porta
+)
+
+motion_lupa = Event(
+    if=click lupa,
+    then=lupa goes to inventory,
+    repetitions=1
+)
+
+
+desaparecer_nota_lupa = Event(
+    if=click not nota_lupa and nota_lupa is visivel,
+    then=nota_lupa change to none
+)
+
+__Python__
+import glob
+import os
+
+
+from erpl.engine.model.object import Object
+from erpl.engine.model.utils import *
+
+o = Object("ola","sceje",Position(10,10),Size(10,10))
+
+
+def dotpng(string):
+    current_folder = os.getcwd()
+    return current_folder+"/../assets/images/"+string+".png"
+
+def dotttf(string):
+    current_folder = os.getcwd()
+    return current_folder+"/../assets/fonts/"+string+".ttf"
+
+def dotmp3(string):
+    current_folder = os.getcwd()
+    return current_folder+"/../assets/sounds/"+string+".mp3"
+
+
+position = (1000,503)
+room = dotpng("room")
+num = 100
+size = [225,300]
+codigo = "932"
+current_folder = os.getcwd()
+door = glob.glob(f"{current_folder}/../assets/images/door/*.png")
+puzzle = glob.glob(f"{current_folder}/../assets/images/puzzle/*.png")

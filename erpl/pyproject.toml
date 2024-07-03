@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "erpl"
-version = "0.1.4"
+version = "0.1.5"
 description = "DSL for escape rooms"
 authors = ["surumkata <a93277@uminho.pt>"]
 readme = "README.md"

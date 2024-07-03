@@ -25,7 +25,7 @@ class EscapeRoom:
     def add_object(self, object : Object):
         self.objects[object.id] = object
 
-    #Função que add um event de cena
+    #Função que add um event
     def add_event(self, event : Event):
         self.events[event.id] = event
     
@@ -33,24 +33,9 @@ class EscapeRoom:
     def add_transition(self, transition : Transition):
         self.transitions[transition.id] = transition
     
-    #Função que add um event de cena
+    #Função que add um event ao buffer
     def add_event_buffer(self, id,pre_conditions,pos_conditions,repetitions):
         self.events_buffer[id] = Event(id,pre_conditions,pos_conditions,repetitions)
-    
-    #Função que desenha a cena atual
-    def draw(self, screen, current_scenario):
-        #Desenhar a cena
-        self.scenarios[current_scenario].draw(screen)
-
-        #Desenhar objects na cena
-        for object in self.objects.values():
-            #Se o object pertence à cena atual
-            if current_scenario == object.reference:
-                object.draw(screen)
-
-    ##Função que muda o view atual de um object
-    #def change_object_view(self, scenario_id : str, object_id : str ,view_id : str):
-    #    self.scenarios[scenario_id].change_object_view(object_id,view_id)
 
     def change_object_current_view(self, object_id : str, view_id):
         if object_id in self.objects:
@@ -83,3 +68,14 @@ class EscapeRoom:
     #Função que devolve o view atual de um object
     def check_view_of_object(self, object_id : str, view_id : str):
         return self.objects[object_id].current_view == view_id if object_id in self.objects else False
+
+    #Função que desenha a cena atual
+    def draw(self, screen, current_scenario):
+        #Desenhar a cena
+        self.scenarios[current_scenario].draw(screen)
+
+        #Desenhar objects na cena
+        for object in self.objects.values():
+            #Se o object pertence à cena atual
+            if current_scenario == object.reference:
+                object.draw(screen)

@@ -23,7 +23,7 @@ class EventPreConditionClickedObject(EventPreCondition):
         object = room.objects[object_id]
         if object.reference == state.current_scenario:
             for (px,py) in state.buffer_click_events:
-                tested = object.have_clicked(px,py)
+                tested = object.have_clicked(px,py) and object.current_view != None
                 if tested:
                     break
         return tested
