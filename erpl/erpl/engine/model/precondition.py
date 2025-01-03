@@ -18,7 +18,7 @@ class EventPreConditionClickedObject(EventPreCondition):
     def test(self,room,inventory,state):
         tested = False
         object_id = self.object_id
-        if not object_id in room.objects:
+        if not object_id in room.objects or len(state.buffer_click_events) == 0:
             return tested
         object = room.objects[object_id]
         if object.reference == state.current_scenario:
@@ -26,6 +26,23 @@ class EventPreConditionClickedObject(EventPreCondition):
                 tested = object.have_clicked(px,py) and object.current_view != None
                 if tested:
                     break
+        return tested
+    
+#CLICKED_HITBOX
+class EventPreConditionClickedHitbox(EventPreCondition):
+    def __init__(self, hitbox_id):
+        self.hitbox_id = hitbox_id
+
+    def test(self,room,inventory,state):
+        tested = False
+        hitbox_id = self.hitbox_id
+        if not hitbox_id in room.scenarios[state.current_scenario].hitboxes or len(state.buffer_click_events) == 0:
+            return tested
+
+        for (px,py) in state.buffer_click_events:
+            tested = room.scenarios[state.current_scenario].collide(px,py,hitbox_id)
+            if tested:
+                break
         return tested
     
 #CLICKED_NOT_OBJECT
@@ -43,6 +60,21 @@ class EventPreConditionClickedNotObject(EventPreCondition):
         if object.reference == state.current_scenario:
             for (px,py) in state.buffer_click_events:
                 tested = tested and not object.have_clicked(px,py)
+        return tested
+    
+#CLICKED_NOT_HITBOX
+class EventPreConditionClickedNotHitbox(EventPreCondition):
+    def __init__(self, hitbox_id):
+        self.hitbox_id = hitbox_id
+
+    def test(self,room,inventory,state):
+        tested = False
+        hitbox_id = self.hitbox_id
+        if not hitbox_id in room.scenarios[state.current_scenario].hitboxes or len(state.buffer_click_events) == 0:
+            return tested
+        tested = True
+        for (px,py) in state.buffer_click_events:
+            tested = tested and not room.scenarios[state.current_scenario].collide(px,py,hitbox_id)
         return tested
     
 #WHEN_OBJECT_IS_STATE
@@ -112,3 +144,63 @@ class EventPreConditionAfterTime(EventPreCondition):
     def test(self, room, inventory, state):
         pygame_time = pygame.time.get_ticks()
         return self.time <= pygame_time
+    
+#IS_EQUAL_TO
+
+class EventPreConditionIsEqualTo(EventPreCondition):
+    def __init__(self, variable, number):
+        self.variable = variable
+        self.number = number
+
+    def test(self, room, inventory, state):
+        if self.variable in room.variables:
+            return room.variables[self.variable] == self.number
+        else: return False
+
+#IS_GREATER_THAN
+
+class EventPreConditionIsGreaterThan(EventPreCondition):
+    def __init__(self, variable, number):
+        self.variable = variable
+        self.number = number
+
+    def test(self, room, inventory, state):
+        if self.variable in room.variables:
+            return room.variables[self.variable] > self.number
+        else: return False
+
+#IS_LESS_THAN
+
+class EventPreConditionIsLessThan(EventPreCondition):
+    def __init__(self, variable, number):
+        self.variable = variable
+        self.number = number
+
+    def test(self, room, inventory, state):
+        if self.variable in room.variables:
+            return room.variables[self.variable] < self.number
+        else: return False
+
+#IS_GREATER_THAN_OR_EQUAL_TO
+
+class EventPreConditionIsGreaterThanOrEqualTo(EventPreCondition):
+    def __init__(self, variable, number):
+        self.variable = variable
+        self.number = number
+
+    def test(self, room, inventory, state):
+        if self.variable in room.variables:
+            return room.variables[self.variable] >= self.number
+        else: return False
+
+#IS_LESS_THAN_OR_EQUAL_TO
+
+class EventPreConditionIsLessThanOrEqualTo(EventPreCondition):
+    def __init__(self, variable, number):
+        self.variable = variable
+        self.number = number
+
+    def test(self, room, inventory, state):
+        if self.variable in room.variables:
+            return room.variables[self.variable] <= self.number
+        else: return False

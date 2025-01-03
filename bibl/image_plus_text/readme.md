@@ -1,3 +1,0 @@
-# **Image Plus Text**
-
-TBD

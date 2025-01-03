@@ -17,20 +17,10 @@ ERPL (Escape Room Programming Language) is a programming language to facilitate 
 
 ## Engine
 
-        erengine <json file>   
+     erengine <json file>   
 
 ### Options
 
     -h, --help                                      show this help message and exit
     -i INPUT , --input  INPUT                       input file (json file)
-
-## Editor
-
-        erpe <.erpl file>
-
-### Options
-
-    -h, --help                                      show this help message and exit
-    -i INPUT , --input  INPUT                       input file (json file)
-    -args ARGS [ARGS ...], --args ARGS [ARGS ...]   arguments to be replaced in the erpl file
-
+    -e ENGINE, --engine ENGINE                      Escolha a engine do jogo: pygame ou p5

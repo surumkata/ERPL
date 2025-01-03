@@ -1,5 +1,5 @@
 import pygame
-from .utils import WIDTH,HEIGHT, Color, Size
+from .utils import WIDTH,HEIGHT, HEIGHT_INV, Color, Size
 from enum import Enum
 
 class State(Enum):
@@ -14,7 +14,6 @@ class GameState:
     def __init__(self,size: Size):
         #Proprities
         self.current_scenario = None
-        self.time = 0 #sec
         self.size = size
 
         #State
@@ -83,7 +82,8 @@ class GameState:
     def is_transition(self):
         return self.state == State.TRANSITION_MODE
 
-    def finish_game(self):
+    def finish_game(self,message):
+        self.end_message = message
         self.state = State.FINISH
     
     def active_challenge_mode(self,challenge):
@@ -112,8 +112,8 @@ class GameState:
             
     
     def draw_finish_screen(self,screen):
-        pygame.draw.rect(screen, Color.GRAY, (0, 0, WIDTH, HEIGHT))  # Fundo colorido/
+        pygame.draw.rect(screen, Color.GRAY, (0, 0, WIDTH, HEIGHT+HEIGHT_INV))  # Fundo colorido/
         font = pygame.font.Font(None, 36)
-        text = font.render("Congratulations! You Escaped.", True, Color.WHITE)
-        text_rect = text.get_rect(center=(WIDTH // 2, HEIGHT // 2))
+        text = font.render(self.end_message, True, Color.WHITE)
+        text_rect = text.get_rect(center=(WIDTH // 2, (HEIGHT+HEIGHT_INV) // 2))
         screen.blit(text, text_rect)

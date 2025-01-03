@@ -1,8 +1,0 @@
-Views:
-- View aberto:
-    - Imagem: "open_cofre.png"
-- View fechado:
-    - Imagem: "cofre.png"
-View inicial: fechado
-Posição: (0,0)
-Tamanho: [172,100]

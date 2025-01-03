@@ -1,0 +1,28 @@
+{
+    "views": [
+        {
+            "id": "safe_open",
+            "sources": [
+                [
+                    "PATH",
+                    "open_safe.png"
+                ]
+            ],
+            "type": "VIEW_IMAGE",
+            "hitbox_type": "DEFAULT"
+        },
+        {
+            "id": "safe_closed",
+            "sources": [
+                [
+                    "PATH",
+                    "closed_safe.png"
+                ]
+            ],
+            "type": "VIEW_IMAGE",
+            "hitbox_type": "DEFAULT"
+        }
+    ],
+    "initial_view": "safe_closed",
+    "position_reference": "floor"
+}

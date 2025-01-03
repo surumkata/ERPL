@@ -1,0 +1,74 @@
+# Construtor da Escape Room
+EscapeRoom(
+    title="Room",
+    scenarios=[room],
+    events=[open_drawer,endgame,move_painting,pick_key,try_open],
+    transitions=[],
+    start=room
+)
+
+
+room = Python.room
+open_drawer = Python.open_drawer
+endgame = Python.endgame
+move_painting = Python.move_painting
+pick_key = Python.pick_key
+try_open = Python.try_open
+
+
+__Python__
+
+from erpl.model.object import Object
+from erpl.model.view import Image
+from erpl.model.utils import Size,Position
+from erpl.model.scenario import Scenario
+
+from erpl.model.event import Event
+from erpl.model.trigger_tree import *
+from erpl.model.trigger import *
+from erpl.model.action import *
+
+door_closed = Image(id="door_closed",src_image="DOOR_CLOSED.png", size=Size(225,300), position=Position(480,360))
+door_opened = Image(id="door_opened",src_image="DOOR_OPEN.png", size=Size(225,300), position=Position(480,360))
+door = Object(id="door", initial_view="door_closed", views=[door_closed, door_opened])
+
+key_view = Image(id="key_view", src_image="KEY_NORMAL.png", position=Position(720,250),size=Size(50,25))
+key = Object(id="key", initial_view=None, views=[key_view])
+
+painting_view = Image(id="painting_view",src_image="PAINTING.png", position=Position(700,200), size=Size(200,100))
+painting = Object(id="painting",initial_view="painting_view", views=[painting_view])
+
+drawer_closed = Image(id="drawer_closed",src_image="DRAWER_CLOSED.png", position=Position(300,400), size=Size(150,100))
+drawer_open = Image(id="drawer_open",src_image="DRAWER_OPEN.png", position=Position(300,400), size=Size(150,100))
+drawer = Object(id="drawer",initial_view="drawer_closed", views=[drawer_closed, drawer_open])
+
+background = Image(id="background",src_image="BACKGROUND_ROOM.png", position=Position(0,0), size=Size(1280,720))
+
+room = Scenario(id="room",initial_view="background", views=[background], objects=[key, door, painting, drawer], floor=660)
+
+trigger_open_drawer = TriggerTree(NodeAnd(NodeVar(TriggerClickedObject("drawer")),NodeVar(TriggerWhenObjectIsView("drawer","drawer_closed"))))
+actions_open_drawer = [ActionObjChangeView("drawer","drawer_open"),ActionShowMessage("You found a note: 'The key is behind the painting!'",Position(400,100))]
+
+open_drawer = Event(id="open_drawer",triggers=trigger_open_drawer, actions=actions_open_drawer,repetitions=1)
+
+
+trigger_move_painting = TriggerTree(NodeAnd(NodeVar(TriggerClickedObject("painting")),NodeVar(TriggerWhenObjectIsView("drawer","drawer_open"))))
+actions_move_painting = [ActionObjChangeView("key","key_view"),ActionObjChangePosition("painting",Position(850,200))]
+
+move_painting = Event(id="move_painting",triggers=trigger_move_painting, actions=actions_move_painting,repetitions=1)
+
+trigger_pick_key = TriggerTree(NodeVar(TriggerClickedObject("key")))
+actions_pick_key = [ActionObjGoesToInventory("key")]
+
+pick_key = Event(id="pick_key",triggers=trigger_pick_key, actions=actions_pick_key,repetitions=1)
+
+trigger_try_open = TriggerTree(NodeAnd(NodeVar(TriggerClickedObject("door")),NodeVar(TriggerObjIsInUse("key"))))
+actions_try_open = [ActionObjChangeView("door","door_opened")]
+
+try_open = Event(id="try_open",triggers=trigger_try_open, actions=actions_try_open,repetitions=1)
+
+
+trigger_endgame = TriggerTree(NodeAnd(NodeVar(TriggerClickedObject("door")),NodeVar(TriggerWhenObjectIsView("door","door_opened"))))
+actions_endgame = [ActionEndGame("Congratulations!")]
+
+endgame = Event(id="endgame",triggers=trigger_endgame, actions=actions_endgame, repetitions=1)

@@ -1,18 +1,21 @@
 import pygame
-from .utils import Size, Color
+from .utils import Size,Position, Color, HEIGHT_INV
+import re
 
 class Transition():
-    def __init__(self,id,background,music,story,next_scenario = None,next_transition = None):
+    def __init__(self,id,background,music,story,next_scenario = None,next_transition = None,format_story= False):
         self.id = id
-        print(background)
-        self.background = pygame.image.load(background).convert_alpha()
+        self.background = background
         self.music = music
         self.story = story
         self.next_scenario = next_scenario
         self.next_transition = next_transition
+        self.format_story = format_story
 
     def define_size(self,size : Size):
-        self.background = pygame.transform.scale(self.background, (size.x,size.y))  # Ajuste o size conforme necessário
+        self.background.size.y = size.y+HEIGHT_INV
+        self.background.position = Position(0,0)
+        self.background.load_images()
 
     def play_music(self):
         if self.music != None:
@@ -24,13 +27,32 @@ class Transition():
             pygame.mixer.music.stop()
             pygame.mixer.music.unload()
         
-    def draw(self, screen):
-        screen.blit(self.background, (0, 0))
+    def draw(self, screen, variables):
+        self.background.draw(screen)         
 
         if self.story != None:
-            font = pygame.font.Font(None, 32) # Font
+            lines = self.story
+            
+            if self.format_story:
+                format_lines = []
+                for message in lines:
+                    # Substituir as variáveis da f-string pelos valores em room.variables
+                    # Extrair as variáveis presentes na f-string
+                    vars = re.findall(r'{(.*?)}', message)
+                    # Substituir as variáveis pelos valores em room.variables
+                    for var in vars:
+                        if var in variables:
+                            # Substitui as ocorrências da variável pelo valor correto de room.variables[var]
+                            value = variables[var]
+                            if isinstance(value, float) and value.is_integer():
+                                value = str(int(value))
+                            else: value = str(value)
+                            message = message.replace(f"{{{var}}}", value)
+                    format_lines.append(message)
+                lines = format_lines
 
-            lines = self.story.split("\\n")
+
+            font = pygame.font.Font(None, 32) # Font
             max_line_width = max(font.size(line)[0] for line in lines)  # Determina a largura máxima da linha
             text_height = font.get_height() * len(lines)  # Determina a altura total do texto
             line_spacing = 5  # Espaço entre as linhas

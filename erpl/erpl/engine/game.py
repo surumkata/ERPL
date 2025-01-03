@@ -3,10 +3,10 @@
 #Imports
 import os
 import threading
+os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "hide"
 import pygame
-import argparse
 from .model.load import load
-from .model.utils import WIDTH, HEIGHT
+from .model.utils import WIDTH, HEIGHT, HEIGHT_INV
 from .model.inventory import Inventory
 from .model.escape_room import EscapeRoom
 from .model.game_state import GameState
@@ -14,12 +14,6 @@ from .model.settings import Settings
 
 # Configuração para ocultar a message de boas-vindas do Pygame
 os.environ["PYGAME_HIDE_SUPPORT_PROMPT"] = "1"
-
-def game_parse_arguments():
-    '''Define and parse arguments using argparse'''
-    parser = argparse.ArgumentParser(description='Engine')
-    parser.add_argument('--input','-i'             ,type=str, nargs=1                                , help='Input file')
-    return parser.parse_args()
 
 def do_event(event,room : EscapeRoom, inventory : Inventory,state : GameState):
     '''Do the pos-conditions of an event'''
@@ -39,12 +33,17 @@ def try_do_events(room : EscapeRoom, inventory : Inventory,state : GameState):
 
 def listening_challenge(room : EscapeRoom, inventory : Inventory,state : GameState):
     '''Listen to the challenge'''
-    event = state.challenge.listen()
+    (status,event) = state.challenge.listen()
+    
     if event != None and event != 0:
-        do_event(room.events[event],room,inventory,state)
+        do_event(event,room,inventory,state)
         state.desactive_challenge_mode()
     if event == 0:
         state.desactive_challenge_mode()
+    if status == True:
+        room.variables['_sucesses_'] += 1
+    else:
+        room.variables['_fails_'] += 1
 
 
 def play_game(screen,room, inventory, state):
@@ -71,11 +70,16 @@ def play_game(screen,room, inventory, state):
                     elif pygame_event.key == pygame.K_F2:
                         settings.change_volume(-0.1)
             elif state.is_challenge_mode():
-                event = state.challenge.update_pygame_event(pygame_event,room)
-                if event != None and event != 0:
-                    do_event(room.events[event],room,inventory,state)
+                result = state.challenge.update_pygame_event(pygame_event,room)
+                if result != None and result != 0:
+                    (status,event) = result
+                    do_event(event,room,inventory,state)
                     state.desactive_challenge_mode()
-                if event == 0:
+                    if status == True:
+                        room.variables['_sucesses_'] += 1
+                    else:
+                        room.variables['_fails_'] += 1
+                if result == 0:
                     state.desactive_challenge_mode()
             elif state.is_transition():
                 #se clicar no rato acaba a transiçao
@@ -102,32 +106,42 @@ def play_game(screen,room, inventory, state):
         else:
             created_thread = False
 
-        #Tenta fazer events
-        try_do_events(room,inventory,state)
+        if not state.is_finished():
+            #Tenta fazer events
+            try_do_events(room,inventory,state)
 
-        #Atualiza os buffers depois dos events
-        state.update_buffers(room)
+            #Atualiza os buffers depois dos events
+            state.update_buffers(room)
+
+            #Atualiza os events do inventário
+            inventory.update_items()
+
+            if state.is_running():
+                room.draw(screen,state.current_scenario)
+                inventory.draw(screen)
+                state.draw_messages(screen)
+
+            elif state.is_transition():
+                state.transition.draw(screen,room.variables)
+
+            elif state.is_challenge_mode():
+                room.draw(screen,state.current_scenario)
+                inventory.draw(screen)
+                state.challenge.draw(screen)
         
-        #Atualiza os events do inventário
-        inventory.update_items()
+            ticks = pygame.time.get_ticks()
+            room.variables['_timer_'] = int(ticks / 1000)
+            room.variables['_timerms_'] = ticks
 
-        if state.is_running():
-            room.draw(screen,state.current_scenario)
-            inventory.draw(screen)
-            state.draw_messages(screen)
+            for minutos_total in range(1, 91):  # De 1 até 90
+                segundos_restantes = minutos_total * 60 - int(ticks / 1000)
+                minutos = segundos_restantes // 60
+                segundos = segundos_restantes % 60
+                room.variables[f'_regressive_timer_{minutos_total}min_'] = f"{minutos:02}:{segundos:02}"
 
-        elif state.is_transition():
-            state.transition.draw(screen)
-
-        elif state.is_challenge_mode():
-            room.draw(screen,state.current_scenario)
-            inventory.draw(screen)
-            state.challenge.draw(screen)
-        
         #Tela de end of game
-        elif state.is_finished():
+        else:
             state.draw_finish_screen(screen)
-             
 
         settings.clock.tick(60)
 
@@ -153,7 +167,7 @@ def init_game(args = None):
     #pygame.mixer.music.load(filename)
     #pygame.mixer.music.play(-1)
 
-    screen = pygame.display.set_mode((WIDTH, HEIGHT))
+    screen = pygame.display.set_mode((WIDTH, HEIGHT+HEIGHT_INV))
 
     # Loading do modelo
     room,state = load(args.input[0]) if args and args.input else load()
@@ -163,11 +177,3 @@ def init_game(args = None):
     inventory = Inventory()
 
     return screen,room,inventory,state
-
-
-if __name__ == '__main__':
-    args = game_parse_arguments()
-    screen,room,inventory,state = init_game(args)
-    # Play Game
-    play_game(screen,room,inventory, state)
-

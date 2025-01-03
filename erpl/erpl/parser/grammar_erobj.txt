@@ -1,24 +1,68 @@
-start : views sounds? view_inicial? position? size?
+start : views ("\n" sounds)? ("\n" view_inicial)? ("\n" (position|position_reference))? ("\n" size)?
 
-views : "Views:" view+
-view  : "- View animado" ID ":" images repiticoes timesprite -> view_animado
-        | "- View" ID ":" image                                -> view_simples
+views : "Views:" view ("\n" view)*
+view  : "-" "Image" ID ":" image ("\n" hitboxes)? ("\n" position)? ("\n" size)? -> view_simples
+      | "-" "Sketch" ID ":" draws ("\n" hitboxes)? ("\n" position)? ("\n" size)? -> view_sketch
+      | "-" "Animation" ID ":" "\n" images "\n" repiticoes "\n" timesprite ("\n" hitboxes)? ("\n" position)? ("\n" size)? -> view_animado
 
-sounds    : "Sons:" sound+
-sound     : "- Sound" ID ":" source
+images : "-" "Sources" ":" "[" TEXTO ("," TEXTO)* "]"
+image  : "-" "Source" ":" TEXTO
+repiticoes: "-" "Repetitions" ":" INT
+timesprite: "-" "Time-Sprite" ":" INT
 
-images : "- Imagens:" "[" TEXTO ("," TEXTO)* "]"
-image  : "- Imagem:" TEXTO
-repiticoes: "- Repitições:" NUM
-timesprite: "- Time-Sprite:" NUM
+draws : "-" "Draws"    ":" ("\n" draw)+
+draw  : "-" "Fill"     ":" param_color param_alpha? -> draw_fill
+      | "-" "Rect"     ":" param_position param_size param_tl? param_tr? param_br? param_bl? -> draw_rect
+      | "-" "Square"   ":" param_position param_width param_tl? param_tr? param_br? param_bl? -> draw_square
+      | "-" "Circle"   ":" param_position param_radius -> draw_circle
+      | "-" "Ellipse"  ":" param_position param_size -> draw_ellipse
+      | "-" "Triangle" ":" param_point1 param_point2 param_point3 -> draw_triangle
+      | "-" "Polygon"  ":" param_points -> draw_polygon
 
-source: "- Fonte:" TEXTO
+hitboxes : "-" "Hitboxes"  ":" ("\n" hitbox)*
+hitbox   : "-" "_Rect"     ":" param_position param_size > hitbox_rect
+         | "-" "_Square"   ":" param_position param_width -> hitbox_square
+         | "-" "_Circle"   ":" param_position param_radius -> hitbox_circle
+         | "-" "_Ellipse"  ":" param_position param_size -> hitbox_ellipse
+         | "-" "_Triangle" ":" param_point1 param_point2 param_point3 -> hitbox_triangle
+         | "-" "_Polygon"  ":" param_points -> hitbox_polygon
 
-view_inicial: "View inicial:" ID
-position: "Posição:" "(" NUM "," NUM ")"
-size: "Tamanho:" "[" NUM "," NUM "]"
+param_color : ("color" "=")? color
+param_position : ("position" "=")? point
+param_size : ("size" "=")? point
+param_tl : ("tl" "=")? NUM
+param_tr : ("tr" "=")? NUM
+param_br : ("br" "=")? NUM
+param_bl : ("bl" "=")? NUM
+param_width : ("width" "=")? NUM
+param_radius : ("radius" "=")? NUM
+param_alpha : ("alpha" "=")? INT
+param_point1 : ("point1" "=")? point
+param_point2 : ("point2" "=")? point
+param_point3 : ("point3" "=")? point
+param_points : ("points" "=")? "[" point ("," point)* "]"
+
+sounds             : "Sounds" ":" ("\n" sound)+
+sound              : "-" "Sound" ID ":" "\n" source ("\n" loop)?
+source             : "-" "Source" ":" TEXTO
+loop               : "-" "Loop" ":" BOOLEAN
+
+view_inicial       : "Initial View" ":" ID
+position           : "Position" ":" point
+position_reference : "Reference Position" ":" POS_REF
+size               : "Size" ":" point
+
+point: "(" NUM "," NUM ")"
+
+color : "#" HEXCODE -> color_hex
+      | "rgb" "(" INT "," INT "," INT ")" -> color_rgb
+      | "hsb" "(" INT "," INT "," INT ")" -> color_hsb
 
 ID            : /[\w\-_]+/
+POS_REF       : /floor|ceil/
+INT           : /(-|\+)?\d+/
+HEXCODE       : /[0-9a-fA-F]{6}|[0-9a-fA-F]{3}/
+BOOLEAN       : /yes|no/
 %import common.ESCAPED_STRING   -> TEXTO
 %import common.SIGNED_NUMBER    -> NUM
 %import common.WS

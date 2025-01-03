@@ -1,0 +1,72 @@
+{
+    "views": [
+        {
+            "id": "door_opened",
+            "sources": [
+                [
+                    "PATH",
+                    "door0.png"
+                ],
+                [
+                    "PATH",
+                    "door1.png"
+                ],
+                [
+                    "PATH",
+                    "door2.png"
+                ],
+                [
+                    "PATH",
+                    "door3.png"
+                ],
+                [
+                    "PATH",
+                    "door4.png"
+                ],
+                [
+                    "PATH",
+                    "door5.png"
+                ]
+            ],
+            "repetitions": 1,
+            "time_sprite": 3,
+            "type": "VIEW_IMAGE",
+            "hitbox_type": "DEFAULT"
+        },
+        {
+            "id": "door_closed",
+            "sources": [
+                [
+                    "PATH",
+                    "door0.png"
+                ]
+            ],
+            "type": "VIEW_IMAGE",
+            "hitbox_type": "DEFAULT"
+        }
+    ],
+    "sounds": [
+        {
+            "id": "door_open",
+            "sources": [
+                [
+                    "PATH",
+                    "door-1-open.mp3"
+                ]
+            ],
+            "loop": false
+        },
+        {
+            "id": "door_locked",
+            "sources": [
+                [
+                    "PATH",
+                    "door-locked.mp3"
+                ]
+            ],
+            "loop": false
+        }
+    ],
+    "initial_view": "door_closed",
+    "position_reference": "floor"
+}

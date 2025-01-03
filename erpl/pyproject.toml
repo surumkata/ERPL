@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "erpl"
-version = "0.1.5"
+version = "0.1.11"
 description = "DSL for escape rooms"
 authors = ["surumkata <a93277@uminho.pt>"]
 readme = "README.md"
@@ -16,12 +16,13 @@ lark = "^1.1.9"
 pillow = "^10.3.0"
 pygame = "^2.5.2"
 numpy = "^1.26.4"
+requests = "^2.32.3"
 
 [tool.poetry.scripts]
 erpl = "erpl:erpl"
 erparse = "erpl:erparse"
 erengine = "erpl:erengine"
-erpe = "erpl:erpe"
+erbib = "erpl:erbib"
 
 
 [build-system]

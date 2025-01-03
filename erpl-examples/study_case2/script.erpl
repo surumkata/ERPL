@@ -1,0 +1,106 @@
+# Construtor da Escape Room
+EscapeRoom(
+    title="Indiana Jones",
+    scenarios=[calices_room,choose_path],
+    events=[choose_path1, choose_path2, choose_path3, wrong_calice, right_calice],
+    transitions=[temple,temple_hallaway,knight,three_path,dead_by_calice,dead_by_giantball,dead_by_snakes],
+    start=temple
+)
+
+adventure_music = Sound("soundtrack.mp3")
+
+calices = Image("calices.png")
+
+calice = _Rect(position=(400,350),size=(300,420))
+
+calices_room = Scenario(initial_view = calices,views = [calices],hitboxes=[calice])
+
+knight = Transition(
+                background = Image.knight_image("knight.png"),
+                music = adventure_music,
+                story = ["As you enter the chamber, you are greeted by a figure clad in ancient armor.",
+                         "'I have been waiting for you,' the knight says.",
+                         "'Before you are three chalices. One brings eternal life, but the others will seal your fate.",
+                         "The choice is yours.'"],
+                next_scenario = calices_room
+)
+
+temple_hallaway = Transition(
+                background = Image.hallaway("temple_hallaway.png"),
+                music = adventure_music,
+                story = ["You chose the right path and continued to enter deeper and deeper into the temple.",
+                "The narrow hallway is dimly lit, and the air grows heavier with each step.",
+                "Ahead lies the final challenge..."],
+                next_transition = knight
+)
+
+tree_path_image = Image("three_paths.png")
+
+path1 = _Rect(position=(0,360)  ,size=(400,300))
+path2 = _Rect(position=(480,300),size=(380,300))
+path3 = _Rect(position=(880,360),size=(400,300))
+
+choose_path = Scenario(initial_view = tree_path_image, views = [tree_path_image], hitboxes = [path1,path2,path3])
+
+# Charada dos Três Caminhos
+three_path = Transition(
+                background = tree_path_image,
+                music = adventure_music,
+                story = ["Before you are three paths, each leading deeper into the temple.",
+                         "One path will take you safely to the treasure, but the others lead to certain death.",
+                         "Choose wisely: 'The true path lies at the heart, where balance prevails.'"],
+                next_scenario = choose_path
+)
+
+# Transição de Entrada do Templo
+temple = Transition(
+                background = Image.temple_entrance("temple_entrance.png"),
+                music = adventure_music,
+                story = ["You found the entrance of an ancient temple hidden deep in the jungle.",
+                         "Legend says that within lies the sacred artifact, but beware the temple is filled with deadly traps.",
+                         "Only the brave and wise may claim the treasure."],
+                next_transition = three_path
+)
+
+# Morte por Bola Gigante
+dead_by_giantball = Transition(
+                        background = Image.giantball("dead_by_giantball.png"),
+                        music = adventure_music,
+                        story = ["As you step onto the wrong path, the ground shakes.",
+                                 "A massive stone ball rolls towards you with terrifying speed.",
+                                 "There's no escape. Your adventure ends here, crushed by the temple's ancient trap."],
+                        next_transition = temple
+                    )
+
+# Morte por Cobras
+dead_by_snakes = Transition(
+                    background = Image.snakes("dead_by_snakes.png"),
+                    music = adventure_music,
+                    story = ["The ground gives way beneath you, and you fall into a pit filled with snakes.",
+                             "Thousands of them slither around, hissing and striking.",
+                             "There's no way out, and your fear overwhelms you. 'Why did it have to be snakes?'"],
+                    next_transition = temple
+                    )
+
+# Morte pelo Cálice Errado
+dead_by_calice = Transition(
+                    background = Image.dead("dead_by_calice.png"),
+                    music = adventure_music,
+                    story = ["You reach for a beautiful, ornate chalice.",
+                             "As you drink, your vision blurs and you feel your strength fading.",
+                             "The knight says: 'You have chosen poorly.'"],
+                    next_transition = temple
+                    )
+
+choose_path1 = Event(triggers = click path1, actions=transition dead_by_snakes)
+choose_path2 = Event(triggers = click path2, actions=transition temple_hallaway)
+choose_path3 = Event(triggers = click path3, actions=transition dead_by_giantball)
+
+wrong_calice = Event(triggers = click not calice, actions=transition dead_by_calice)
+
+# Escolha Certa do Cálice
+
+right_calice = Event(
+                triggers = click calice,
+                actions = end of game with message "'You choose wisely!' the knight says. As you drink from the humble chalice, you feel a surge of energy."
+                )

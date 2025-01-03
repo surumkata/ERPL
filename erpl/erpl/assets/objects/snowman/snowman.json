@@ -1,0 +1,114 @@
+{
+    "views": [
+        {
+            "id": "snowman_sketch",
+            "draws": [
+                {
+                    "type": "FILL",
+                    "color": "#ffffff"
+                },
+                {
+                    "type": "CIRCLE",
+                    "position": {
+                        "x": 224.0,
+                        "y": 282.0
+                    },
+                    "radius": 60.0
+                },
+                {
+                    "type": "CIRCLE",
+                    "position": {
+                        "x": 222.0,
+                        "y": 390.0
+                    },
+                    "radius": 80.0
+                },
+                {
+                    "type": "CIRCLE",
+                    "position": {
+                        "x": 222.0,
+                        "y": 510.0
+                    },
+                    "radius": 100.0
+                },
+                {
+                    "type": "FILL",
+                    "color": "#ff8800"
+                },
+                {
+                    "type": "TRIANGLE",
+                    "point1": {
+                        "x": 200.0,
+                        "y": 300.0
+                    },
+                    "point2": {
+                        "x": 100.0,
+                        "y": 270.0
+                    },
+                    "point3": {
+                        "x": 200.0,
+                        "y": 280.0
+                    }
+                },
+                {
+                    "type": "FILL",
+                    "color": "#000000"
+                },
+                {
+                    "type": "CIRCLE",
+                    "position": {
+                        "x": 205.0,
+                        "y": 264.0
+                    },
+                    "radius": 10.0
+                },
+                {
+                    "type": "CIRCLE",
+                    "position": {
+                        "x": 245.0,
+                        "y": 264.0
+                    },
+                    "radius": 10.0
+                },
+                {
+                    "type": "FILL",
+                    "color": "#512b00"
+                },
+                {
+                    "type": "TRIANGLE",
+                    "point1": {
+                        "x": 170.0,
+                        "y": 360.0
+                    },
+                    "point2": {
+                        "x": 50.0,
+                        "y": 370.0
+                    },
+                    "point3": {
+                        "x": 170.0,
+                        "y": 380.0
+                    }
+                },
+                {
+                    "type": "TRIANGLE",
+                    "point1": {
+                        "x": 280.0,
+                        "y": 360.0
+                    },
+                    "point2": {
+                        "x": 400.0,
+                        "y": 370.0
+                    },
+                    "point3": {
+                        "x": 280.0,
+                        "y": 380.0
+                    }
+                }
+            ],
+            "type": "VIEW_SKETCH",
+            "hitbox_type": "DEFAULT",
+            "hitboxes": []
+        }
+    ],
+    "initial_view": "snowman_sketch"
+}

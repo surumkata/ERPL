@@ -4,23 +4,49 @@ from .precondition import EventPreConditionClickedItem, EventPreConditionItemIsI
 from .precondition_tree import PreConditionTree, PreConditionOperatorAnd, PreConditionVar
 import sys
 from .challenge import ChallengeSocketConnection, ChallengeSlidePuzzle, ChallengePuzzle, ChallengeSequence, ChallengeConnections, ChallengeQuestion, ChallengeMotion, ChallengeMultipleChoice
+import re
 
 class EventPosCondition(ABC):
-    def __init__(self,type):
+    def __init__(self):
         pass
 
     @abstractmethod
     def do(self,room,inventory):
         pass
 
-#END_GAME = 0
+
+#END_GAME
 class EventPosConditionEndGame(EventPosCondition):
     def __init__(self, message = ""):
         self.message = message
     
     def do(self,room,inventory,state):
-        state.finish_game()
-        debug("EVENT_ENDGAME.")
+        state.finish_game(self.message)
+        debug("EVENT_ENDGAME_FORMAT_MESSAGE.")
+
+#END_GAME
+class EventPosConditionEndGameFormatMessage(EventPosCondition):
+    def __init__(self, message = ""):
+        self.message = message
+    
+    def do(self,room,inventory,state):
+        message = self.message
+        variables = room.variables
+        # Substituir as variáveis da f-string pelos valores em room.variables
+        # Extrair as variáveis presentes na f-string
+        vars = re.findall(r'{(.*?)}', message)
+        # Substituir as variáveis pelos valores em room.variables
+        for var in vars:
+            if var in variables:
+                # Substitui as ocorrências da variável pelo valor correto de room.variables[var]
+                value = variables[var]
+                if isinstance(value, float) and value.is_integer():
+                    value = str(int(value))
+                else: value = str(value)
+                message = message.replace(f"{{{var}}}", value)
+
+        state.finish_game(message)
+        debug("EVENT_ENDGAME_FORMAT_MESSAGE.")
 
 #OBJ_CHANGE_STATE = 1
 class EventPosConditionObjChangeState(EventPosCondition):
@@ -43,16 +69,16 @@ class EventPosConditionObjChangePosition(EventPosCondition):
         debug("EVENT_CHANGE_POSITION: Mudando "+self.object_id +" para a position ("+str(self.position.x)+","+str(self.position.y)+").")
 
 #OBJ_CHANGE_SIZE = 3
-class EventPosConditionObjChangeSize(EventPosCondition):
-    def __init__(self, object_id, size):
+class EventPosConditionObjScale(EventPosCondition):
+    def __init__(self, object_id, scale):
         self.object_id = object_id
-        self.size = size
+        self.scale = scale
 
     def do(self,room,inventory,state):
         object_id = self.object_id
-        size = self.size
-        room.objects[object_id].change_size(size)
-        debug("EVENT_CHANGE_SIZE: Mudando "+object_id +" para o size ("+str(size.x)+","+str(size.y)+").")
+        scale = self.scale
+        room.objects[object_id].change_size(scale)
+        debug("EVENT_CHANGE_SIZE: Mudando "+object_id +" para o size ("+str(scale.x)+","+str(scale.y)+").")
 
 #SHOW_MESSAGE = 4
 class EventPosConditionShowMessage(EventPosCondition):
@@ -63,6 +89,34 @@ class EventPosConditionShowMessage(EventPosCondition):
     def do(self,room,inventory,state):
         state.buffer_messages.append(BalloonMessage(self.message,self.position.x,self.position.y))
         debug("EVENT_MESSAGE: Mostrando message '"+str(self.message)+"'.")
+
+#SHOW_FORMAT_MESSAGE
+class EventPosConditionShowFormatMessage(EventPosCondition):
+    def __init__(self, message, position : Position):
+        self.message = message
+        self.position = position
+
+    def do(self, room, inventory, state):
+
+        message = self.message
+        variables = room.variables
+
+        vars = re.findall(r'{(.*?)}', message)
+        # Substituir as variáveis pelos valores em room.variables
+        for var in vars:
+            if var in variables:
+                # Substitui as ocorrências da variável pelo valor correto de room.variables[var]
+                value = variables[var]
+                if isinstance(value, float) and value.is_integer():
+                    value = str(int(value))
+                else: value = str(value)
+                message = message.replace(f"{{{var}}}", value)
+        
+
+        # Adicionar a mensagem formatada ao estado
+        state.buffer_messages.append(BalloonMessage(message, self.position.x, self.position.y))
+        debug(f"EVENT_MESSAGE: Mostrando mensagem '{message}'.")
+
 
 #QUESTION = 5
 class EventPosConditionQuestion(EventPosCondition):
@@ -131,7 +185,10 @@ class EventPosConditionDeleteItem(EventPosCondition):
         self.item_id = item_id
 
     def do(self,room,inventory,state):
-        inventory.update_remove.append(self.item_id)
+        if inventory.exist_item(self.item_id):
+            inventory.update_remove.append(self.item_id)
+        elif self.item_id in room.objects:
+            del room.objects[self.item_id]
         debug("EVENT_DELETE_ITEM: Removendo item "+self.item_id+".")
 
 
@@ -180,14 +237,15 @@ class EventPosConditionMultipleChoice(EventPosCondition):
 
 #CONNECTIONS = 11
 class EventPosConditionConnections(EventPosCondition):
-    def __init__(self,connections,question, sucess_event, fail_event):
+    def __init__(self,list1,list2,question, sucess_event, fail_event):
         self.question = question
-        self.connections = connections
+        self.list1 = list1
+        self.list2 = list2
         self.sucess_event = sucess_event
         self.fail_event = fail_event
 
     def do(self,room,inventory,state):
-        challenge_connections = ChallengeConnections(self.question,self.connections,self.sucess_event,self.fail_event)
+        challenge_connections = ChallengeConnections(self.question,self.list1,self.list2,self.sucess_event,self.fail_event)
         state.active_challenge_mode(challenge_connections)
         debug("EVENT_POSCONDITION_CONNECTIONS")
 
@@ -249,3 +307,36 @@ class EventPosConditionSocketConnection(EventPosCondition):
         challenge_socket_connection = ChallengeSocketConnection(self.host,self.port,self.text,self.sucess_event,self.fail_event)
         state.active_listenning_challenge_mode(challenge_socket_connection)
         debug("EVENT_POSCONDITION_ORDER")
+
+#VAR_DECREASES
+class EventPosConditionVarDecreases(EventPosCondition):
+    def __init__(self,variable,number):
+        self.variable = variable
+        self.number = number
+    
+    def do(self,room,inventory,state):
+        if self.variable in room.variables:
+            room.variables[self.variable] -= self.number
+            debug("EVENT_VAR_DECREASES: Variavel "+self.variable+" diminui "+str(self.number)+".")
+
+#VAR_INCREASES
+class EventPosConditionVarIncreases(EventPosCondition):
+    def __init__(self,variable,number):
+        self.variable = variable
+        self.number = number
+    
+    def do(self,room,inventory,state):
+        if self.variable in room.variables:
+            room.variables[self.variable] += self.number
+            debug("EVENT_VAR_INCREASES: Variavel "+self.variable+" aumenta "+str(self.number)+".")
+
+#VAR_BECOMES
+class EventPosConditionVarBecomes(EventPosCondition):
+    def __init__(self,variable,number):
+        self.variable = variable
+        self.number = number
+    
+    def do(self,room,inventory,state):
+        if self.variable in room.variables:
+            room.variables[self.variable] = self.number
+            debug("EVENT_VAR_BECOMES: Variavel "+self.variable+" torna-se "+str(self.number)+".")

@@ -1,32 +1,58 @@
 import pygame
 
-from .utils import Position, Size, Color
-from .view import View
+from .utils import Position, Size, Color, WIDTH, HEIGHT, HEIGHT_INV
+from .view import View, ViewSketch
+import math
 
+SQUARE_SIZE = 80
 
 class Item:
-    def __init__(self, id : str, size : Size, view : View, slot : int):
+    def __init__(self, id : str, view : View, slot : int, slotPosition : Position):
         self.id = id
         self.size = Size(0,0)
         self.position = Position(0,0)
-        if size.x >= size.y:
-            self.size.x = 60
-            self.size.y = size.y * 60 / size.x
+        self.slot = slot
+
+        self.slotPosition = slotPosition
+
+        padding = 10
+        objSize = SQUARE_SIZE - padding*2
+
+        if isinstance(view, ViewSketch):
+            width = view.bb.xmax - view.bb.xmin
+            height = view.bb.ymax - view.bb.ymin
+        elif isinstance(view,View):
+            width = view.size.x
+            height = view.size.y
+
+        if width >= height:
+            self.size.x = objSize
+            self.size.y = height * objSize/width
         else:
-            self.size.y = 60
-            self.size.x = size.x * 60 / size.y
-        
-        self.position.x = (80-self.size.x) + 10+(slot*90)
-        self.position.y = (80-self.size.x) + 10
+            self.size.y = objSize
+            self.size.x = width * objSize/height
+        if self.size.x == objSize:
+            self.position.x = self.slotPosition.x + padding
+            self.position.y = self.slotPosition.y + SQUARE_SIZE/2 - self.size.y/2
+        else:
+            self.position.x = self.slotPosition.x + SQUARE_SIZE/2 - self.size.x/2
+            self.position.y = self.slotPosition.y + padding
 
-        view.change_size(self.size)
+        scalex = self.size.x / width
+        scaley = self.size.y / height
+        print(scalex,scaley)
+
+        view.change_size(Size(scalex,scaley))
+        view.change_position(self.position)
+
+
         self.view = view
-
         self.in_use = False
+        self.hover = False
     
     #Função que verifica se foi clicado na área do object
     def have_clicked(self, x : int, y : int):
-        return self.position.x <= x <= self.position.x + self.size.x and self.position.y <= y <= self.position.y + self.size.y
+        return self.slotPosition.x <= x and x <= self.slotPosition.x + SQUARE_SIZE and self.slotPosition.y <= y and y <= self.slotPosition.y + SQUARE_SIZE
     
     def draw(self, screen):
         screen.blit(self.view.images[0], (self.position.x,self.position.y))
@@ -44,6 +70,17 @@ class Inventory:
         self.update_remove = []
         self.last_active = None
 
+        self.inWidth = WIDTH
+        self.invHeight = HEIGHT_INV
+        self.squareSize = SQUARE_SIZE
+        self.padding = (self.invHeight - 80) / 2
+    
+        self.numberSquares = WIDTH / (self.squareSize+self.padding)
+        self.numberSquares = math.floor(self.numberSquares)
+    
+        self.startPadding = (WIDTH - (self.numberSquares * (self.squareSize+self.padding))) / 2
+  
+
     def find_empty_slot(self):
         for slot,item in self.slots.items():
             if item == None:
@@ -51,7 +88,9 @@ class Inventory:
         return self.items
 
     def add(self, object, slot):
-        self.slots[slot] = Item(object.id,object.size,object.views[object.current_view], slot)
+        x = self.startPadding + ((slot) * (self.squareSize + self.padding))
+        y = self.padding
+        self.slots[slot] = Item(object.id,object.views[object.current_view], slot, Position(x,y))
         self.items += 1
     
     def remove(self,item_id):
@@ -107,15 +146,20 @@ class Inventory:
         return False
 
     def draw(self, screen):
-        pygame.draw.rect(screen, Color.GRAY, (0, 0, 1280, 100))
+        pygame.draw.rect(screen, Color.WHITE, (0, 0, self.inWidth, self.invHeight))
+        pygame.draw.rect(screen, Color.BLACK, (0, 0, self.inWidth, self.invHeight),2)
+
         i = 1
+        #Desenhar slots
         while True:
-            x = 10+((i-1)*90)
-            if x < 1280 - 80:
-                pygame.draw.rect(screen, Color.WHITE, (x, 10, 80, 80))
+            x = self.startPadding + ((i - 1) * (self.squareSize + self.padding))
+            if x < self.inWidth - self.squareSize:
+                pygame.draw.rect(screen, Color.BLACK, (x, self.padding, self.squareSize, self.squareSize),2)
                 i+=1
             else:
                 break
+        
+        # Desenha os items nos slots   
         for item in self.slots.values():
             if item != None:
                 item.draw(screen)

@@ -1,97 +1,191 @@
 start         : er imports? decls? python_block?
 
 er            : "EscapeRoom(" er_parameters ")"
-er_parameters : param_title "," param_size "," param_scenarios "," param_events "," param_transitions "," param_start
+er_parameters : param_title "," param_scenarios "," param_events "," param_transitions ("," param_variables)? "," param_start
 
-imports       : import_obj+
+imports       : (import_obj|import_scene)+
 import_obj    : "import Object." ID
+import_scene  : "import Scenario." ID
 
 decls         : (var|decl)+
-decl          : add_view|add_object|add_sound
+decl          : add_view | add_object | add_sound | translate_obj | scale_obj
 
-add_view   : ID         ".add_View"  "(" view   ")"
-add_sound  : ID         ".add_Sound" "(" sound  ")"
-add_object : cenario_id ".add_Object" "(" object ")"
+add_view       : ID          ".add"         "(" view                 ")"
+add_sound      : ID          ".add"         "(" sound                ")"
+add_object     : scenario_id ".add"         "(" object               ")"
+translate_obj  : object_id   ".translateTo" "(" number "," number    ")"
+scale_obj      : object_id   ".scaleTo"     "(" number ("," number)? ")"
 
 
 var   : ID "=" value
-value : ID|python_call|list_text_constructor|text_constructor|size_constructor|position_constructor|number_constructor|view_constructor|object_constructor|object_imported|sound_constructor|cenario_constructor|event_constructor|challenge_constructor|transition_constructor
+value : ID | comand_arg | python_call | list_text_constructor | text_constructor | format_text_constructor | point_constructor | number_constructor | view_constructor | object_constructor | object_imported | sound_constructor | scenario_constructor | event_constructor | challenge_constructor | transition_constructor | draw_constructor | hitbox_constructor | variable_constructor | obj_text_constructor
 
-python_call           : python_local|python_function
-python_local          : "Python.Local." ID
-python_function       : "Python.Function." FUNC
+comand_arg : ARGN
 
-list_text             : list_text_arg|list_text_constructor|list_text_python_call
+
+python_call           : python_local | python_function
+python_local          : "Python." ID
+python_function       : "Python." FUNC
+
+list_text             : list_text_arg | list_text_constructor | list_text_python_call
 list_text_arg         : ID
 list_text_python_call : python_call
 list_text_constructor : "[" text ("," text)* "]"
  
-text                  : text_arg|text_constructor|text_python_call
+text                  : text_arg | text_constructor | text_python_call | text_comand_arg
 text_arg              : ID
+text_comand_arg       : comand_arg
 text_python_call      : python_call
 text_constructor      : TEXTO
+
+list_format_text        : "[" format_text ("," format_text)* "]"
+format_text             : format_text_arg | format_text_constructor | format_text_python_call
+format_text_arg         : ID
+format_text_python_call : python_call
+format_text_constructor : "f" TEXTO
+
+points             : "[" point "," point "," point "," point ("," point)* "]"
+point              : point_arg | point_constructor | point_python_call
+point_arg          : ID
+point_python_call  : python_call
+point_constructor  : "(" number "," number ")"
      
-size                  : size_arg|size_constructor|size_python_call
-size_arg              : ID
-size_python_call      : python_call
-size_constructor      : "[" number "," number "]"
-     
-position              : position_arg|position_constructor|position_python_call
-position_arg          : ID
-position_python_call  : python_call
-position_constructor  : "(" number "," number ")"
-     
-number                : number_arg|number_constructor|number_python_call
+number                : number_arg | number_constructor | number_python_call
 number_arg            : ID
 number_python_call    : python_call
 number_constructor    : NUM
-     
+
+integer               : integer_arg | integer_constructor | integer_python_call
+integer_arg           : ID
+integer_python_call   : python_call
+integer_constructor   : INT
+
+color                 : color_arg | color_constructor | color_constructor_rgb | color_constructor_hsb | color_python_call
+color_arg             : ID
+color_python_call     : python_call
+color_constructor     : "#" HEXCODE
+color_constructor_rgb : "rgb" "(" integer "," integer "," integer ")"
+color_constructor_hsb : "hsb" "(" integer "," integer "," integer ")"
+
+variables                : "[" variable ("," variable)* "]"
+                         | "[" "]"
+variable                 : variable_arg | variable_constructor | variable_python_call
+variable_arg             : ID
+variable_id              : ID
+variable_python_call     : python_call
+variable_constructor     : "Variable" "(" param_number ")"
+variable_constructor_id  : "Variable." ID "(" param_number ")"
+
 views                 : "[" view ("," view)* "]"
                       | "[" "]"
-view                  : view_arg|view_constructor_id|view_python_call
+view                  : view_arg | view_constructor_id | view_python_call
 view_arg              : ID
 view_id               : ID
 view_python_call      : python_call
-view_constructor      : view_static|view_animated
-view_constructor_id   : view_static_id|view_animated_id
-view_static           : "View.Static"       "(" param_image ("," param_position)? ("," param_size)? ")"
-view_animated         : "View.Animated"     "(" param_images "," param_repetitions "," param_time_sprite ("," param_position)? ("," param_size)? ")"
-view_static_id        : "View.Static." ID   "(" param_image ("," param_position)? ("," param_size)? ")"
-view_animated_id      : "View.Animated." ID "(" param_images "," param_repetitions "," param_time_sprite ("," param_position)? ("," param_size)? ")"
+view_constructor      : view_static | view_animated | view_sketch
+view_constructor_id   : view_static_id | view_animated_id | view_sketch_id
+view_static           : "Image"         "(" param_image ("," param_position)? ("," param_size)? ("," param_hitboxes)? ")"
+view_animated         : "Animation"     "(" param_images "," param_repetitions "," param_time_sprite ("," param_position)? ("," param_size)? ("," param_hitboxes)? ")"
+view_sketch           : "Sketch"        "(" param_draws ("," param_hitboxes)? ")"
+view_static_id        : "Image." ID     "(" param_image ("," param_position)? ("," param_size)? ("," param_hitboxes)? ")"
+view_animated_id      : "Animation." ID "(" param_images "," param_repetitions "," param_time_sprite ("," param_position)? ("," param_size)? ("," param_hitboxes)? ")"
+view_sketch_id        : "Sketch." ID    "(" param_draws ("," param_hitboxes)? ")"
+
+draws                 : "[" draw ("," draw)* "]"
+                      | "[" "]"
+draw                  : draw_arg | draw_constructor_id | draw_python_call
+draw_arg              : ID
+draw_id               : ID
+draw_python_call      : python_call
+draw_constructor      : draw_rect | draw_polygon | draw_square | draw_circle | draw_line | draw_ellipse | draw_arc | draw_triangle | draw_fill
+draw_constructor_id   : draw_rect_id | draw_polygon_id | draw_square_id | draw_circle_id | draw_line_id | draw_ellipse_id | draw_arc_id | draw_triangle_id | draw_fill_id
+draw_rect             : "Rect"         "(" param_position "," param_size ("," param_tl)? ("," param_tr)? ("," param_bl)? ("," param_br)?  ")"
+draw_polygon          : "Polygon"      "(" param_points ")"
+draw_triangle         : "Triangle"     "(" param_point1 "," param_point2 "," param_point3 ")"
+draw_line             : "Line"         "(" param_point1 "," param_point2 ")"
+draw_ellipse          : "Ellipse"      "(" param_position "," param_size ")"
+draw_arc              : "Arc"          "(" param_position "," param_size "," param_arcstart "," param_arcstop ")"
+draw_circle           : "Circle"       "(" param_position "," param_radius ")"
+draw_square           : "Square"       "(" param_position "," param_width ("," param_tl)? ("," param_tr)? ("," param_bl)? ("," param_br)? ")"
+draw_fill             : "Fill"         "(" param_color ("," param_opacity)? ")"
+draw_rect_id          : "Rect." ID     "(" param_position "," param_size ("," param_tl)? ("," param_tr)? ("," param_bl)? ("," param_br)? ")"
+draw_polygon_id       : "Polygon." ID  "(" param_points ")"
+draw_triangle_id      : "Triangle." ID "(" param_point1 "," param_point2 "," param_point3 ")"
+draw_line_id          : "Line." ID     "(" param_point1 "," param_point2 ")"
+draw_ellipse_id       : "Ellipse." ID  "(" param_position "," param_size ")"
+draw_arc_id           : "Arc." ID      "(" param_position "," param_size "," param_arcstart "," param_arcstop ")"
+draw_circle_id        : "Circle." ID   "(" param_position "," param_radius ")"
+draw_square_id        : "Square." ID   "(" param_position "," param_width ("," param_tl)? ("," param_tr)? ("," param_bl)? ("," param_br)? ")"
+draw_fill_id          : "Fill"         "(" param_color ("," param_opacity)? ")"
+
+hitboxes              : "[" hitbox ("," hitbox)* "]"
+                      | "[" "]"
+hitbox                : hitbox_arg | hitbox_constructor_id | hitbox_python_call
+hitbox_arg            : ID
+hitbox_id             : ID
+hitbox_python_call    : python_call
+hitbox_constructor    : hitbox_rect | hitbox_polygon | hitbox_square | hitbox_circle | hitbox_line | hitbox_ellipse | hitbox_arc | hitbox_triangle
+hitbox_constructor_id : hitbox_rect_id | hitbox_polygon_id | hitbox_square_id | hitbox_circle_id | hitbox_line_id | hitbox_ellipse_id | hitbox_arc_id | hitbox_triangle_id
+hitbox_rect             : "_Rect"         "(" param_position "," param_size ")"
+hitbox_polygon          : "_Polygon"      "(" param_points ")"
+hitbox_triangle         : "_Triangle"     "(" param_point1 "," param_point2 "," param_point3 ")"
+hitbox_line             : "_Line"         "(" param_point1 "," param_point2 ")"
+hitbox_ellipse          : "_Ellipse"      "(" param_position "," param_size ")"
+hitbox_arc              : "_Arc"          "(" param_position "," param_size "," param_arcstart "," param_arcstop ")"
+hitbox_circle           : "_Circle"       "(" param_position "," param_radius ")"
+hitbox_square           : "_Square"       "(" param_position "," param_width ")"
+hitbox_rect_id          : "_Rect." ID     "(" param_position "," param_size ")"
+hitbox_polygon_id       : "_Polygon." ID  "(" param_points ")"
+hitbox_triangle_id      : "_Triangle." ID "(" param_point1 "," param_point2 "," param_point3 ")"
+hitbox_line_id          : "_Line." ID     "(" param_point1 "," param_point2 ")"
+hitbox_ellipse_id       : "_Ellipse." ID  "(" param_position "," param_size ")"
+hitbox_arc_id           : "_Arc." ID      "(" param_position "," param_size "," param_arcstart "," param_arcstop ")"
+hitbox_circle_id        : "_Circle." ID   "(" param_position "," param_radius ")"
+hitbox_square_id        : "_Square." ID   "(" param_position "," param_width ")"
+
  
 sounds                : "[" sound ("," sound)* "]"
                       | "[" "]"
-sound                 : sound_arg|sound_constructor_id|sound_python_call
+sound                 : sound_arg | sound_constructor_id | sound_python_call
 sound_arg             : ID
 sound_id              : ID
 sound_python_call     : python_call
-sound_constructor     : "Sound" "(" param_source ")"
-sound_constructor_id  : "Sound." ID "(" param_source ")"
+sound_constructor     : "Sound" "(" param_source ("," param_loop)?  ")"
+sound_constructor_id  : "Sound." ID "(" param_source ("," param_loop)? ")"
  
 objects               : "[" object ("," object)* "]"
-object                : object_imported_id|object_arg|object_constructor_id|object_python_call
+                      | "[" "]"
+object                : object_imported_id | object_arg | object_constructor_id | object_python_call
 object_arg            : ID
 object_id             : ID
 object_python_call    : python_call
 object_imported       : "Object." ID ("(" (param_position|param_size|(param_position "," param_size)) ")")?
-object_constructor    : "Object" "(" (param_view_inicial ",")? param_views ("," param_position)? ("," param_size)? ("," param_sounds)? ")"
+object_constructor    : "Object" "(" (param_view_inicial ",")? param_views ("," param_position)? ("," param_position_reference)? ("," param_size)? ("," param_sounds)? ")"
 object_imported_id    : "Object." ID "." ID ("(" (param_position|param_size|(param_position "," param_size)) ")")?
-object_constructor_id : "Object." ID "(" (param_view_inicial ",")? param_views ("," param_position)? ("," param_size)? ("," param_sounds)? ")"
+object_constructor_id : "Object." ID "(" (param_view_inicial ",")? param_views ("," param_position)? ("," param_position_reference)? ("," param_size)? ("," param_sounds)? ")"
 
+obj_texts             : "[" obj_text ("," obj_text)* "]"
+                      | "[" "]"
+obj_text                : obj_text_arg | obj_text_constructor_id | obj_text_python_call
+obj_text_arg            : ID
+obj_text_id             : ID
+obj_text_python_call    : python_call
+obj_text_constructor    : "Text" "(" param_text ("," param_color)? "," param_position ("," param_width)? ")"
+obj_text_constructor_id : "Text" "(" param_text ("," param_color)? "," param_position ("," param_width)? ")"
 
-scenarios               : "[" cenario ("," cenario)* "]"
+scenarios               : "[" scenario ("," scenario)* "]"
                         | "[" "]"
-cenario                 : cenario_arg|cenario_constructor_id|cenario_python_call
-cenario_arg             : ID
-cenario_id              : ID
-cenario_python_call     : python_call
-cenario_constructor     : "Scenario"     "(" param_view_inicial "," param_views "," param_objects ("," param_sounds)? ")"
-cenario_constructor_id  : "Scenario." ID "(" param_view_inicial "," param_views "," param_objects ("," param_sounds)? ")"
+scenario                 : scenario_arg | scenario_constructor_id | scenario_python_call
+scenario_arg             : ID
+scenario_id              : ID
+scenario_python_call     : python_call
+scenario_constructor     : "Scenario"     "(" param_view_inicial "," param_views "," (param_hitboxes|param_objects) ("," param_texts)? ("," param_sounds)? ("," param_floor)? ("," param_ceil)? ")"
+scenario_constructor_id  : "Scenario." ID "(" param_view_inicial "," param_views "," (param_hitboxes|param_objects) ("," param_texts)? ("," param_sounds)? ("," param_floor)? ("," param_ceil)? ")"
 
 
 transitions               : "[" transition ("," transition)* "]"
                           | "[" "]"
-transition                : transition_arg|transition_constructor_id|transition_python_call
+transition                : transition_arg | transition_constructor_id | transition_python_call
 transition_arg            : ID
 transition_id             : ID
 transition_python_call    : python_call
@@ -102,102 +196,148 @@ transition_constructor_id : "Transition." ID "(" param_background "," param_musi
 challenge                    : challenge_arg|challenge_constructor_id|challenge_python_call
 challenge_arg                : ID
 challenge_python_call        : python_call
-challenge_constructor        : challenge_question|challenge_motion|challenge_multiple_choice|challenge_connection|challenge_sequence|challenge_puzzle|challenge_slidepuzzle|challenge_socket
-challenge_question           : "Challenge.Question"         "(" param_question      "," param_answer         "," param_sucess  "," param_fail                  ")"
-challenge_motion             : "Challenge.Motion"           "(" param_motion_object "," param_trigger_object "," param_sucess  "," param_fail                  ")"
-challenge_multiple_choice    : "Challenge.Multiple_Choice"  "(" param_question      "," param_choices        "," param_answer  "," param_sucess "," param_fail ")"
-challenge_connection         : "Challenge.Connection"       "(" param_question      "," param_list1          "," param_list2   "," param_sucess "," param_fail ")"
-challenge_sequence           : "Challenge.Sequence"         "(" param_question      "," param_sequence       "," param_sucess  "," param_fail                  ")"
-challenge_puzzle             : "Challenge.Puzzle"           "(" param_image         "," param_sucess                                                           ")"
-challenge_slidepuzzle        : "Challenge.SlidePuzzle"      "(" param_image         "," param_sucess                                                           ")"
-challenge_socket             : "Challenge.Socket"           "(" param_host          "," param_port           "," param_message "," param_sucess "," param_fail ")"
+challenge_constructor        : challenge_question | challenge_motion | challenge_multiple_choice | challenge_connection | challenge_sequence | challenge_puzzle | challenge_slidepuzzle | challenge_socket
+challenge_question           : "Question"         "(" param_question "," param_answer "," param_sucess  "," param_fail ")"
+challenge_motion             : "Motion"           "(" param_motion_object "," param_trigger_object "," param_sucess  "," param_fail ")"
+challenge_multiple_choice    : "Multiple_Choice"  "(" param_question "," param_choices "," param_answer  "," param_sucess "," param_fail ")"
+challenge_connection         : "Connection"       "(" param_question "," param_list1 "," param_list2   "," param_sucess "," param_fail ")"
+challenge_sequence           : "Sequence"         "(" param_question "," param_sequence "," param_sucess  "," param_fail ")"
+challenge_puzzle             : "Puzzle"           "(" param_image "," param_sucess ")"
+challenge_slidepuzzle        : "SlidingPuzzle"    "(" param_image "," param_sucess ")"
+challenge_socket             : "Socket"           "(" param_host "," param_port "," param_message "," param_sucess "," param_fail ")"
 
-challenge_constructor_id     : challenge_question_id|challenge_motion_id|challenge_multiple_choice_id|challenge_connection_id|challenge_sequence_id|challenge_puzzle_id|challenge_slidepuzzle_id|challenge_socket_id
-challenge_question_id        : "Challenge.Question."         ID "(" param_question      "," param_answer         "," param_sucess   "," param_fail                  ")"
-challenge_motion_id          : "Challenge.Motion."           ID "(" param_motion_object "," param_trigger_object "," param_sucess   "," param_fail                  ")"
-challenge_multiple_choice_id : "Challenge.Multiple_Choice."  ID "(" param_question      "," param_choices        "," param_answer   "," param_sucess "," param_fail ")"
-challenge_connection_id      : "Challenge.Connection."       ID "(" param_question      "," param_list1          "," param_list2    "," param_sucess "," param_fail ")"
-challenge_sequence_id        : "Challenge.Sequence."         ID "(" param_question      "," param_sequence       "," param_sucess   "," param_fail                  ")"
-challenge_puzzle_id          : "Challenge.Puzzle."           ID "(" param_image         "," param_sucess                                                            ")"
-challenge_slidepuzzle_id     : "Challenge.SlidePuzzle."      ID "(" param_image         "," param_sucess                                                            ")"
-challenge_socket_id          : "Challenge.Socket."           ID "(" param_host          "," param_port           "," param_message  "," param_sucess "," param_fail ")"
+challenge_constructor_id     : challenge_question_id | challenge_motion_id | challenge_multiple_choice_id | challenge_connection_id | challenge_sequence_id | challenge_puzzle_id | challenge_slidepuzzle_id | challenge_socket_id
+challenge_question_id        : "Question."         ID "(" param_question "," param_answer "," param_sucess "," param_fail ")"
+challenge_motion_id          : "Motion."           ID "(" param_motion_object "," param_trigger_object "," param_sucess   "," param_fail ")"
+challenge_multiple_choice_id : "Multiple_Choice."  ID "(" param_question "," param_choices "," param_answer   "," param_sucess "," param_fail ")"
+challenge_connection_id      : "Connection."       ID "(" param_question "," param_list1 "," param_list2    "," param_sucess "," param_fail ")"
+challenge_sequence_id        : "Sequence."         ID "(" param_question "," param_sequence "," param_sucess   "," param_fail ")"
+challenge_puzzle_id          : "Puzzle."           ID "(" param_image "," param_sucess ")"
+challenge_slidepuzzle_id     : "SlidingPuzzle."      ID "(" param_image "," param_sucess ")"
+challenge_socket_id          : "Socket."           ID "(" param_host "," param_port "," param_message "," param_sucess "," param_fail ")"
 
 
 
 
 events               : "[" event ("," event)* "]"
                      | "[" "]"
-event                : event_arg|event_constructor_id|event_python_call
+event                : event_arg | event_constructor_id | event_python_call
 event_arg            : ID
 event_id             : ID
 event_python_call    : python_call
-event_constructor    : "Event"     "(" (param_if ",")? param_then ("," param_repetitions)? ")"
-event_constructor_id : "Event." ID "(" (param_if ",")? param_then ("," param_repetitions)? ")"
+event_constructor    : "Event"     "(" param_if "," param_then ("," param_repetitions)? ")"
+event_constructor_id : "Event." ID "(" param_if "," param_then ("," param_repetitions)? ")"
 
-param_answer         : "answer"          "=" text
-param_background     : "background"      "=" view
-param_choices        : "choices"         "=" list_text
-param_events         : "events"          "=" events
-param_fail           : "fail"            "=" event_id
-param_host           : "host"            "=" text
-param_if             : "if"              "=" preconditions
-param_image          : "image"           "=" text
-param_images         : "images"          "=" list_text
-param_list1          : "list1"           "=" list_text
-param_list2          : "list2"           "=" list_text
-param_message        : "message"         "=" text
-param_motion_object  : "motion_object"   "=" object_id
-param_music          : "music"           "=" sound
-param_next_scene      : "next_scenario"  "=" cenario_id
-param_next_trans     : "next_transition" "=" transition_id
-param_objects        : "objects"         "=" objects
-param_port           : "port"            "=" number
-param_position       : "position"        "=" position
-param_question       : "question"        "=" text
-param_repetitions    : "repetitions"     "=" number
-param_scenarios      : "scenarios"       "=" scenarios
-param_sequence       : "sequence"        "=" list_text
-param_size           : "size"            "=" size
-param_sounds         : "sounds"          "=" sounds
-param_source         : "source"          "=" text
-param_start          : "start"           "=" ID
-param_story          : "story"           "=" text
-param_sucess         : "sucess"          "=" event_id
-param_then           : "then"            "=" posconditions
-param_time_sprite    : "time_sprite"     "=" number
-param_title          : "title"           "=" text
-param_transitions    : "transitions"     "=" transitions
-param_trigger_object : "trigger_object"  "=" object_id
-param_view_inicial   : "initial_view"    "=" view_id
-param_views          : "views"           "=" views
+sources                  : "[" source ("," source)* "]"
+source                   : text
+                         | "ImageLib." LIBID
 
-preconditions  : precondition|preconds_and|preconds_ou|preconds_not|preconds_group
+param_answer             : ("answer"             "=" )? text
+param_background         : ("background"         "=" )? view
+param_choices            : ("choices"            "=" )? list_text
+param_events             : ("events"             "=" )? events
+param_ceil               : ("ceil"               "=" )? number
+param_floor              : ("floor"              "=" )? number
+param_fail               : ("fail"               "=" )? posconditions
+param_host               : ("host"               "=" )? text
+param_if                 : ("triggers"           "=" )? preconditions
+param_image              : ("source"             "=" )? source
+param_images             : ("sources"            "=" )? sources
+param_list1              : ("list1"              "=" )? list_text
+param_list2              : ("list2"              "=" )? list_text
+param_message            : ("message"            "=" )? text
+param_motion_object      : ("motion_object"      "=" )? object_id
+param_music              : ("music"              "=" )? sound
+param_next_scene         : ("next_scenario"      "=" )? scenario_id
+param_next_trans         : ("next_transition"    "=" )? transition_id
+param_objects            : ("objects"            "=" )? objects
+param_port               : ("port"               "=" )? integer
+param_position           : ("position"           "=" )? point
+param_position_reference : ("position_reference" "=" )? POS_REF
+param_question           : ("question"           "=" )? text
+param_repetitions        : ("repetitions"        "=" )? integer
+param_scenarios          : ("scenarios"          "=" )? scenarios
+param_sequence           : ("sequence"           "=" )? list_text
+param_size               : ("size"               "=" )? point
+param_sounds             : ("sounds"             "=" )? sounds
+param_source             : ("source"             "=" )? source
+param_start              : ("start"              "=" )? ID
+param_story              : ("story"              "=" )? (list_text|list_format_text)
+param_sucess             : ("sucess"             "=" )? posconditions
+param_then               : ("actions"            "=" )? posconditions
+param_time_sprite        : ("time_sprite"        "=" )? integer
+param_title              : ("title"              "=" )? text
+param_transitions        : ("transitions"        "=" )? transitions
+param_trigger_object     : ("trigger_object"     "=" )? object_id
+param_texts              : ("texts"              "=" )? obj_texts
+param_text               : ("text"               "=" )? (text|format_text)
+param_view_inicial       : ("initial_view"       "=" )? view_id
+param_views              : ("views"              "=" )? views
+param_loop               : ("loop"               "=" )? BOOLEAN
+param_draws              : ("draws"              "=" )? draws
+param_tl                 : ("tl"                 "=" )? number
+param_tr                 : ("tr"                 "=" )? number
+param_bl                 : ("bl"                 "=" )? number
+param_br                 : ("br"                 "=" )? number
+param_point1             : ("point1"             "=" )? point
+param_point2             : ("point2"             "=" )? point
+param_point3             : ("point3"             "=" )? point
+param_width              : ("width"              "=" )? number
+param_radius             : ("radius"             "=" )? number
+param_number             : ("number"             "=" )? number
+param_points             : ("points"             "=" )? points
+param_arcstart           : ("arc_start"          "=" )? number
+param_arcstop            : ("arc_stop"           "=" )? number
+param_color              : ("color"              "=" )? color
+param_opacity            : ("opacity"            "=" )? number
+param_hitboxes           : ("hitboxes"           "=" )? hitboxes
+param_variables          : ("variables"          "=" )? variables
+
+
+
+preconditions  : precondition | preconds_and | preconds_ou | preconds_not | preconds_group
 preconds_and   : preconditions "and" preconditions 
 preconds_ou    : preconditions "or" preconditions
 preconds_not   : "not" preconditions            
 preconds_group : "(" preconditions ")"          
 
-precondition            : precond_click_obj | precond_click_not_obj | precond_obj_is_view | precond_ev_already_hap | precond_obj_in_use | precond_already_passed
-precond_click_obj       : "click" object_id                                
-precond_click_not_obj   : "click not" object_id                           
-precond_obj_is_view     : object_id "is" view_id                               
-precond_ev_already_hap  : event_id "already happened"
-precond_obj_in_use      : object_id "is in use"           
-precond_already_passed  : number "seconds have already passed"                
+precondition              : precond_click_obj | precond_click_not_obj | precond_obj_is_view | precond_ev_already_hap | precond_obj_in_use | precond_already_passed | precond_var_equal | precond_var_greater | precond_var_less | precond_var_greater_equal | precond_var_less_equal
+precond_click_obj         : "click" ID                                
+precond_click_not_obj     : "click not" ID                       
+precond_obj_is_view       : object_id "is" ID                               
+precond_ev_already_hap    : event_id "already happened"
+precond_obj_in_use        : object_id "is in use"           
+precond_already_passed    : number "seconds have already passed"
+precond_var_equal         : variable_id "is equal to" number
+                          | variable_id "==" number
+precond_var_greater       : variable_id "is greater than" number 
+                          | variable_id ">" number
+precond_var_less          : variable_id "is less than" number
+                          | variable_id "<" number
+precond_var_greater_equal : variable_id "is greater than or equal to" number 
+                          | variable_id ">=" number
+precond_var_less_equal    : variable_id "is less than or equal to" number
+                          | variable_id "<=" number       
 
-posconditions         : poscondition ("and" poscondition)*
-poscondition          : poscond_obj_muda_view|poscond_obj_vai_inv|poscond_fim_de_jogo|poscond_mostra_msg|poscond_obj_muda_tam|poscond_obj_muda_pos|poscond_muda_cena|poscond_remove_obj|poscond_play_sound|poscond_comeca_des|poscond_trans
-poscond_obj_muda_view : object_id "change to" view_id                  
+posconditions         : poscondition (("and"|",") poscondition)*
+poscondition          : poscond_obj_muda_view | poscond_obj_vai_inv | poscond_fim_de_jogo | poscond_mostra_msg | poscond_obj_muda_tam | poscond_obj_muda_pos | poscond_muda_cena | poscond_remove_obj | poscond_play_sound | poscond_comeca_des | poscond_trans | poscond_var_decreases | poscond_var_increases | poscond_var_becomes
+poscond_obj_muda_view : object_id "change to" ID                  
 poscond_obj_vai_inv   : object_id "goes to inventory"         
-poscond_fim_de_jogo   : "end of game"                      
-poscond_mostra_msg    : "show message" text "in" position
-poscond_obj_muda_tam  : object_id "change size to" size     
-poscond_obj_muda_pos  : object_id "move to" position     
-poscond_muda_cena     : "change to scenario" cenario_id                
-poscond_remove_obj    : object_id "is removed"           
+poscond_fim_de_jogo   : "end of game" (" with message" (text|format_text))?                    
+poscond_mostra_msg    : "show message" (text|format_text) "in" point
+poscond_obj_muda_tam  : object_id "scales into" point     
+poscond_obj_muda_pos  : object_id "move to" point     
+poscond_muda_cena     : "change to scenario" scenario_id             
+poscond_remove_obj    : "remove" object_id          
 poscond_play_sound    : "play" sound_id "of" ID                        
 poscond_comeca_des    : "start challenge" challenge_arg                
 poscond_trans         : "transition" transition_id
+poscond_var_decreases : variable_id "decreases" number
+                      | variable_id "-=" number
+poscond_var_increases : variable_id "increases" number
+                      | variable_id "+=" number
+poscond_var_becomes   : variable_id "becomes" number
+                      | variable_id "=" number
 
 python_block : "__Python__" PYTHON_CODE
 
@@ -205,10 +345,16 @@ INICIAL : /inicial/
 REVERSE : /\.reverse\(\)/
 
 ID            : /[a-z][\w\-_]*/
+LIBID         : /[A-Z][A-Z\-_]*/
 VAR           : /\.[a-z][\w\-_]*/
 ARGN          : /\$\d+/
 PYTHON_CODE   : /(.|\n)+/
 FUNC          : /\w+\((?:[^()]*|\([^()]*\))*\)/
+BOOLEAN       : /yes|no/
+POS_REF       : /floor|ceil/
+HEXCODE       : /[0-9a-fA-F]{6}|[0-9a-fA-F]{3}/
+INT           : /(-|\+)?\d+/
+
 COMMENT: /#[^\n]*/
 
 %import common.ESCAPED_STRING   -> TEXTO

@@ -1,0 +1,100 @@
+EscapeRoom(title="Mission Solar System",
+    scenarios=[station],
+    events=[first_challenge,second_challenge,third_challenge,open_door,endgame,explosion,explosion2],
+    transitions=[intro],
+    variables=[lifes,challenges_dones],
+    start=intro
+)
+
+background = Image(source="room.png")
+
+locked_sound = Sound(source="door-locked.mp3")
+opening_sound = Sound(source="door-opening.mp3")
+
+door_closed = Image(source="door_closed.png")
+door_opened = Animation(sources=["door_semi_closed.png","door_open.png"],repetitions=1,time_sprite=3)
+
+door = Object(initial_view=door_closed,views=[door_closed,door_opened],position_reference=floor,sounds=[locked_sound, opening_sound])
+
+challenges_dones = Variable(number=0)
+lifes = Variable(number=2)
+
+timer = Text(f"{_regressive_timer_5min_}",rgb(0,0,255),(555,100),100)
+
+station = Scenario(initial_view=background,views=[background],objects=[door],texts=[timer,Text(f"{lifes} remaining attempts",rgb(0,0,255),(500,200),40)],sounds=[],floor=610)
+
+intro = Transition(
+            Image.space_station("space_station.png"),
+            Sound.intro_music("intro.mp3"),
+            [f"You and your team are astronauts on a special mission to explore the solar system.",
+             f"However, during the journey, you get trapped in a space station and need to solve a",
+             f"series of puzzles to escape before time runs out and the spaceship leaves without you.",
+             f"You have {_regressive_timer_5min_} to escape and you need to pass 2 of 3 challenges, otherwise the space station explodes."
+            ],
+            next_scenario=station
+        )
+
+question = Multiple_Choice(
+	       Python.question,
+	       Python.options,
+           Python.answer,
+	       sucess=challenges_dones increases 1,
+	       fail=challenges_dones increases 1 and lifes decreases 1 and show message f"Wrong! You have {lifes} lifes left." in (497,310)
+	       )
+	
+question2 = Multiple_Choice(
+	        Python.question2,
+	        Python.options2,
+            Python.answer2,
+            sucess=challenges_dones increases 1,
+            fail=challenges_dones increases 1 and lifes decreases 1 and show message f"Wrong! You have {lifes} lifes left." in (497,310)
+            )
+
+question3 = Multiple_Choice(
+	        Python.question3,
+	        Python.options3,
+            Python.answer3,
+            sucess=door change to door_opened,
+            fail=challenges_dones increases 1 and lifes decreases 1 and show message f"Wrong! You have {lifes} lifes left." in (497,310)
+            )
+
+first_challenge = Event(triggers=click door and door is door_closed and challenges_dones is equal to 0 , actions=start challenge question)
+second_challenge = Event(triggers=click door and door is door_closed and challenges_dones is equal to 1 , actions=start challenge question2)
+third_challenge = Event(triggers=click door and door is door_closed and challenges_dones is equal to 2 , actions=start challenge question3)
+
+open_door = Event(triggers = challenges_dones is equal to 2 and lifes is equal to 2, actions= door change to door_opened, repetitions=1)
+
+endgame = Event(triggers = click door and door is door_opened,actions = end of game with message f"Congratulations! You finish in {_timer_} seconds.")
+
+explosion = Event(triggers = 20 seconds have already passed, actions = end of game with message "Time's up! The Space Station exploded.")
+explosion2 = Event(triggers = lifes is equal to 0, actions = end of game with message "You failed twice! The Space Station exploded.")
+
+__Python__
+
+import random
+import yaml
+import sys
+import os
+
+
+#Need to run with `erpl -i script.erpl -args "questions.yaml"`
+# Carrega o arquivo YAML
+directory_path = sys.argv[4]
+with open(directory_path, 'r', encoding='utf-8') as f:
+    data = yaml.safe_load(f)
+
+# Seleciona 3 perguntas diferentes aleatoriamente
+choices = random.sample(data['perguntas'], 3)
+
+question = choices[0]['pergunta']
+options = choices[0]['opcoes']
+answer = choices[0]['resposta']
+
+question2 = choices[1]['pergunta']
+options2 = choices[1]['opcoes']
+answer2 = choices[1]['resposta']
+
+question3 = choices[2]['pergunta']
+options3 = choices[2]['opcoes']
+answer3 = choices[2]['resposta']
+

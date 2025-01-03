@@ -1,0 +1,327 @@
+{
+   "title": "Room",
+   "scenarios": [
+      {
+         "views": [
+            {
+               "sources": [
+                  [
+                     "PATH",
+                     "/mnt/c/Users/35191/Desktop/MyEscapeRoom/erpl-examples/study_cases/1/BACKGROUND_ROOM.png"
+                  ]
+               ],
+               "position": {
+                  "x": 0.0,
+                  "y": 0.0
+               },
+               "size": {
+                  "x": 1280.0,
+                  "y": 720.0
+               },
+               "type": "VIEW_IMAGE",
+               "hitbox_type": "DEFAULT",
+               "id": "background"
+            }
+         ],
+         "objects": [
+            {
+               "views": [
+                  {
+                     "sources": [
+                        [
+                           "PATH",
+                           "/mnt/c/Users/35191/Desktop/MyEscapeRoom/erpl-examples/study_cases/1/DOOR_CLOSED.png"
+                        ]
+                     ],
+                     "position": {
+                        "x": 480.0,
+                        "y": 360.0
+                     },
+                     "size": {
+                        "x": 225.0,
+                        "y": 300.0
+                     },
+                     "type": "VIEW_IMAGE",
+                     "hitbox_type": "DEFAULT",
+                     "id": "door_closed"
+                  },
+                  {
+                     "sources": [
+                        [
+                           "PATH",
+                           "/mnt/c/Users/35191/Desktop/MyEscapeRoom/erpl-examples/study_cases/1/DOOR_OPEN.png"
+                        ]
+                     ],
+                     "position": {
+                        "x": 480.0,
+                        "y": 360.0
+                     },
+                     "size": {
+                        "x": 225.0,
+                        "y": 300.0
+                     },
+                     "type": "VIEW_IMAGE",
+                     "hitbox_type": "DEFAULT",
+                     "id": "door_opened"
+                  }
+               ],
+               "initial_view": "door_closed",
+               "id": "door"
+            },
+            {
+               "views": [
+                  {
+                     "sources": [
+                        [
+                           "PATH",
+                           "/mnt/c/Users/35191/Desktop/MyEscapeRoom/erpl-examples/study_cases/1/KEY_NORMAL.png"
+                        ]
+                     ],
+                     "position": {
+                        "x": 720.0,
+                        "y": 250.0
+                     },
+                     "size": {
+                        "x": 50.0,
+                        "y": 25.0
+                     },
+                     "type": "VIEW_IMAGE",
+                     "hitbox_type": "DEFAULT",
+                     "id": "key_view"
+                  }
+               ],
+               "id": "key"
+            },
+            {
+               "views": [
+                  {
+                     "sources": [
+                        [
+                           "PATH",
+                           "/mnt/c/Users/35191/Desktop/MyEscapeRoom/erpl-examples/study_cases/1/PAINTING.png"
+                        ]
+                     ],
+                     "position": {
+                        "x": 700.0,
+                        "y": 200.0
+                     },
+                     "size": {
+                        "x": 200.0,
+                        "y": 100.0
+                     },
+                     "type": "VIEW_IMAGE",
+                     "hitbox_type": "DEFAULT",
+                     "id": "painting_view"
+                  }
+               ],
+               "initial_view": "painting_view",
+               "id": "painting"
+            },
+            {
+               "views": [
+                  {
+                     "sources": [
+                        [
+                           "PATH",
+                           "/mnt/c/Users/35191/Desktop/MyEscapeRoom/erpl-examples/study_cases/1/DRAWER_CLOSED.png"
+                        ]
+                     ],
+                     "position": {
+                        "x": 300.0,
+                        "y": 400.0
+                     },
+                     "size": {
+                        "x": 150.0,
+                        "y": 100.0
+                     },
+                     "type": "VIEW_IMAGE",
+                     "hitbox_type": "DEFAULT",
+                     "id": "drawer_closed"
+                  },
+                  {
+                     "sources": [
+                        [
+                           "PATH",
+                           "/mnt/c/Users/35191/Desktop/MyEscapeRoom/erpl-examples/study_cases/1/DRAWER_OPEN.png"
+                        ]
+                     ],
+                     "position": {
+                        "x": 300.0,
+                        "y": 400.0
+                     },
+                     "size": {
+                        "x": 150.0,
+                        "y": 100.0
+                     },
+                     "type": "VIEW_IMAGE",
+                     "hitbox_type": "DEFAULT",
+                     "id": "drawer_open"
+                  }
+               ],
+               "initial_view": "drawer_closed",
+               "id": "drawer"
+            }
+         ],
+         "initial_view": "background",
+         "floor": 720,
+         "ceil": 0,
+         "id": "room"
+      }
+   ],
+   "events": [
+      {
+         "preconditions": {
+            "operator": "AND",
+            "left": {
+               "var": {
+                  "type": "CLICKED_OBJECT",
+                  "object": "drawer"
+               }
+            },
+            "right": {
+               "var": {
+                  "type": "WHEN_OBJECT_IS_VIEW",
+                  "object": "drawer",
+                  "view": "drawer_closed"
+               }
+            }
+         },
+         "posconditions": [
+            {
+               "type": "OBJ_CHANGE_VIEW",
+               "object": "drawer",
+               "view": "drawer_open"
+            },
+            {
+               "type": "SHOW_MESSAGE",
+               "message": "You found a note: 'The key is behind the painting!'",
+               "position": {
+                  "x": 400.0,
+                  "y": 100.0
+               }
+            }
+         ],
+         "id": "open_drawer"
+      },
+      {
+         "preconditions": {
+            "operator": "AND",
+            "left": {
+               "var": {
+                  "type": "CLICKED_OBJECT",
+                  "object": "painting"
+               }
+            },
+            "right": {
+               "var": {
+                  "type": "WHEN_OBJECT_IS_VIEW",
+                  "object": "drawer",
+                  "view": "drawer_open"
+               }
+            }
+         },
+         "posconditions": [
+            {
+               "type": "OBJ_CHANGE_POSITION",
+               "object": "painting",
+               "position": {
+                  "x": 850.0,
+                  "y": 200.0
+               }
+            },
+            {
+               "type": "OBJ_CHANGE_VIEW",
+               "object": "key",
+               "view": "key_view"
+            }
+         ],
+         "id": "move_painting"
+      },
+      {
+         "preconditions": {
+            "var": {
+               "type": "CLICKED_OBJECT",
+               "object": "key"
+            }
+         },
+         "posconditions": [
+            {
+               "type": "OBJ_PUT_INVENTORY",
+               "object": "key"
+            },
+            {
+               "type": "SHOW_MESSAGE",
+               "message": "You picked up the key!",
+               "position": {
+                  "x": 400.0,
+                  "y": 100.0
+               }
+            }
+         ],
+         "id": "pick_key"
+      },
+      {
+         "preconditions": {
+            "operator": "AND",
+            "left": {
+               "operator": "AND",
+               "left": {
+                  "var": {
+                     "type": "CLICKED_OBJECT",
+                     "object": "door"
+                  }
+               },
+               "right": {
+                  "var": {
+                     "type": "WHEN_OBJECT_IS_VIEW",
+                     "object": "door",
+                     "view": "door_closed"
+                  }
+               }
+            },
+            "right": {
+               "var": {
+                  "type": "OBJ_IS_IN_USE",
+                  "object": "key"
+               }
+            }
+         },
+         "posconditions": [
+            {
+               "type": "OBJ_CHANGE_VIEW",
+               "object": "door",
+               "view": "door_opened"
+            }
+         ],
+         "id": "try_open"
+      },
+      {
+         "preconditions": {
+            "operator": "AND",
+            "left": {
+               "var": {
+                  "type": "CLICKED_OBJECT",
+                  "object": "door"
+               }
+            },
+            "right": {
+               "var": {
+                  "type": "WHEN_OBJECT_IS_VIEW",
+                  "object": "door",
+                  "view": "door_opened"
+               }
+            }
+         },
+         "posconditions": [
+            {
+               "type": "END_GAME",
+               "message": "Congratulations! You Escaped!"
+            }
+         ],
+         "id": "endgame"
+      }
+   ],
+   "transitions": [],
+   "start": "room",
+   "start_type": "SCENARIO"
+}

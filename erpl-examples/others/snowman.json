@@ -1,0 +1,493 @@
+{
+   "title": "Room",
+   "scenarios": [
+      {
+         "views": [
+            {
+               "sources": [
+                  [
+                     "LIB",
+                     "BACKGROUND_ROOM"
+                  ]
+               ],
+               "position": {
+                  "x": 0.0,
+                  "y": 0.0
+               },
+               "size": {
+                  "x": 1280.0,
+                  "y": 720.0
+               },
+               "type": "VIEW_IMAGE",
+               "hitbox_type": "DEFAULT",
+               "id": "background"
+            }
+         ],
+         "objects": [
+            {
+               "views": [
+                  {
+                     "sources": [
+                        [
+                           "LIB",
+                           "KEY_NORMAL"
+                        ]
+                     ],
+                     "position": {
+                        "x": 720.0,
+                        "y": 250.0
+                     },
+                     "size": {
+                        "x": 50.0,
+                        "y": 25.0
+                     },
+                     "type": "VIEW_IMAGE",
+                     "hitbox_type": "DEFAULT",
+                     "id": "key_view"
+                  }
+               ],
+               "id": "key"
+            },
+            {
+               "views": [
+                  {
+                     "id": "door_opened",
+                     "sources": [
+                        [
+                           "PATH",
+                           "/mnt/c/Users/35191/Desktop/MyEscapeRoom/erpl/erpl/parser/../assets/objects/door/door0.png"
+                        ],
+                        [
+                           "PATH",
+                           "/mnt/c/Users/35191/Desktop/MyEscapeRoom/erpl/erpl/parser/../assets/objects/door/door1.png"
+                        ],
+                        [
+                           "PATH",
+                           "/mnt/c/Users/35191/Desktop/MyEscapeRoom/erpl/erpl/parser/../assets/objects/door/door2.png"
+                        ],
+                        [
+                           "PATH",
+                           "/mnt/c/Users/35191/Desktop/MyEscapeRoom/erpl/erpl/parser/../assets/objects/door/door3.png"
+                        ],
+                        [
+                           "PATH",
+                           "/mnt/c/Users/35191/Desktop/MyEscapeRoom/erpl/erpl/parser/../assets/objects/door/door4.png"
+                        ],
+                        [
+                           "PATH",
+                           "/mnt/c/Users/35191/Desktop/MyEscapeRoom/erpl/erpl/parser/../assets/objects/door/door5.png"
+                        ]
+                     ],
+                     "repetitions": 1,
+                     "time_sprite": 3,
+                     "type": "VIEW_IMAGE",
+                     "hitbox_type": "DEFAULT",
+                     "size": {
+                        "x": 194,
+                        "y": 254
+                     },
+                     "position": {
+                        "x": 287.0,
+                        "y": 406.0
+                     }
+                  },
+                  {
+                     "id": "door_closed",
+                     "sources": [
+                        [
+                           "PATH",
+                           "/mnt/c/Users/35191/Desktop/MyEscapeRoom/erpl/erpl/parser/../assets/objects/door/door0.png"
+                        ]
+                     ],
+                     "type": "VIEW_IMAGE",
+                     "hitbox_type": "DEFAULT",
+                     "size": {
+                        "x": 194,
+                        "y": 254
+                     },
+                     "position": {
+                        "x": 287.0,
+                        "y": 406.0
+                     }
+                  }
+               ],
+               "sounds": [
+                  {
+                     "id": "door_open",
+                     "sources": [
+                        [
+                           "PATH",
+                           "/mnt/c/Users/35191/Desktop/MyEscapeRoom/erpl/erpl/parser/../assets/objects/door/door-1-open.mp3"
+                        ]
+                     ],
+                     "loop": false
+                  },
+                  {
+                     "id": "door_locked",
+                     "sources": [
+                        [
+                           "PATH",
+                           "/mnt/c/Users/35191/Desktop/MyEscapeRoom/erpl/erpl/parser/../assets/objects/door/door-locked.mp3"
+                        ]
+                     ],
+                     "loop": false
+                  }
+               ],
+               "initial_view": "door_closed",
+               "position_reference": "floor",
+               "id": "door"
+            },
+            {
+               "views": [
+                  {
+                     "sources": [
+                        [
+                           "LIB",
+                           "PAINTING"
+                        ]
+                     ],
+                     "position": {
+                        "x": 700.0,
+                        "y": 200.0
+                     },
+                     "size": {
+                        "x": 200.0,
+                        "y": 100.0
+                     },
+                     "type": "VIEW_IMAGE",
+                     "hitbox_type": "DEFAULT",
+                     "id": "painting_view"
+                  }
+               ],
+               "initial_view": "painting_view",
+               "id": "painting"
+            },
+            {
+               "views": [
+                  {
+                     "sources": [
+                        [
+                           "LIB",
+                           "DRAWER_CLOSED"
+                        ]
+                     ],
+                     "position": {
+                        "x": 300.0,
+                        "y": 400.0
+                     },
+                     "size": {
+                        "x": 150.0,
+                        "y": 100.0
+                     },
+                     "type": "VIEW_IMAGE",
+                     "hitbox_type": "DEFAULT",
+                     "id": "drawer_closed"
+                  },
+                  {
+                     "sources": [
+                        [
+                           "LIB",
+                           "DRAWER_OPEN"
+                        ]
+                     ],
+                     "position": {
+                        "x": 300.0,
+                        "y": 400.0
+                     },
+                     "size": {
+                        "x": 150.0,
+                        "y": 100.0
+                     },
+                     "type": "VIEW_IMAGE",
+                     "hitbox_type": "DEFAULT",
+                     "id": "drawer_open"
+                  }
+               ],
+               "initial_view": "drawer_closed",
+               "id": "drawer"
+            },
+            {
+               "views": [
+                  {
+                     "draws": [
+                        {
+                           "color": "#ffffff",
+                           "type": "FILL",
+                           "id": "white"
+                        },
+                        {
+                           "position": {
+                              "x": 224.0,
+                              "y": 282.0
+                           },
+                           "radius": 60.0,
+                           "type": "CIRCLE",
+                           "id": "head"
+                        },
+                        {
+                           "position": {
+                              "x": 222.0,
+                              "y": 390.0
+                           },
+                           "radius": 80.0,
+                           "type": "CIRCLE",
+                           "id": "snowball1"
+                        },
+                        {
+                           "position": {
+                              "x": 222.0,
+                              "y": 510.0
+                           },
+                           "radius": 100.0,
+                           "type": "CIRCLE",
+                           "id": "snowball2"
+                        },
+                        {
+                           "color": "#ff8800",
+                           "type": "FILL",
+                           "id": "orange"
+                        },
+                        {
+                           "point1": {
+                              "x": 200.0,
+                              "y": 300.0
+                           },
+                           "point2": {
+                              "x": 100.0,
+                              "y": 270.0
+                           },
+                           "point3": {
+                              "x": 200.0,
+                              "y": 280.0
+                           },
+                           "type": "TRIANGLE",
+                           "id": "nose"
+                        },
+                        {
+                           "color": "#000000",
+                           "type": "FILL",
+                           "id": "black"
+                        },
+                        {
+                           "position": {
+                              "x": 205.0,
+                              "y": 264.0
+                           },
+                           "radius": 10.0,
+                           "type": "CIRCLE",
+                           "id": "eye1"
+                        },
+                        {
+                           "position": {
+                              "x": 245.0,
+                              "y": 264.0
+                           },
+                           "radius": 10.0,
+                           "type": "CIRCLE",
+                           "id": "eye2"
+                        },
+                        {
+                           "color": "#512b00",
+                           "type": "FILL",
+                           "id": "brown"
+                        },
+                        {
+                           "point1": {
+                              "x": 170.0,
+                              "y": 360.0
+                           },
+                           "point2": {
+                              "x": 50.0,
+                              "y": 370.0
+                           },
+                           "point3": {
+                              "x": 170.0,
+                              "y": 380.0
+                           },
+                           "type": "TRIANGLE",
+                           "id": "arm1"
+                        },
+                        {
+                           "point1": {
+                              "x": 280.0,
+                              "y": 360.0
+                           },
+                           "point2": {
+                              "x": 400.0,
+                              "y": 370.0
+                           },
+                           "point3": {
+                              "x": 280.0,
+                              "y": 380.0
+                           },
+                           "type": "TRIANGLE",
+                           "id": "arm2"
+                        }
+                     ],
+                     "type": "VIEW_SKETCH",
+                     "hitbox_type": "DEFAULT",
+                     "id": "sketch"
+                  }
+               ],
+               "initial_view": "sketch",
+               "id": "snowman"
+            }
+         ],
+         "floor": 660.0,
+         "initial_view": "background",
+         "ceil": 0,
+         "id": "room"
+      }
+   ],
+   "events": [
+      {
+         "preconditions": {
+            "operator": "AND",
+            "left": {
+               "var": {
+                  "type": "CLICKED_OBJECT",
+                  "object": "drawer"
+               }
+            },
+            "right": {
+               "var": {
+                  "type": "WHEN_OBJECT_IS_VIEW",
+                  "object": "drawer",
+                  "view": "drawer_closed"
+               }
+            }
+         },
+         "posconditions": [
+            {
+               "type": "OBJ_CHANGE_VIEW",
+               "object": "drawer",
+               "view": "drawer_open"
+            },
+            {
+               "type": "SHOW_MESSAGE",
+               "message": "You found a note: 'The key is behind the painting!'",
+               "position": {
+                  "x": 400.0,
+                  "y": 100.0
+               }
+            }
+         ],
+         "id": "open_drawer"
+      },
+      {
+         "preconditions": {
+            "operator": "AND",
+            "left": {
+               "var": {
+                  "type": "CLICKED_OBJECT",
+                  "object": "painting"
+               }
+            },
+            "right": {
+               "var": {
+                  "type": "WHEN_OBJECT_IS_VIEW",
+                  "object": "drawer",
+                  "view": "drawer_open"
+               }
+            }
+         },
+         "posconditions": [
+            {
+               "type": "OBJ_CHANGE_POSITION",
+               "object": "painting",
+               "position": {
+                  "x": 850.0,
+                  "y": 200.0
+               }
+            },
+            {
+               "type": "OBJ_CHANGE_VIEW",
+               "object": "key",
+               "view": "key_view"
+            }
+         ],
+         "id": "move_painting"
+      },
+      {
+         "preconditions": {
+            "var": {
+               "type": "CLICKED_OBJECT",
+               "object": "key"
+            }
+         },
+         "posconditions": [
+            {
+               "type": "OBJ_PUT_INVENTORY",
+               "object": "key"
+            }
+         ],
+         "id": "pick_key"
+      },
+      {
+         "preconditions": {
+            "operator": "AND",
+            "left": {
+               "var": {
+                  "type": "CLICKED_OBJECT",
+                  "object": "door"
+               }
+            },
+            "right": {
+               "var": {
+                  "type": "WHEN_OBJECT_IS_VIEW",
+                  "object": "door",
+                  "view": "door_closed"
+               }
+            }
+         },
+         "posconditions": [
+            {
+               "sources": [
+                  [
+                     "URL",
+                     "https://i.imgur.com/XZB2cAV.jpeg"
+                  ]
+               ],
+               "sucess": [
+                  {
+                     "type": "OBJ_CHANGE_VIEW",
+                     "object": "door",
+                     "view": "door_opened"
+                  }
+               ],
+               "type": "SLIDEPUZZLE",
+               "id": "question"
+            }
+         ],
+         "id": "try_open"
+      },
+      {
+         "preconditions": {
+            "operator": "AND",
+            "left": {
+               "var": {
+                  "type": "CLICKED_OBJECT",
+                  "object": "door"
+               }
+            },
+            "right": {
+               "var": {
+                  "type": "WHEN_OBJECT_IS_VIEW",
+                  "object": "door",
+                  "view": "door_opened"
+               }
+            }
+         },
+         "posconditions": [
+            {
+               "type": "END_GAME",
+               "message": "Congratulations! You Escaped!"
+            }
+         ],
+         "id": "endgame"
+      }
+   ],
+   "transitions": [],
+   "start": "room",
+   "start_type": "SCENARIO"
+}

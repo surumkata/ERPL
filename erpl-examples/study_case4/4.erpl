@@ -1,0 +1,70 @@
+EscapeRoom(
+    title="Mission Solar System",
+    scenarios=[station],
+    events=[first_challenge,second_challenge,third_challenge,open_door,endgame,explosion,explosion2],
+    transitions=[intro],
+    variables=[lifes,challenges_dones],
+    start=intro
+)
+
+background = Image(source="room.png")
+
+locked_sound = Sound(source="door-locked.mp3")
+opening_sound = Sound(source="door-opening.mp3")
+
+door_closed = Image(source="door_closed.png")
+door_opened = Animation(sources=["door_semi_closed.png","door_open.png"],repetitions=1,time_sprite=3)
+
+door = Object(initial_view=door_closed,views=[door_closed,door_opened],position_reference=floor,sounds=[locked_sound, opening_sound])
+
+challenges_dones = Variable(number=0)
+lifes = Variable(number=2)
+
+timer = Text(f"{_regressive_timer_5min_}",rgb(0,0,255),(555,100),100)
+
+station = Scenario(initial_view=background,views=[background],objects=[door],texts=[timer,Text(f"{lifes} remaining attempts",rgb(0,0,255),(500,200),40)],sounds=[],floor=610)
+
+intro = Transition(
+            Image.space_station("space_station.png"),
+            Sound.intro_music("intro.mp3"),
+            [f"You and your team are astronauts on a special mission to explore the solar system.",
+             f"However, during the journey, you get trapped in a space station and need to solve a",
+             f"series of puzzles to escape before time runs out and the spaceship leaves without you.",
+             f"You have {_regressive_timer_5min_} to escape and you need to pass 2 of 3 challenges, otherwise the space station explodes."
+            ],
+            next_scenario=station
+        )
+
+question = Sequence(
+	"Choose from the planet closest to the sun to the furthest",
+	["Mercury","Earth","Jupiter","Neptune"],
+	sucess=challenges_dones increases 1,
+	fail=challenges_dones increases 1 and lifes decreases 1 and show message f"Wrong! You have {lifes} lifes left." in (497,310)
+	)
+	
+question2 = Multiple_Choice(
+            "Which planet has the biggest greenhouse effect?",
+            ["Mercury","Earth","Jupiter","Venus"],
+            "Venus",
+            sucess=challenges_dones increases 1,
+            fail=challenges_dones increases 1 and lifes decreases 1 and show message f"Wrong! You have {lifes} lifes left." in (497,310)
+            )
+
+question3 = Multiple_Choice(
+            "How many planets are there in the Solar System?",
+            ["7","8","9","10"],
+            "7",
+            sucess=door change to door_opened,
+            fail=challenges_dones increases 1 and lifes decreases 1 and show message f"Wrong! You have {lifes} lifes left." in (497,310)
+            )
+
+first_challenge = Event(triggers=click door and door is door_closed and challenges_dones is equal to 0 , actions=start challenge question)
+second_challenge = Event(triggers=click door and door is door_closed and challenges_dones is equal to 1 , actions=start challenge question2)
+third_challenge = Event(triggers=click door and door is door_closed and challenges_dones is equal to 2 , actions=start challenge question3)
+
+open_door = Event(triggers = challenges_dones is equal to 2 and lifes is equal to 2, actions= door change to door_opened, repetitions=1)
+
+endgame = Event(triggers = click door and door is door_opened,actions = end of game with message f"Congratulations! You finish in {_timer_} seconds.")
+
+explosion = Event(triggers = 20 seconds have already passed, actions = end of game with message "Time's up! The Space Station exploded.")
+explosion2 = Event(triggers = lifes is equal to 0, actions = end of game with message "You failed twice! The Space Station exploded.")

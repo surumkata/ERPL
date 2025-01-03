@@ -1,0 +1,64 @@
+# Construtor da Escape Room
+EscapeRoom(
+    title="Room",
+    scenarios=[room],
+    events=[open_drawer, move_painting, pick_key, try_open, endgame],
+    transitions=[],
+    start=room
+)
+
+
+# Porta: Fechada e aberta
+door_closed = Image(source=ImageLib.DOOR_CLOSED, position=(480,360), size=(225,300))
+door_opened = Image(source=ImageLib.DOOR_OPEN, position=(480,360), size=(225,300))
+door = Object(initial_view=door_closed, views=[door_closed, door_opened])
+
+# Chave: Está escondida atrás do quadro, só aparece quando o jogador move o quadro
+key_view = Image(source=ImageLib.KEY_NORMAL, position=(720,250), size=(50,25))
+key = Object(views=[key_view])
+
+# Quadro na parede: Objeto que o jogador pode mover
+painting_view = Image(source=ImageLib.PAINTING, position=(700,200), size=(200,100))
+painting = Object(initial_view=painting_view, views=[painting_view])
+
+# Mesa com gaveta: O jogador pode abrir a gaveta para encontrar uma pista
+drawer_closed = Image(source=ImageLib.DRAWER_CLOSED, position=(300,400), size=(150,100))
+drawer_open = Image(source=ImageLib.DRAWER_OPEN, position=(300,400), size=(150,100))
+drawer = Object(initial_view=drawer_closed, views=[drawer_closed, drawer_open])
+
+# Cenário principal com a porta, a chave (escondida), o quadro e a mesa com a gaveta
+background = Image(source=ImageLib.BACKGROUND_ROOM, position=(0,0), size=(1280,720))
+room = Scenario(initial_view=background, views=[background], objects=[key, door, painting, drawer], floor=660)
+
+# Definição de eventos
+# Evento para abrir a gaveta
+open_drawer = Event(
+    triggers = click drawer and drawer is drawer_closed,
+    actions = drawer change to drawer_open and show message "You found a note: 'The key is behind the painting!'" in (400,100)
+)
+
+# Evento para mover o quadro e revelar a chave
+move_painting = Event(
+    triggers = click painting and drawer is drawer_open,
+    actions = painting move to (850,200) and key change to key_view
+)
+
+# Evento para pegar a chave (só aparece após o quadro ser movido)
+pick_key = Event(
+    triggers = click key,
+    actions = key goes to inventory
+)
+
+# Evento para tentar abrir a porta
+try_open = Event(
+    triggers = click door and door is door_closed and key is in use,
+    actions = door change to door_opened
+)
+
+
+
+# Evento de fim de jogo ao abrir a porta
+endgame = Event(
+    triggers = click door and door is door_opened,
+    actions = end of game
+)

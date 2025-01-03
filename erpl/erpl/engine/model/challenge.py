@@ -1,13 +1,14 @@
 import pygame
 from .utils import WIDTH, HEIGHT, Color, Position, debug, Size
 import random
-from .view import View, ViewPeace
+from .view import ViewPeace
 import numpy as np
 from PIL import Image
 import io
 import os
 import socket
 import time
+import requests
 
 current_folder = os.path.dirname(__file__)
 
@@ -28,7 +29,7 @@ class ChallengeQuestion(Challenge):
     def __init__(self, question, code, sucess_challenge, fail_challenge):
         super().__init__(sucess_challenge,fail_challenge)
         self.question = question
-        self.code = code
+        self.code = code.lower()
         self.input_box = pygame.Rect(WIDTH/4+10, HEIGHT/2+10, WIDTH/2-20, HEIGHT/4-20)
         self.input_text = ""
         self.sucess_challenge = sucess_challenge
@@ -43,7 +44,7 @@ class ChallengeQuestion(Challenge):
         pygame.draw.rect(screen, Color.BLACK, self.input_box, 2) #borda preta do input
 
 
-        question_surface = font.render(self.question, True, Color.BLACK)
+        question_surface = font.render(self.question, True, Color.WHITE)
         screen.blit(question_surface, (background.x+10, background.y+10)) #print question
 
 
@@ -55,10 +56,10 @@ class ChallengeQuestion(Challenge):
         if pygame_event.type == pygame.KEYDOWN:
             if pygame_event.key == pygame.K_RETURN:  # Verifica se o jogador pressionou Enter
                 debug("CHALLENGE_ASK_CODE: Código Recebido: "+self.input_text+".")
-                if self.input_text == self.code:
-                    return self.sucess_challenge
+                if self.input_text.lower() == self.code:
+                    return (True,self.sucess_challenge)
                 else:
-                    return self.fail_challenge
+                    return (False,self.fail_challenge)
             elif pygame_event.key == pygame.K_BACKSPACE:  # Verifica se o jogador pressionou Backspace
                 self.input_text = self.input_text[:-1]
             else:
@@ -90,11 +91,11 @@ class ChallengeMotion(Challenge):
             if self.last_motion != None:
                 trigger_object = room.objects[self.trigger_motion]
                 if(trigger_object.have_clicked(self.last_motion.x,self.last_motion.y)):
-                    return self.sucess_challenge
+                    return (True,self.sucess_challenge)
                 else:
-                    return self.fail_challenge
+                    return (False,self.fail_challenge)
             else:
-                return self.fail_challenge
+                return (False,self.fail_challenge)
 
         return None
     
@@ -162,9 +163,9 @@ class ChallengeMultipleChoice(Challenge):
                     if self.have_clicked(pygame_event.pos[0],pygame_event.pos[1],self.choice_boxes[i]):
                         choice_answer = self.multiple_choices[i]
                         if choice_answer == self.answer:
-                            return self.sucess_challenge
+                            return (True,self.sucess_challenge)
                         else:
-                            return self.fail_challenge
+                            return (False,self.fail_challenge)
                 return None
             else:
                 return 0
@@ -172,13 +173,18 @@ class ChallengeMultipleChoice(Challenge):
 
 
 class ChallengeConnections(Challenge):
-    def __init__(self, question, connections, sucess_challenge, fail_challenge):
+    def __init__(self, question, list1,list2, sucess_challenge, fail_challenge):
         super().__init__(sucess_challenge,fail_challenge)
         self.question = question
-        self.connections = connections
+        self.connections = {}
 
-        self.lefts = [k for k in self.connections]
-        self.rights = [v for v in self.connections.values()]
+        for idx, x in enumerate(list1):
+            self.connections[x] = list2[idx]
+
+        print(self.connections)
+
+        self.lefts = list1
+        self.rights = list2
 
         random.shuffle(self.lefts)
         random.shuffle(self.rights)
@@ -248,9 +254,9 @@ class ChallengeConnections(Challenge):
                                 self.lefts_dones.append(self.left_choice)
                                 self.rights_dones.append(self.rights[i])
                                 if len(self.lefts_dones) == 4:
-                                    return self.sucess_challenge
+                                    return (True,self.sucess_challenge)
                             else:
-                                return self.fail_challenge
+                                return (False,self.fail_challenge)
 
             else:
                 return 0
@@ -310,12 +316,12 @@ class ChallengeSequence(Challenge):
                 for i in range(4):
                     if self.shuffle_sequence[i] not in self.dones and self.have_clicked(pygame_event.pos[0],pygame_event.pos[1],self.boxes[i]):
                         if self.sequence[self.choice] != self.shuffle_sequence[i]:
-                            return self.fail_challenge
+                            return (False,self.fail_challenge)
                         else:
                             self.choice+=1
                             self.dones.append(self.shuffle_sequence[i])
                             if self.choice == 4:
-                                return self.sucess_challenge
+                                return (True,self.sucess_challenge)
 
             else:
                 return 0
@@ -392,7 +398,31 @@ class ChallengeSlidePuzzle(Challenge):
 
     def recort_image(self, image_path):
         # Abra a image
-        image = Image.open(image_path)
+        # Verifica se 'image' é uma URL
+        if image_path.startswith('http://') or image_path.startswith('https://'):
+            # Faz o download da imagem da web
+            headers = {
+                    "user-agent": "curl/7.84.0",
+                    "accept": "*/*"
+                }
+            response = requests.get(url=image_path,headers=headers)
+
+            # Verifica se a resposta foi bem-sucedida
+            if response.status_code == 200:
+                # Tenta abrir a imagem
+                try:
+                    image = Image.open(io.BytesIO(response.content)).convert("RGB")  # Abre a imagem da web e converte para RGB
+                except Exception as e:
+                    print(f"Erro ao abrir a imagem da URL: {e}")
+                    exit(-1)
+                    return  # Sai da função se não conseguir abrir a imagem
+            else:
+                print(f"Erro ao baixar a imagem: {response.status_code}")
+                exit(-1)
+                return  # Sai da função se a resposta não for bem-sucedida
+        else:
+            # Se não for uma URL, assume que é um caminho de arquivo local
+            image = Image.open(image_path).convert("RGB")  # Garantir que a imagem tem 3 canais (RGB)
         peaces = []
         size = 300
         
@@ -476,7 +506,7 @@ class ChallengeSlidePuzzle(Challenge):
                             if x != -1:
                                 self.swap(i,x)
                                 if self.is_done():
-                                    return self.sucess_challenge
+                                    return (True,self.sucess_challenge)
                                 else:
                                     break
                                 
@@ -488,8 +518,6 @@ class ChallengeSlidePuzzle(Challenge):
 class ChallengePuzzle(Challenge):
     def __init__(self, image, sucess_challenge):
         super().__init__(sucess_challenge,None)
-
-
 
         self.background = pygame.Rect(WIDTH/8, HEIGHT/8, 3*WIDTH/4, 3*HEIGHT/4)
         s = 0.8
@@ -566,37 +594,74 @@ class ChallengePuzzle(Challenge):
         return rect.x <= x <= rect.x + rect.w and rect.y <= y <= rect.y  + rect.h
         
     def recort_image(self, image):
-        # Abra as images
-        image = Image.open(image)
+        # Abra a imagem
+        # Verifica se 'image' é uma URL
+        if image.startswith('http://') or image.startswith('https://'):
+            # Faz o download da imagem da web
+            headers = {
+                    "user-agent": "curl/7.84.0",
+                    "accept": "*/*"
+                }
+            response = requests.get(url=image,headers=headers)
+
+            # Verifica se a resposta foi bem-sucedida
+            if response.status_code == 200:
+                # Tenta abrir a imagem
+                try:
+                    image = Image.open(io.BytesIO(response.content)).convert("RGB")  # Abre a imagem da web e converte para RGB
+                except Exception as e:
+                    print(f"Erro ao abrir a imagem da URL: {e}")
+                    exit(-1)
+                    return  # Sai da função se não conseguir abrir a imagem
+            else:
+                print(f"Erro ao baixar a imagem: {response.status_code}")
+                exit(-1)
+                return  # Sai da função se a resposta não for bem-sucedida
+        else:
+            # Se não for uma URL, assume que é um caminho de arquivo local
+            image = Image.open(image).convert("RGB")  # Garantir que a imagem tem 3 canais (RGB)
+
         self.peaces = []
+
         for i in range(0, 12):
-            mask = Image.open(f'{current_folder}/../../assets/images/moldes/molde{i}.jpg').convert('L')
-    	
-            # Redimensione a image para as dimensões do molde
+            mask = Image.open(f'{current_folder}/../../assets/images/moldes/molde{i}.jpg').convert('L')  # Escala de cinza para a máscara
+
+            # Redimensione a imagem para as dimensões do molde
             image_resized = image.resize(mask.size)
 
-            # Empilhe as images
-            image_with_transparency = np.dstack((np.array(image_resized), np.array(mask)))
+            # Converta as imagens para arrays NumPy
+            image_array = np.array(image_resized)
+            mask_array = np.array(mask)
 
-            # Converta para image do tipo PIL
-            image_with_transparency_pil = Image.fromarray(image_with_transparency)
+            # Certifique-se de que o mask_array é um array de 2D (escala de cinza)
+            if mask_array.ndim == 2:
+                # Adicione o canal alfa (transparência) com base na máscara
+                image_with_transparency = np.dstack((image_array, mask_array))
 
-            # Encontre os limites not transparentes
-            bbox = image_with_transparency_pil.getbbox()
+                # Converta para o tipo correto (uint8) para evitar problemas com PIL
+                image_with_transparency = image_with_transparency.astype(np.uint8)
 
-            # Recorte a image usando os limites encontrados
-            image_cropped = image_with_transparency_pil.crop(bbox)
+                # Converta a matriz NumPy para imagem do PIL
+                image_with_transparency_pil = Image.fromarray(image_with_transparency)
 
-            buffer = io.BytesIO()
-            image_cropped.save(buffer, format='PNG')
-            buffer.seek(0)
+                # Encontre os limites não transparentes
+                bbox = image_with_transparency_pil.getbbox()
 
-            image_pygame = ViewPeace(i,buffer,self.sizes[i],self.random_positions[i])
+                # Recorte a imagem usando os limites encontrados
+                image_cropped = image_with_transparency_pil.crop(bbox)
 
-            self.peaces.append(image_pygame)
-            
-            # Fechar o object io.BytesIO
-            buffer.close()
+                # Salve a imagem cortada em um buffer
+                buffer = io.BytesIO()
+                image_cropped.save(buffer, format='PNG')
+                buffer.seek(0)
+
+                # Crie o objeto pygame da imagem recortada
+                image_pygame = ViewPeace(i, buffer, self.sizes[i], self.random_positions[i])
+
+                self.peaces.append(image_pygame)
+
+                # Fechar o object io.BytesIO
+                buffer.close()
 
     
     #Função que verifica se foi clicado na área do object
@@ -633,7 +698,7 @@ class ChallengePuzzle(Challenge):
                     self.dones.append(self.motion_peace)
 
                     if len(self.dones) == 12:
-                        return self.sucess_challenge
+                        return (True,self.sucess_challenge)
         else:
             if pygame_event.type == pygame.MOUSEBUTTONDOWN:
                 if self.have_clicked(pygame_event.pos[0],pygame_event.pos[1],self.background):
@@ -719,11 +784,11 @@ class ChallengeSocketConnection(Challenge):
                     decoded_data = data.decode()
                     debug(f'Mensagem recebida: {decoded_data}')
                     if decoded_data == "-1":
-                        return self.fail_challenge
+                        return (False,self.fail_challenge)
                     elif decoded_data == "0":
                         return 0
                     elif decoded_data == "1":
-                        return self.sucess_challenge
+                        return (True,self.sucess_challenge)
                     else:
                         return None
             except socket.timeout:

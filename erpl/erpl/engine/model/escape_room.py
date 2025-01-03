@@ -12,10 +12,15 @@ class EscapeRoom:
         self.title = title #TITULO
         self.scenarios = {} 
         self.objects = {}
-        self.events = {
-        }
+        self.events = {}
         self.events_buffer = {}
         self.transitions = {}
+        self.variables = {
+            "_timer_" : 0.0,
+            "_timerms_" : 0.0,
+            "_sucesses_" : 0.0,
+            "_fails_" : 0.0
+        }
 
     #Função que add uma cena
     def add_scenario(self,scenario : Scenario):
@@ -33,6 +38,10 @@ class EscapeRoom:
     def add_transition(self, transition : Transition):
         self.transitions[transition.id] = transition
     
+    #Função que add uma transition
+    def add_variable(self, variable : str, number : float):
+        self.variables[variable] = number
+
     #Função que add um event ao buffer
     def add_event_buffer(self, id,pre_conditions,pos_conditions,repetitions):
         self.events_buffer[id] = Event(id,pre_conditions,pos_conditions,repetitions)
@@ -64,6 +73,7 @@ class EscapeRoom:
     def check_if_event_occurred(self,event_id : str):
         if event_id in self.events:
             return self.events[event_id].happen
+        else: return False
             
     #Função que devolve o view atual de um object
     def check_view_of_object(self, object_id : str, view_id : str):
@@ -72,8 +82,10 @@ class EscapeRoom:
     #Função que desenha a cena atual
     def draw(self, screen, current_scenario):
         #Desenhar a cena
-        self.scenarios[current_scenario].draw(screen)
-
+        if current_scenario in self.scenarios:
+            self.scenarios[current_scenario].draw(screen,self.variables)
+        else: return
+        
         #Desenhar objects na cena
         for object in self.objects.values():
             #Se o object pertence à cena atual

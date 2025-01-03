@@ -1,0 +1,80 @@
+perguntas:
+  - pergunta: Qual é a unidade básica da vida?
+    opcoes:
+      - Átomo
+      - Célula
+      - Molécula
+      - Tecido
+    resposta: Célula
+
+  - pergunta: Qual gás as plantas absorvem durante a fotossíntese?
+    opcoes:
+      - Oxigênio
+      - Nitrogênio
+      - Gás carbônico
+      - Hidrogênio
+    resposta: Gás carbônico
+
+  - pergunta: Quem formulou a Teoria da Relatividade?
+    opcoes:
+      - Isaac Newton
+      - Albert Einstein
+      - Galileo Galilei
+      - Stephen Hawking
+    resposta: Albert Einstein
+
+  - pergunta: Qual é a camada mais externa da Terra?
+    opcoes:
+      - Núcleo
+      - Manto
+      - Crosta
+      - Litosfera
+    resposta: Crosta
+
+  - pergunta: Qual planeta é conhecido como o "Planeta Vermelho"?
+    opcoes:
+      - Terra
+      - Marte
+      - Vênus
+      - Júpiter
+    resposta: Marte
+
+  - pergunta: Qual é a principal função dos glóbulos vermelhos no sangue?
+    opcoes:
+      - Combater infecções
+      - Transportar oxigênio
+      - Produzir anticorpos
+      - Coagular o sangue
+    resposta: Transportar oxigênio
+
+  - pergunta: Qual é a fórmula química da água?
+    opcoes:
+      - H2O
+      - CO2
+      - O2
+      - H2SO4
+    resposta: H2O
+
+  - pergunta: Qual cientista descobriu a penicilina?
+    opcoes:
+      - Marie Curie
+      - Louis Pasteur
+      - Alexander Fleming
+      - Gregor Mendel
+    resposta: Alexander Fleming
+
+  - pergunta: Qual é a velocidade da luz no vácuo?
+    opcoes:
+      - 300.000 km/h
+      - 300.000 km/s
+      - 150.000 km/s
+      - 150.000 km/h
+    resposta: 300.000 km/s
+
+  - pergunta: O que é medido pela escala Richter?
+    opcoes:
+      - Temperatura
+      - Intensidade sísmica
+      - Pressão atmosférica
+      - Velocidade do som
+    resposta: Intensidade sísmica

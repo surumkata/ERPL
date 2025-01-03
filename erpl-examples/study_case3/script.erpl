@@ -1,0 +1,42 @@
+EscapeRoom(
+    title="Mission Solar System",
+    scenarios=[station],
+    events=[try_open,endgame],
+    transitions=[intro],
+    start=intro
+)
+
+background = Image(source="room.png")
+
+locked_sound = Sound(source="door-locked.mp3")
+opening_sound = Sound(source="door-opening.mp3")
+
+door_closed = Image(source="door_closed.png")
+door_opened = Animation(sources=["door_semi_closed.png","door_open.png"],repetitions=1,time_sprite=3)
+
+door = Object(initial_view=door_closed,views=[door_closed,door_opened],position_reference=floor,sounds=[locked_sound, opening_sound])
+
+station = Scenario(initial_view=background,views=[background],objects=[door],sounds=[],floor=610)
+
+intro = Transition(
+        Image.space_station("space_station.png"),
+        Sound.intro_music("intro.mp3"),
+        Python.story,
+        next_scenario=station
+        )
+
+question_planets = Sequence(
+	               question="Choose from the planet closest to the sun to the furthest",
+	               sequence=["Mercury","Earth","Jupiter","Neptune"],
+	               sucess=door change to door_opened and play opening_sound of door,
+	               fail=show message "Wrong!" in (497,310)
+	               )
+
+try_open = Event(triggers=click door and door is door_closed,actions=start challenge question_planets)
+
+endgame = Event(triggers = click door and door is door_opened,actions = end of game)
+
+__Python__
+
+file = open("story.txt")
+story = file.read().split("\n")
